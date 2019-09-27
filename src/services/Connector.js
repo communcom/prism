@@ -205,7 +205,6 @@ class Connector extends BasicConnector {
                     handler: this._profile.getProfile,
                     scope: this._profile,
                     inherits: [
-                        'appSpecify',
                         'userByName',
                         'userRelativity',
                         'onlyWhenPublicApiEnabled',

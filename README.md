@@ -40,22 +40,8 @@ search:                            // Поиск по данным из приз
 getProfile:                        // Получение профиля пользователя
     requestedUserId <string>       // Идентификатор пользователя
     username <string>              // Имя пользователя относительно домена
-    user <string>                  // Любое из имен выше
-    app <string>('cyber')          // Тип приложения / домена
-        [
-          cyber                    // CyberWay
-        | gls                      // Golos
-        ]
+    user <string>                  // userId либо username
 
-    @deprecated
-    type <string>('cyber')         // Тип профиля (устарело)
-        [
-          cyber                    // CyberWay
-        | gls                      // Golos
-        ]
-
-getChargers:                       // Получение батареек пользователя
-    userId <string>                // Идентификатор пользователя
 
 getPost:                           // Получение конкретного поста
     currentUserId <string/null>    // Идентификатор текущего пользователя
@@ -282,6 +268,56 @@ waitForTransaction               // Дождаться и получить от�
     transactionId <string>       // Идентификатор транзакции
 
 ```
+
+## Описание API
+
+### getProfile
+
+=> Запрос
+```json
+{
+  "id": "1",
+  "method": "getProfile",
+  "jsonrpc": "2.0",
+  "params": {
+    "user": "username",
+    "requestedUserId": "lol"
+  }
+}
+```
+
+<= Ответ
+
+```json
+{
+    "jsonrpc": "2.0",
+    "id": "1",
+    "result": {
+        "username": "username",
+        "subscriptions": {
+            "usersCount": 1,
+            "communitiesCount": 0
+        },
+        "subscribers": {
+            "usersCount": 1,
+            "communitiesCount": 0
+        },
+        "stats": {
+            "reputation": 0,
+            "postsCount": 0,
+            "commentsCount": 0
+        },
+        "leaderIn": [],
+        "userId": "tst3vypszqsu",
+        "registration": {
+            "time": "2019-09-27T11:33:33.000Z"
+        },
+        "isSubscribed": true,
+        "isSubscription": false
+    }
+}
+```
+
 
 Возможные переменные окружения `ENV`:
 

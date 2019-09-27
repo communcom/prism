@@ -81,10 +81,6 @@ class Main {
         const events = action.events;
 
         switch (pathName) {
-            case `${communityId}.charge->use`:
-                await this._profile.handleChargeState(events);
-                break;
-
             case `cyber->newaccount`:
                 await this._profile.handleCreate(actionArgs, { blockTime });
                 break;
@@ -172,10 +168,6 @@ class Main {
 
             case `${communityId}.publish->erasereblog`:
                 await this._post.handleRemoveRepost(actionArgs, { communityId, blockTime });
-                break;
-
-            case `${communityId}.vesting->open`:
-                await this._profile.handleVestingOpening(actionArgs);
                 break;
 
             case 'cyber.msig->propose':

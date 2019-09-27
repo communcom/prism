@@ -5,14 +5,17 @@ const Abstract = require('./Abstract');
 const ProfileModel = require('../../models/Profile');
 
 class Profile extends Abstract {
-    async handleUsername({ owner: userId, name: username, creator: communityId }) {
-        const path = `usernames.${communityId}`;
+    async handleUsername({ owner: userId, name: username, creator: app }) {
+        if (app !== 'comn') {
+            // TODO: remove in production
+            Logger.warn('Non-commun scope username', username, 'in scope', app);
+            return;
+        }
+
         const previousModel = await ProfileModel.findOneAndUpdate(
             { userId },
             {
-                $set: {
-                    [path]: username,
-                },
+                $set: { username },
             }
         );
 
@@ -20,19 +23,19 @@ class Profile extends Abstract {
             return;
         }
 
-        const previousName = previousModel[path];
+        const previousName = previousModel.username;
         let revertData;
 
         if (previousName) {
             revertData = {
                 $set: {
-                    [path]: previousName,
+                    username: previousName,
                 },
             };
         } else {
             revertData = {
                 $unset: {
-                    [path]: true,
+                    username: true,
                 },
             };
         }
@@ -92,69 +95,6 @@ class Profile extends Abstract {
         });
     }
 
-    async handleChargeState(chargeStateEvents) {
-        chargeStateEvents = chargeStateEvents.filter(event => event.event === 'chargestate');
-        for (const chargeStateEvent of chargeStateEvents) {
-            const {
-                user,
-                charge_symbol: chargeSymbol,
-                token_code: tokenCode,
-                charge_id: chargeId,
-                last_update: lastUpdate,
-                value,
-            } = chargeStateEvent.args;
-            // TODO: решить, как обрабатывать charge_symbol, token_code, last_update
-
-            let chargeType;
-
-            switch (chargeId) {
-                case 0:
-                    chargeType = 'votes';
-                    break;
-                case 1:
-                    chargeType = 'posts';
-                    break;
-                case 2:
-                    chargeType = 'comments';
-                    break;
-                case 3:
-                    chargeType = 'postbw';
-                    break;
-                default:
-                    return;
-            }
-
-            const chargePercent = (10000 - value) / 100;
-
-            await this._updateChargeState(user, chargeType, chargePercent);
-        }
-    }
-
-    async _updateChargeState(userId, chargeType, chargePercent) {
-        const path = `chargersRaw.${chargeType}`;
-        const previousModel = await ProfileModel.findOneAndUpdate(
-            {
-                userId,
-            },
-            {
-                $set: { [path]: { value: chargePercent, lastUpdated: Date.now() } },
-            }
-        );
-
-        if (!previousModel) {
-            return;
-        }
-
-        await this.registerForkChanges({
-            type: 'update',
-            Model: ProfileModel,
-            documentId: previousModel._id,
-            data: {
-                $set: { [path]: previousModel[path] },
-            },
-        });
-    }
-
     _makePersonalUpdateQuery(meta) {
         const data = this._extractUpdatedPersonalRawFields(meta);
         const query = {};
@@ -165,69 +105,40 @@ class Profile extends Abstract {
             switch (key) {
                 case 'profile_image':
                 case 'user_image':
-                    query['personal.cyber.avatarUrl'] = value;
-                    query['personal.gls.avatarUrl'] = value;
+                    query['personal.avatarUrl'] = value;
                     break;
 
                 case 'background_image':
                 case 'cover_image':
-                    query['personal.cyber.coverUrl'] = value;
-                    query['personal.gls.coverUrl'] = value;
+                    query['personal.coverUrl'] = value;
                     break;
 
                 case 'about':
-                    query['personal.cyber.biography'] = value;
-                    query['personal.gls.about'] = value;
+                    query['personal.biography'] = value;
                     break;
 
                 case 'vk':
-                    query['personal.cyber.contacts.vkontakte'] = value;
-                    query['personal.gls.contacts.vkontakte'] = value;
+                    query['personal.contacts.vkontakte'] = value;
                     break;
 
                 case 'facebook':
-                    query['personal.cyber.contacts.facebook'] = value;
-                    query['personal.gls.contacts.facebook'] = value;
+                    query['personal.contacts.facebook'] = value;
                     break;
 
                 case 'instagram':
-                    query['personal.cyber.contacts.instagram'] = value;
-                    query['personal.gls.contacts.instagram'] = value;
+                    query['personal.contacts.instagram'] = value;
                     break;
 
                 case 'telegram':
-                    query['personal.cyber.contacts.telegram'] = value;
-                    query['personal.gls.contacts.telegram'] = value;
+                    query['personal.contacts.telegram'] = value;
                     break;
 
                 case 'whatsapp':
-                    query['personal.cyber.contacts.whatsApp'] = value;
-                    query['personal.gls.contacts.whatsApp'] = value;
+                    query['personal.contacts.whatsApp'] = value;
                     break;
 
                 case 'wechat':
-                    query['personal.cyber.contacts.weChat'] = value;
-                    query['personal.gls.contacts.weChat'] = value;
-                    break;
-
-                case 'name':
-                    query['personal.gls.name'] = value;
-                    break;
-
-                case 'gender':
-                    query['personal.gls.gender'] = value;
-                    break;
-
-                case 'email':
-                    query['personal.gls.email'] = value;
-                    break;
-
-                case 'location':
-                    query['personal.gls.location'] = value;
-                    break;
-
-                case 'website':
-                    query['personal.gls.website'] = value;
+                    query['personal.contacts.weChat'] = value;
                     break;
             }
         }
@@ -263,30 +174,6 @@ class Profile extends Abstract {
         }
 
         return result;
-    }
-
-    async handleVestingOpening({ owner, symbol }) {
-        if (symbol !== '6,GOLOS') {
-            return;
-        }
-
-        const previousModel = await ProfileModel.findOneAndUpdate(
-            { userId: owner },
-            { $set: { isGolosVestingOpened: true } }
-        );
-
-        if (!previousModel) {
-            return;
-        }
-
-        await this.registerForkChanges({
-            type: 'update',
-            Model: ProfileModel,
-            documentId: previousModel._id,
-            data: {
-                $set: { isGolosVestingOpened: previousModel.isGolosVestingOpened },
-            },
-        });
     }
 }
 

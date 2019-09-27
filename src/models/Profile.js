@@ -1,140 +1,45 @@
 const core = require('gls-core-service');
 const MongoDB = core.services.MongoDB;
+const Logger = core.utils.Logger;
 
-module.exports = MongoDB.makeModel(
+const ProfileModel = MongoDB.makeModel(
     'Profile',
     {
         userId: {
             type: String,
             required: true,
         },
-        usernames: {
-            // app -> name
-            type: Object,
-            default: {},
-        },
-        isGenesisUser: {
-            type: Boolean,
-            default: false,
-        },
-        chargersRaw: {
-            votes: {
-                value: {
-                    type: Number,
-                    default: 100,
-                },
-                lastUpdated: {
-                    type: Date,
-                    default: Date.now(),
-                },
-            },
-            posts: {
-                value: {
-                    type: Number,
-                    default: 100,
-                },
-                lastUpdated: {
-                    type: Date,
-                    default: Date.now(),
-                },
-            },
-            comments: {
-                value: {
-                    type: Number,
-                    default: 100,
-                },
-                lastUpdated: {
-                    type: Date,
-                    default: Date.now(),
-                },
-            },
-            postbw: {
-                value: {
-                    type: Number,
-                    default: 100,
-                },
-                lastUpdated: {
-                    type: Date,
-                    default: Date.now(),
-                },
-            },
+        username: {
+            type: String,
         },
         personal: {
-            cyber: {
-                avatarUrl: {
-                    type: String,
-                },
-                coverUrl: {
-                    type: String,
-                },
-                biography: {
-                    type: String,
-                },
-                contacts: {
-                    vkontakte: {
-                        type: String,
-                    },
-                    facebook: {
-                        type: String,
-                    },
-                    instagram: {
-                        type: String,
-                    },
-                    telegram: {
-                        type: String,
-                    },
-                    whatsApp: {
-                        type: String,
-                    },
-                    weChat: {
-                        type: String,
-                    },
-                },
+            avatarUrl: {
+                type: String,
             },
-            gls: {
-                name: {
+            coverUrl: {
+                type: String,
+            },
+            biography: {
+                type: String,
+            },
+            contacts: {
+                vkontakte: {
                     type: String,
                 },
-                gender: {
+                facebook: {
                     type: String,
                 },
-                email: {
+                instagram: {
                     type: String,
                 },
-                about: {
+                telegram: {
                     type: String,
                 },
-                location: {
+                whatsApp: {
                     type: String,
                 },
-                website: {
+                weChat: {
                     type: String,
-                },
-                avatarUrl: {
-                    type: String,
-                },
-                coverUrl: {
-                    type: String,
-                },
-                contacts: {
-                    vkontakte: {
-                        type: String,
-                    },
-                    facebook: {
-                        type: String,
-                    },
-                    instagram: {
-                        type: String,
-                    },
-                    telegram: {
-                        type: String,
-                    },
-                    whatsApp: {
-                        type: String,
-                    },
-                    weChat: {
-                        type: String,
-                    },
                 },
             },
         },
@@ -197,10 +102,6 @@ module.exports = MongoDB.makeModel(
             type: [String],
             default: [],
         },
-        isGolosVestingOpened: {
-            type: Boolean,
-            default: false,
-        },
     },
     {
         index: [
@@ -213,18 +114,27 @@ module.exports = MongoDB.makeModel(
                     unique: true,
                 },
             },
-            // Golos user search
             {
                 fields: {
-                    'usernames.gls': 1,
-                },
-            },
-            // Cyber user search
-            {
-                fields: {
-                    'usernames.cyber': 1,
+                    username: 1,
                 },
             },
         ],
     }
 );
+
+MongoDB.mongoose.connection
+    .createCollection('CommunUsers', {
+        viewOn: 'profiles',
+        pipeline: [
+            {
+                $match: {
+                    username: { $exists: true },
+                },
+            },
+        ],
+    })
+    .then(() => Logger.log('CommunUsers view has been created'))
+    .catch(e => Logger.error('Error during CommunUsers view creation:', e));
+
+module.exports = ProfileModel;
