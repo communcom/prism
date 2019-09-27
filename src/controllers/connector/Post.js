@@ -1,25 +1,10 @@
-const AbstractContent = require('./AbstractContent');
-const PostModel = require('../../models/Post');
+const core = require('gls-core-service');
+const BasicController = core.controllers.Basic;
+const env = require('../../data/env');
 
-class Post extends AbstractContent {
-    async getPost({ currentUserId, requestedUserId, permlink, contentType, username, user, app }) {
-        const modelObject = await this._getContent(PostModel, {
-            currentUserId,
-            requestedUserId,
-            permlink,
-            contentType,
-            username,
-            user,
-            app,
-            noReposts: true,
-        });
-
-        await Promise.all([
-            this._populateCommunities([modelObject]),
-            this._populateViewCount([modelObject]),
-        ]);
-
-        return modelObject;
+class Post extends BasicController {
+    getPost() {
+        // TODO: get specific post
     }
 }
 
