@@ -12,6 +12,7 @@ const Block = require('../controllers/connector/Block');
 const Search = require('../controllers/connector/Search');
 const Vote = require('../controllers/connector/Vote');
 const CommunitySettings = require('../controllers/connector/CommunitySettings');
+const Community = require('../controllers/connector/Community');
 
 class Connector extends BasicConnector {
     constructor({ postFeedCache, leaderFeedCache, prism }) {
@@ -37,6 +38,7 @@ class Connector extends BasicConnector {
             this._search = new Search(linking);
             this._vote = new Vote(linking);
             this._communitySettings = new CommunitySettings(linking);
+            this._community = new Community(linking);
         } else {
             this._feed = empty;
             this._comment = empty;
@@ -48,6 +50,7 @@ class Connector extends BasicConnector {
             this._search = empty;
             this._vote = empty;
             this._communitySettings = empty;
+            this._community = empty;
         }
     }
 
@@ -441,9 +444,54 @@ class Connector extends BasicConnector {
                         },
                     },
                 },
+                getCommunity: {
+                    handler: this._community.getCommunity,
+                    scope: this._community,
+                    inherits: ['userRelativity', 'onlyWhenPublicApiEnabled'],
+                    validation: {
+                        required: ['communityId'],
+                        properties: {
+                            requestedUserId: {
+                                type: 'string',
+                            },
+                            communityId: {
+                                type: 'string',
+                            },
+                        },
+                    },
+                },
+                getCommunitiesList: {
+                    handler: this._community.getCommunities,
+                    scope: this._community,
+                    inherits: ['userRelativity', 'onlyWhenPublicApiEnabled', 'paging'],
+                    validation: {
+                        required: [],
+                        properties: {
+                            requestedUserId: {
+                                type: 'string',
+                            },
+                        },
+                    },
+                },
             },
             serverDefaults: {
                 parents: {
+                    paging: {
+                        validation: {
+                            properties: {
+                                limit: {
+                                    type: 'number',
+                                    default: 10,
+                                    minValue: 1,
+                                    maxValue: 30,
+                                },
+                                offset: {
+                                    type: 'number',
+                                    default: 0,
+                                },
+                            },
+                        },
+                    },
                     feedPagination: {
                         validation: {
                             properties: {

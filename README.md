@@ -317,6 +317,71 @@ waitForTransaction               // Дождаться и получить от�
     }
 }
 ```
+### getCommunity
+
+=> Запрос
+
+```json
+{
+  "id": "1",
+  "method": "getCommunity",
+  "jsonrpc": "2.0",
+  "params": {
+  	"communityId": "TWO comunity",
+    "requestedUserId": "lol"
+  }
+}
+```
+
+<= Ответ
+
+```json
+{
+    "jsonrpc": "2.0",
+    "id": "1",
+    "result": {
+        "subscribersCount": 0,
+        "communityId": "TWO comunity",
+        "tokenName": "TWO",
+        "isSubscribed": false
+    }
+}
+```
+
+### getCommunitiesList
+
+=> Запрос
+
+```json
+{
+  "id": "1",
+  "method": "getCommunitiesList",
+  "jsonrpc": "2.0",
+  "params": {
+    "requestedUserId": "lol",
+    "offset": 1
+  }
+}
+```
+
+<= Ответ
+
+```json
+{
+    "jsonrpc": "2.0",
+    "id": "1",
+    "result": {
+        "communities": [
+            {
+                "subscribersCount": 0,
+                "communityId": "TWO comunity",
+                "tokenName": "TWO",
+                "isSubscribed": false
+            }
+        ]
+    }
+}
+```
 
 
 Возможные переменные окружения `ENV`:

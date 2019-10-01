@@ -24,7 +24,7 @@ class Profile extends BasicController {
             'subscriptions.communityIds': false,
         };
 
-        const aggregation = [{ $match: filter }, { $project: projection }];
+        const aggregation = [{ $match: filter }];
 
         if (requestedUserId) {
             aggregation.push({
@@ -60,6 +60,7 @@ class Profile extends BasicController {
                 },
             });
         }
+        aggregation.push({ $project: projection });
 
         // like this, because `toArray` is the only allowed method
         const result = await ProfileView.aggregate(aggregation).toArray();

@@ -8,22 +8,12 @@ const Subscribe = require('./Subscribe');
 const HashTag = require('./HashTag');
 const Leader = require('./Leader');
 const CommunitySettings = require('./CommunitySettings');
+const Community = require('./Community');
 
 const ACTION_PROCESSING_WARNING_LIMIT = 1000;
 
 // TODO Change after MVP
-const communityRegistry = [
-    'gls.publish',
-    'gls.social',
-    'gls.vesting',
-    'gls.ctrl',
-    'gls.charge',
-    'cyber',
-    'cyber.domain',
-    'cyber.token',
-    'cyber.msig',
-];
-
+const communityRegistry = ['cyber', 'cyber.domain', 'cyber.token', 'cyber.msig', 'comn.list'];
 class Main {
     constructor({ connector, forkService }) {
         this._post = new Post({ connector, forkService });
@@ -34,6 +24,7 @@ class Main {
         this._hashTag = new HashTag({ connector, forkService });
         this._leader = new Leader({ connector, forkService });
         this._communitySettings = new CommunitySettings({ connector, forkService });
+        this._community = new Community({ connector, forkService });
     }
 
     async disperse({ transactions, blockNum, blockTime }) {
@@ -81,6 +72,12 @@ class Main {
         const events = action.events;
 
         switch (pathName) {
+            case `comn.list->create`:
+                await this._community.handleCreate(actionArgs);
+                break;
+            case `comn.list->addinfo`:
+                await this._community.handleAddInfo(actionArgs);
+                break;
             case `cyber->newaccount`:
                 await this._profile.handleCreate(actionArgs, { blockTime });
                 break;
