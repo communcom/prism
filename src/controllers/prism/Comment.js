@@ -1,37 +1,34 @@
 const core = require('cyberway-core-service');
-const Content = core.utils.Content;
-const Logger = core.utils.Logger;
-const BigNum = core.types.BigNum;
+const { Logger } = core.utils;
 const { NESTED_COMMENTS_MAX_INDEX_DEPTH } = require('../../data/constants');
-const AbstractContent = require('./AbstractContent');
+const Abstract = require('./Abstract');
 const PostModel = require('../../models/Post');
 const CommentModel = require('../../models/Comment');
 const ProfileModel = require('../../models/Profile');
+const { processContent, getContentId, extractContentId } = require('../../utils/content');
 
-class Comment extends AbstractContent {
-    constructor(...args) {
-        super(...args);
+class Comment extends Abstract {
+    async handleCreate(content, { communityId, blockNum, blockTime }) {
+        const contentId = extractContentId(content);
 
-        this._contentUtil = new Content();
-    }
+        let processedContent = null;
 
-    async handleCreate(content, { communityId, blockTime }) {
-        if (!(await this._isComment(content))) {
-            return;
+        try {
+            processedContent = await processContent(this, content, { isComment: true });
+        } catch (err) {
+            Logger.warn(`Invalid comment content, block num: ${blockNum}`, contentId, err);
         }
 
         const model = new CommentModel({
             communityId,
-            contentId: this._extractContentId(content),
-            content: await this._extractContentObject(content),
+            contentId,
+            content: processedContent,
             meta: {
                 time: blockTime,
             },
             payout: {
                 meta: {
-                    tokenProp: new BigNum(content.tokenprop),
-                    benefactorPercents: this._extractBenefactorPercents(content),
-                    curatorsPercent: new BigNum(content.curators_prcnt),
+                    curatorsPercent: Number(content.curators_prcnt),
                 },
             },
         });
@@ -48,12 +45,17 @@ class Comment extends AbstractContent {
         await this.updateUserCommentsCount(model.contentId.userId, 1);
     }
 
-    async handleUpdate(content) {
-        if (!(await this._isComment(content))) {
-            return;
+    async handleUpdate(content, { blockNum }) {
+        const contentId = extractContentId(content);
+
+        let updatedContent = null;
+
+        try {
+            updatedContent = await processContent(this, content);
+        } catch (err) {
+            Logger.warn(`Invalid comment content, block num: ${blockNum}`, contentId, err);
         }
 
-        const contentId = this._extractContentId(content);
         const previousModel = await CommentModel.findOneAndUpdate(
             {
                 'contentId.userId': contentId.userId,
@@ -61,7 +63,7 @@ class Comment extends AbstractContent {
             },
             {
                 $set: {
-                    content: await this._extractContentObject(content),
+                    content: updatedContent,
                 },
             }
         );
@@ -83,11 +85,7 @@ class Comment extends AbstractContent {
     }
 
     async handleDelete(content) {
-        if (!(await this._isComment(content))) {
-            return;
-        }
-
-        const contentId = this._extractContentId(content);
+        const contentId = extractContentId(content);
         const model = await CommentModel.findOne({
             'contentId.userId': contentId.userId,
             'contentId.permlink': contentId.permlink,
@@ -98,7 +96,6 @@ class Comment extends AbstractContent {
         }
 
         await this.updatePostCommentsCount(model, -1);
-        await this.updateUserPostsCount(model.contentId.userId, -1);
 
         const removed = await model.remove();
 
@@ -166,7 +163,7 @@ class Comment extends AbstractContent {
     }
 
     async applyParentByContent(model, content) {
-        const contentId = this._extractContentIdFromId(content.parent_id);
+        const contentId = getContentId(content.parent_id);
 
         await this.applyParentById(model, contentId);
     }
@@ -188,7 +185,7 @@ class Comment extends AbstractContent {
         );
 
         if (!parentComment) {
-            Logger.warn(`Unknown parent comment for ordering - ${parentCommentId}`);
+            Logger.warn('Unknown parent comment for ordering:', parentCommentId);
             return;
         }
 

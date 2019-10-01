@@ -1,13 +1,16 @@
 const lodash = require('lodash');
 const core = require('cyberway-core-service');
-const Logger = core.utils.Logger;
-const BigNum = core.types.BigNum;
-const AbstractContent = require('./AbstractContent');
+const { Logger } = core.utils;
+const { BigNum } = core.types;
+const Abstract = require('./Abstract');
 const ProfileModel = require('../../models/Profile');
 const WilsonScoring = require('../../utils/WilsonScoring');
 const PoolModel = require('../../models/Pool');
+const PostModel = require('../../models/Post');
+const CommentModel = require('../../models/Comment');
+const { extractContentId } = require('../../utils/content');
 
-class Vote extends AbstractContent {
+class Vote extends Abstract {
     async handleUpVote(content, { communityId, events }) {
         const model = await this._getModel(content);
 
@@ -51,12 +54,32 @@ class Vote extends AbstractContent {
     }
 
     async _getModel(content) {
-        return await super._getModel(content, {
+        const projection = {
             votes: true,
             payout: true,
             meta: true,
             stats: true,
-        });
+        };
+
+        const contentId = extractContentId(content);
+        const query = {
+            'contentId.userId': contentId.userId,
+            'contentId.permlink': contentId.permlink,
+        };
+
+        const post = await PostModel.findOne(query, projection);
+
+        if (post) {
+            return post;
+        }
+
+        const comment = await CommentModel.findOne(query, projection);
+
+        if (comment) {
+            return comment;
+        }
+
+        return null;
     }
 
     async _tryUpdateProfileReputation({ voter, author, rshares: rShares }) {

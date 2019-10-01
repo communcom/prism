@@ -10,24 +10,6 @@
     "type": "git",
     "url": "git+https://github.com/GolosChain/prism-service.git"
   },
-  "prettier": {
-    "singleQuote": true,
-    "tabWidth": 4,
-    "semi": true,
-    "trailingComma": "es5",
-    "printWidth": 100,
-    "overrides": [
-      {
-        "files": [
-          "*.json",
-          "*.yml"
-        ],
-        "options": {
-          "tabWidth": 2
-        }
-      }
-    ]
-  },
   "author": "golos.io",
   "license": "GPL-3.0",
   "bugs": {

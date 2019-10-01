@@ -37,55 +37,24 @@ module.exports = MongoDB.makeModel(
             type: String,
         },
         content: {
+            type: {
+                type: String,
+                enum: ['basic', 'article'],
+            },
             title: {
                 type: String,
             },
             body: {
-                preview: {
-                    type: String,
-                },
-                full: {
-                    type: String,
-                },
-                mobile: {
-                    type: [
-                        {
-                            type: {
-                                type: String,
-                            },
-                            content: {
-                                type: String,
-                            },
-                            src: {
-                                type: String,
-                            },
-                        },
-                    ],
-                },
-                raw: {
-                    type: String,
-                },
+                type: Object,
+            },
+            article: {
+                type: Object,
             },
             metadata: {
                 type: Object,
             },
             tags: {
                 type: [String],
-            },
-            embeds: {
-                type: [
-                    {
-                        id: {
-                            type: String,
-                        },
-                        type: {
-                            type: String,
-                        },
-                        result: {
-                            type: Object,
-                        },
-                    },
-                ],
             },
         },
         votes: {

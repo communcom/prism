@@ -1,35 +1,32 @@
 const core = require('cyberway-core-service');
-const Content = core.utils.Content;
-const BigNum = core.types.BigNum;
-const AbstractContent = require('./AbstractContent');
+const { Logger } = core.utils;
+const Abstract = require('./Abstract');
 const PostModel = require('../../models/Post');
+const ProfileModel = require('../../models/Profile');
+const { processContent, extractContentId } = require('../../utils/content');
 
-class Post extends AbstractContent {
-    constructor(...args) {
-        super(...args);
+class Post extends Abstract {
+    async handleCreate(content, { blockNum, blockTime }) {
+        const contentId = extractContentId(content);
 
-        this._contentUtil = new Content();
-    }
+        let processedContent = null;
 
-    async handleCreate(content, { communityId, blockTime }) {
-        if (!(await this._isPost(content))) {
-            return;
+        try {
+            processedContent = await processContent(this, content);
+        } catch (err) {
+            Logger.warn(`Invalid post content, block num: ${blockNum}`, contentId, err);
         }
 
-        const contentId = this._extractContentId(content);
-
         const model = await PostModel.create({
-            communityId,
+            communityId: content.commun_code,
             contentId,
-            content: await this._extractContentObject(content),
+            content: processedContent,
             meta: {
                 time: blockTime,
             },
             payout: {
                 meta: {
-                    tokenProp: new BigNum(content.tokenprop),
-                    benefactorPercents: this._extractBenefactorPercents(content),
-                    curatorsPercent: new BigNum(content.curators_prcnt),
+                    curatorsPercent: Number(content.curators_prcnt),
                 },
             },
         });
@@ -38,12 +35,17 @@ class Post extends AbstractContent {
         await this.updateUserPostsCount(contentId.userId, 1);
     }
 
-    async handleUpdate(content) {
-        if (!(await this._isPost(content))) {
-            return;
+    async handleUpdate(content, { blockNum }) {
+        const contentId = extractContentId(content);
+
+        let updatedContent = null;
+
+        try {
+            updatedContent = await processContent(this, content);
+        } catch (err) {
+            Logger.warn(`Invalid post content, block num: ${blockNum}`, contentId, err);
         }
 
-        const contentId = this._extractContentId(content);
         const previousModel = await PostModel.findOneAndUpdate(
             {
                 'contentId.userId': contentId.userId,
@@ -51,7 +53,7 @@ class Post extends AbstractContent {
             },
             {
                 $set: {
-                    content: await this._extractContentObject(content),
+                    content: updatedContent,
                 },
             }
         );
@@ -71,44 +73,41 @@ class Post extends AbstractContent {
     }
 
     async handleDelete(content) {
-        if (!(await this._isPost(content))) {
-            return;
-        }
-
-        const contentId = this._extractContentId(content);
+        const contentId = extractContentId(content);
         const previousModel = await PostModel.findOneAndRemove({
             'contentId.userId': contentId.userId,
             'contentId.permlink': contentId.permlink,
         });
 
-        await this.registerForkChanges({
-            type: 'remove',
-            Model: PostModel,
-            documentId: previousModel._id,
-            data: previousModel.toObject(),
-        });
-        await this.updateUserPostsCount(contentId.userId, -1);
+        if (previousModel) {
+            await this.registerForkChanges({
+                type: 'remove',
+                Model: PostModel,
+                documentId: previousModel._id,
+                data: previousModel.toObject(),
+            });
+            await this.updateUserPostsCount(contentId.userId, -1);
+        }
     }
 
-    async handleRepost({ rebloger: userId, ...content }, { communityId, blockTime }) {
-        const model = await PostModel.create({
-            communityId,
-            contentId: this._extractContentId(content),
-            repost: {
-                isRepost: true,
-                userId,
-                body: {
-                    raw: this._extractBodyRaw(content),
-                },
-                time: blockTime,
-            },
-        });
+    async updateUserPostsCount(userId, increment) {
+        const previousModel = await ProfileModel.findOneAndUpdate(
+            { userId },
+            { $inc: { 'stats.postsCount': increment } }
+        );
 
-        await this.registerForkChanges({ type: 'create', Model: PostModel, documentId: model._id });
+        if (previousModel) {
+            await this.registerForkChanges({
+                type: 'update',
+                Model: ProfileModel,
+                documentId: previousModel._id,
+                data: { $inc: { 'stats.postsCount': -increment } },
+            });
+        }
     }
 
     async handleRemoveRepost({ rebloger: userId, ...content }, { communityId }) {
-        const contentId = this._extractContentId(content);
+        const contentId = extractContentId(content);
         const previousModel = await PostModel.findOneAndRemove({
             communityId,
             'repost.userId': userId,

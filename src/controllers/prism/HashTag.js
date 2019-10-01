@@ -1,23 +1,12 @@
 const core = require('cyberway-core-service');
-const Logger = core.utils.Logger;
-const Content = core.utils.Content;
-const env = require('../../data/env');
-const AbstractContent = require('./AbstractContent');
+const { Logger } = core.utils;
+const Abstract = require('./Abstract');
 const PostModel = require('../../models/Post');
 const HashTagModel = require('../../models/HashTag');
+const { extractContentId, isPost } = require('../../utils/content');
 
-class HashTag extends AbstractContent {
-    constructor(...args) {
-        super(...args);
-
-        this._contentUtil = new Content({ maxHashTagSize: env.GLS_MAX_HASH_TAG_SIZE });
-    }
-
+class HashTag extends Abstract {
     async handleCreate(content, { communityId }) {
-        if (!(await this._isPost(content))) {
-            return;
-        }
-
         const model = await this._tryGetModel(content, { 'content.tags': true });
 
         if (!model) {
@@ -40,10 +29,6 @@ class HashTag extends AbstractContent {
     }
 
     async handleUpdate(content, { communityId }) {
-        if (!(await this._isPost(content))) {
-            return;
-        }
-
         const model = await this._tryGetModel(content, { 'content.tags': true });
 
         if (!model) {
@@ -68,7 +53,7 @@ class HashTag extends AbstractContent {
     }
 
     async handleDelete(content, { communityId }) {
-        if (!(await this._isPost(content))) {
+        if (!(await isPost(content))) {
             return;
         }
 
@@ -83,28 +68,12 @@ class HashTag extends AbstractContent {
         await this._decrementTagsScore(recentTags, communityId);
     }
 
-    async _extractTags(content) {
-        const tagsFromMetadata = await this._extractTagsFromMetadata(content);
-        const tagsFromText = this._extractTagsFromBlockChain(content);
-
-        return [...new Set([...tagsFromMetadata, ...tagsFromText])];
-    }
-
-    async _extractTagsFromMetadata(content) {
-        const metadata = await this._extractMetadata(content);
-        const rawTags = Array.from(metadata.tags || []);
-
-        return rawTags.filter(
-            tag => typeof tag === 'string' && tag.length <= env.GLS_MAX_HASH_TAG_SIZE
-        );
-    }
-
     _extractTagsFromBlockChain(content) {
         return content.tags;
     }
 
     async _tryGetModel(content, projection) {
-        const contentId = this._extractContentId(content);
+        const contentId = extractContentId(content);
         const model = await PostModel.findOne(
             {
                 'contentId.userId': contentId.userId,

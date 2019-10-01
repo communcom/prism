@@ -8,6 +8,7 @@ const Subscribe = require('./Subscribe');
 const HashTag = require('./HashTag');
 const Leader = require('./Leader');
 const CommunitySettings = require('./CommunitySettings');
+const { isPost } = require('../../utils/content');
 const Community = require('./Community');
 
 const ACTION_PROCESSING_WARNING_LIMIT = 1000;
@@ -21,7 +22,7 @@ class Main {
         this._profile = new Profile({ connector, forkService });
         this._vote = new Vote({ connector, forkService });
         this._subscribe = new Subscribe({ connector, forkService });
-        this._hashTag = new HashTag({ connector, forkService });
+        // this._hashTag = new HashTag({ connector, forkService });
         this._leader = new Leader({ connector, forkService });
         this._communitySettings = new CommunitySettings({ connector, forkService });
         this._community = new Community({ connector, forkService });
@@ -56,7 +57,7 @@ class Main {
         end();
     }
 
-    async _disperseAction(action, previous = { args: {} }, { blockTime }) {
+    async _disperseAction(action, previous = { args: {} }, { blockNum, blockTime }) {
         if (!action) {
             Logger.error('Empty transaction! But continue.');
             return;
@@ -71,6 +72,13 @@ class Main {
         const actionArgs = action.args;
         const events = action.events;
 
+        const meta = {
+            communityId,
+            blockNum,
+            blockTime,
+            events,
+        };
+
         switch (pathName) {
             case `comn.list->create`:
                 await this._community.handleCreate(actionArgs);
@@ -79,96 +87,99 @@ class Main {
                 await this._community.handleAddInfo(actionArgs);
                 break;
             case `cyber->newaccount`:
-                await this._profile.handleCreate(actionArgs, { blockTime });
+                await this._profile.handleCreate(actionArgs, meta);
                 break;
 
             case `cyber.domain->newusername`:
-                await this._profile.handleUsername(actionArgs);
+                await this._profile.handleUsername(actionArgs, meta);
                 break;
 
-            case `${communityId}.publish->paymssgrwrd`:
-                await this._post.handlePayout(actionArgs, { events });
+            // В данный момент не обрабатывается
+            // case `${communityId}.publish->paymssgrwrd`:
+            //     await this._post.handlePayout(actionArgs, meta);
+            //     break;
+
+            case 'comn.gallery->createmssg':
+                if (actionArgs.parent_id && actionArgs.parent_id.permlink) {
+                    await this._comment.handleCreate(actionArgs, meta);
+                } else {
+                    await this._post.handleCreate(actionArgs, meta);
+                    // Временно не обрабатываем
+                    // await this._hashTag.handleCreate(actionArgs, meta);
+                }
                 break;
 
-            case `${communityId}.publish->createmssg`:
+            case 'comn.gallery->updatemssg':
+                if (await isPost(actionArgs)) {
+                    await this._post.handleUpdate(actionArgs, meta);
+                    // Временно не обрабатываем
+                    // await this._hashTag.handleUpdate(actionArgs, meta);
+                } else {
+                    await this._comment.handleUpdate(actionArgs, meta);
+                }
+                break;
+
+            case 'comn.gallery->deletemssg':
                 // Warning - do not change ordering
-                await this._post.handleCreate(actionArgs, { communityId, blockTime });
-                await this._hashTag.handleCreate(actionArgs, { communityId });
-                await this._comment.handleCreate(actionArgs, { communityId, blockTime });
-                break;
-
-            case `${communityId}.publish->updatemssg`:
-                // Warning - do not change ordering
-                await this._hashTag.handleUpdate(actionArgs, { communityId });
-                await this._post.handleUpdate(actionArgs);
-                await this._comment.handleUpdate(actionArgs);
-                break;
-
-            case `${communityId}.publish->deletemssg`:
-                // Warning - do not change ordering
-                await this._hashTag.handleDelete(actionArgs, { communityId });
-                await this._post.handleDelete(actionArgs);
-                await this._comment.handleDelete(actionArgs);
+                // await this._hashTag.handleDelete(actionArgs, meta);
+                await this._post.handleDelete(actionArgs, meta);
+                await this._comment.handleDelete(actionArgs, meta);
                 break;
 
             case `${communityId}.social->updatemeta`:
-                await this._profile.handleMeta(actionArgs);
+                await this._profile.handleMeta(actionArgs, meta);
                 break;
 
             case `${communityId}.publish->upvote`:
-                await this._vote.handleUpVote(actionArgs, { communityId, events });
+                await this._vote.handleUpVote(actionArgs, meta);
                 break;
 
             case `${communityId}.publish->downvote`:
-                await this._vote.handleDownVote(actionArgs, { communityId, events });
+                await this._vote.handleDownVote(actionArgs, meta);
                 break;
 
             case `${communityId}.publish->unvote`:
-                await this._vote.handleUnVote(actionArgs, { communityId, events });
+                await this._vote.handleUnVote(actionArgs, meta);
                 break;
 
             case `${communityId}.social->pin`:
-                await this._subscribe.pin(actionArgs);
+                await this._subscribe.pin(actionArgs, meta);
                 break;
 
             case `${communityId}.social->unpin`:
-                await this._subscribe.unpin(actionArgs);
+                await this._subscribe.unpin(actionArgs, meta);
                 break;
 
             case `${communityId}.ctrl->regwitness`:
-                await this._leader.register(actionArgs, { communityId });
+                await this._leader.register(actionArgs, meta);
                 break;
 
             case `${communityId}.ctrl->unregwitness`:
-                await this._leader.unregister(actionArgs, { communityId });
+                await this._leader.unregister(actionArgs, meta);
                 break;
 
             case `${communityId}.ctrl->startwitness`:
-                await this._leader.activate(actionArgs, { communityId });
+                await this._leader.activate(actionArgs, meta);
                 break;
 
             case `${communityId}.ctrl->stopwitness`:
-                await this._leader.deactivate(actionArgs, { communityId });
+                await this._leader.deactivate(actionArgs, meta);
                 break;
 
             case `${communityId}.ctrl->votewitness`:
-                await this._leader.vote(actionArgs, { communityId, events });
+                await this._leader.vote(actionArgs, meta);
                 break;
 
             case `${communityId}.ctrl->unvotewitn`:
-                await this._leader.unvote(actionArgs, { communityId, events });
-                break;
-
-            case `${communityId}.publish->reblog`:
-                await this._post.handleRepost(actionArgs, { communityId, blockTime });
+                await this._leader.unvote(actionArgs, meta);
                 break;
 
             case `${communityId}.publish->erasereblog`:
-                await this._post.handleRemoveRepost(actionArgs, { communityId, blockTime });
+                await this._post.handleRemoveRepost(actionArgs, meta);
                 break;
 
             case 'cyber.msig->propose':
-                await this._leader.handleNewProposal(actionArgs, { blockTime });
+                await this._leader.handleNewProposal(actionArgs, meta);
                 break;
 
             case 'cyber.msig->approve':
@@ -176,7 +187,7 @@ class Main {
                 break;
 
             case 'cyber.msig->exec':
-                await this._leader.handleProposalExec(actionArgs, { blockTime });
+                await this._leader.handleProposalExec(actionArgs, meta);
                 break;
 
             case `${communityId}.charge->setrestorer`:
