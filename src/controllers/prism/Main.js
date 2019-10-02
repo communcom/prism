@@ -96,10 +96,6 @@ class Main {
                 await this._community.handleAddInfo(actionArgs);
                 break;
 
-            case 'cyber->newaccount':
-                await this._profile.handleCreate(actionArgs, meta);
-                break;
-
             case `cyber.domain->newusername`:
                 await this._profile.handleUsername(actionArgs, meta);
                 break;

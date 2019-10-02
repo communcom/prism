@@ -4,12 +4,15 @@ const BasicController = core.controllers.Basic;
 const CommunityModel = require('../../models/Community');
 
 class Community extends BasicController {
-    async getCommunity({ userId, communityId }) {
-        const community = (await CommunityModel.aggregate([
+    async getCommunity({ userId, communityId }, { userId: authUserId }) {
+        const aggregation = [
             {
                 $match: { communityId },
             },
-            {
+        ];
+
+        if (authUserId) {
+            aggregation.push({
                 $addFields: {
                     isSubscribed: {
                         $cond: {
@@ -17,7 +20,7 @@ class Community extends BasicController {
                                 $eq: [
                                     -1,
                                     {
-                                        $indexOfArray: ['$subscribers', userId],
+                                        $indexOfArray: ['$subscribers', authUserId],
                                     },
                                 ],
                             },
@@ -26,17 +29,20 @@ class Community extends BasicController {
                         },
                     },
                 },
+            });
+        }
+
+        aggregation.push({
+            $project: {
+                subscribers: false,
+                _id: false,
+                __v: false,
+                createdAt: false,
+                updatedAt: false,
             },
-            {
-                $project: {
-                    subscribers: false,
-                    _id: false,
-                    __v: false,
-                    createdAt: false,
-                    updatedAt: false,
-                },
-            },
-        ]))[0];
+        });
+
+        const community = (await CommunityModel.aggregate(aggregation))[0];
 
         if (!community) {
             throw {
@@ -48,8 +54,8 @@ class Community extends BasicController {
         return community;
     }
 
-    async getCommunities({ userId, limit, offset }) {
-        const communities = await CommunityModel.aggregate([
+    async getCommunities({ userId, limit, offset }, { userId: authUserId }) {
+        const aggregation = [
             { $match: {} },
             {
                 $skip: offset,
@@ -58,7 +64,10 @@ class Community extends BasicController {
                 $limit: limit,
             },
             { $sort: { subscribersCount: -1 } },
-            {
+        ];
+
+        if (authUserId) {
+            aggregation.push({
                 $addFields: {
                     isSubscribed: {
                         $cond: {
@@ -66,7 +75,7 @@ class Community extends BasicController {
                                 $eq: [
                                     -1,
                                     {
-                                        $indexOfArray: ['$subscribers', userId],
+                                        $indexOfArray: ['$subscribers', authUserId],
                                     },
                                 ],
                             },
@@ -75,19 +84,22 @@ class Community extends BasicController {
                         },
                     },
                 },
+            });
+        }
+
+        aggregation.push({
+            $project: {
+                subscribers: false,
+                _id: false,
+                __v: false,
+                createdAt: false,
+                updatedAt: false,
+                rules: false,
+                description: false,
             },
-            {
-                $project: {
-                    subscribers: false,
-                    _id: false,
-                    __v: false,
-                    createdAt: false,
-                    updatedAt: false,
-                    rules: false,
-                    description: false,
-                },
-            },
-        ]);
+        });
+
+        const communities = await CommunityModel.aggregate(aggregation);
 
         return { communities };
     }

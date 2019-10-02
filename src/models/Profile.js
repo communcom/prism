@@ -127,18 +127,4 @@ const ProfileModel = MongoDB.makeModel(
     }
 );
 
-MongoDB.mongoose.connection
-    .createCollection('CommunUsers', {
-        viewOn: 'profiles',
-        pipeline: [
-            {
-                $match: {
-                    username: { $exists: true },
-                },
-            },
-        ],
-    })
-    .then(() => Logger.log('CommunUsers view has been created'))
-    .catch(e => Logger.error('Error during CommunUsers view creation:', e));
-
 module.exports = ProfileModel;

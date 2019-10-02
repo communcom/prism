@@ -1,11 +1,22 @@
 const core = require('cyberway-core-service');
 const BasicController = core.controllers.Basic;
 
+const ProfileModel = require('../../models/Profile');
+const TrashModel = require('../../models/TrashPost');
+
 class Abstract extends BasicController {
     constructor({ forkService, ...args } = {}) {
         super(args);
 
         this._forkService = forkService;
+    }
+
+    async _isTrash({ userId, permlink }) {
+        if (!(await ProfileModel.findOne({ userId }))) {
+            await TrashModel.create({ userId, permlink });
+            return true;
+        }
+        return false;
     }
 
     async registerForkChanges(changes) {

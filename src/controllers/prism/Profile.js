@@ -5,50 +5,13 @@ const Abstract = require('./Abstract');
 const ProfileModel = require('../../models/Profile');
 
 class Profile extends Abstract {
-    async handleUsername({ owner: userId, name: username, creator: app }) {
+    async handleUsername({ owner: userId, name: username, creator: app }, { blockTime }) {
         if (app !== 'comn') {
             // TODO: remove in production
             Logger.warn('Non-commun scope username', username, 'in scope', app);
             return;
         }
 
-        const previousModel = await ProfileModel.findOneAndUpdate(
-            { userId },
-            {
-                $set: { username },
-            }
-        );
-
-        if (!previousModel) {
-            return;
-        }
-
-        const previousName = previousModel.username;
-        let revertData;
-
-        if (previousName) {
-            revertData = {
-                $set: {
-                    username: previousName,
-                },
-            };
-        } else {
-            revertData = {
-                $unset: {
-                    username: true,
-                },
-            };
-        }
-
-        await this.registerForkChanges({
-            type: 'update',
-            Model: ProfileModel,
-            documentId: previousModel._id,
-            data: revertData,
-        });
-    }
-
-    async handleCreate({ name: userId }, { blockTime }) {
         const modelsAlready = await ProfileModel.count({ userId });
 
         if (modelsAlready > 0) {

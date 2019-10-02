@@ -11,6 +11,10 @@ class Post extends Abstract {
     async handleCreate(content, { blockNum, blockTime }) {
         const contentId = extractContentId(content);
 
+        if (await this._isTrash(contentId)) {
+            return;
+        }
+
         let processedContent = null;
 
         try {

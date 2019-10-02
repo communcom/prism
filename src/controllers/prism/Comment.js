@@ -11,6 +11,10 @@ class Comment extends Abstract {
     async handleCreate(content, { communityId, blockNum, blockTime }) {
         const contentId = extractContentId(content);
 
+        if (await this._isTrash(contentId)) {
+            return;
+        }
+
         let processedContent = null;
 
         try {

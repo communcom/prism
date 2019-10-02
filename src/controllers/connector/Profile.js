@@ -1,11 +1,9 @@
 const core = require('cyberway-core-service');
-const mongoose = core.services.MongoDB.mongoose;
 const BasicController = core.controllers.Basic;
+const ProfileModel = require('../../models/Profile');
 
 class Profile extends BasicController {
-    async getProfile({ username, user }, auth) {
-        const ProfileView = mongoose.connection.db.collection('CommunUsers');
-
+    async getProfile({ userId, username, user }, { userId: authUserId }) {
         const filter = {};
         if (username) {
             filter.username = username;
@@ -26,7 +24,7 @@ class Profile extends BasicController {
 
         const aggregation = [{ $match: filter }];
 
-        if (auth.userId) {
+        if (authUserId) {
             aggregation.push({
                 $addFields: {
                     isSubscribed: {
@@ -35,7 +33,8 @@ class Profile extends BasicController {
                                 $eq: [
                                     -1,
                                     {
-                                        $indexOfArray: ['$subscribers.userIds', auth.userId],
+                                        $indexOfArray: ['$subscribers.userIds', authUserId],
+
                                     },
                                 ],
                             },
@@ -49,7 +48,7 @@ class Profile extends BasicController {
                                 $eq: [
                                     -1,
                                     {
-                                        $indexOfArray: ['$subscriptions.userIds', auth.userId],
+                                        $indexOfArray: ['$subscriptions.userIds', authUserId],
                                     },
                                 ],
                             },
@@ -62,8 +61,7 @@ class Profile extends BasicController {
         }
         aggregation.push({ $project: projection });
 
-        // like this, because `toArray` is the only allowed method
-        const result = await ProfileView.aggregate(aggregation).toArray();
+        const result = await ProfileModel.aggregate(aggregation);
 
         if (!result) {
             throw {
