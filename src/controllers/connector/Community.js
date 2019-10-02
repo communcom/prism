@@ -4,7 +4,7 @@ const BasicController = core.controllers.Basic;
 const CommunityModel = require('../../models/Community');
 
 class Community extends BasicController {
-    async getCommunity({ requestedUserId, communityId }) {
+    async getCommunity({ userId, communityId }) {
         const community = (await CommunityModel.aggregate([
             {
                 $match: { communityId },
@@ -17,7 +17,7 @@ class Community extends BasicController {
                                 $eq: [
                                     -1,
                                     {
-                                        $indexOfArray: ['$subscribers', requestedUserId],
+                                        $indexOfArray: ['$subscribers', userId],
                                     },
                                 ],
                             },
@@ -48,7 +48,7 @@ class Community extends BasicController {
         return community;
     }
 
-    async getCommunities({ requestedUserId, limit, offset }) {
+    async getCommunities({ userId, limit, offset }) {
         const communities = await CommunityModel.aggregate([
             { $match: {} },
             {
@@ -66,7 +66,7 @@ class Community extends BasicController {
                                 $eq: [
                                     -1,
                                     {
-                                        $indexOfArray: ['$subscribers', requestedUserId],
+                                        $indexOfArray: ['$subscribers', userId],
                                     },
                                 ],
                             },

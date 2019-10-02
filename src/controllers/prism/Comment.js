@@ -108,7 +108,7 @@ class Comment extends Abstract {
     }
 
     async updatePostCommentsCount(model, increment) {
-        const contentId = model.parent.post.contentId;
+        const contentId = model.parents.post;
         const previousModel = await PostModel.findOneAndUpdate(
             {
                 'contentId.userId': contentId.userId,
@@ -147,8 +147,8 @@ class Comment extends Abstract {
         const post = await this._getParentPost(contentId);
 
         if (post) {
-            model.parent.post.contentId = contentId;
-            model.parent.comment.contentId = null;
+            model.parents.post = contentId;
+            model.parents.comment = null;
             model.nestedLevel = 1;
             return;
         }
@@ -156,8 +156,8 @@ class Comment extends Abstract {
         const comment = await this._getParentComment(contentId);
 
         if (comment) {
-            model.parent.post.contentId = comment.parent.post.contentId;
-            model.parent.comment.contentId = contentId;
+            model.parents.post = comment.parents.post;
+            model.parents.comment = contentId;
             model.nestedLevel = comment.nestedLevel + 1;
         }
     }
@@ -169,12 +169,12 @@ class Comment extends Abstract {
     }
 
     async applyOrdering(model) {
-        if (!model.parent.comment.contentId.userId) {
+        if (!model.parents.comment.userId) {
             model.ordering.byTime = Date.now().toString();
             return;
         }
 
-        const parentCommentId = model.parent.comment.contentId;
+        const parentCommentId = model.parents.comment;
         const parentComment = await CommentModel.findOne(
             {
                 'contentId.userId': parentCommentId.userId,
@@ -219,7 +219,7 @@ class Comment extends Abstract {
                 'contentId.userId': contentId.userId,
                 'contentId.permlink': contentId.permlink,
             },
-            { contentId: true, parent: true, nestedLevel: true },
+            { contentId: true, parents: true, nestedLevel: true },
             { lean: true }
         );
     }

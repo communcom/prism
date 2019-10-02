@@ -2,8 +2,7 @@ const core = require('cyberway-core-service');
 const BasicConnector = core.services.Connector;
 const env = require('../data/env');
 const Comment = require('../controllers/connector/Comment');
-const Feed = require('../controllers/connector/Feed');
-const Post = require('../controllers/connector/Post');
+const Posts = require('../controllers/connector/Posts');
 const Profile = require('../controllers/connector/Profile');
 const Notify = require('../controllers/connector/Notify');
 const HashTag = require('../controllers/connector/HashTag');
@@ -15,7 +14,7 @@ const CommunitySettings = require('../controllers/connector/CommunitySettings');
 const Community = require('../controllers/connector/Community');
 
 class Connector extends BasicConnector {
-    constructor({ postFeedCache, leaderFeedCache, prism }) {
+    constructor({ prism }) {
         super();
 
         const linking = { connector: this };
@@ -28,21 +27,19 @@ class Connector extends BasicConnector {
         }
 
         if (env.GLS_ENABLE_PUBLIC_API) {
-            this._feed = new Feed({ postFeedCache, ...linking });
+            this._posts = new Posts(linking);
             this._comment = new Comment(linking);
-            this._post = new Post(linking);
             this._profile = new Profile(linking);
             this._notify = new Notify(linking);
             this._hashTag = new HashTag(linking);
-            this._leaders = new Leaders({ leaderFeedCache, ...linking });
+            this._leaders = new Leaders(linking);
             this._search = new Search(linking);
             this._vote = new Vote(linking);
             this._communitySettings = new CommunitySettings(linking);
             this._community = new Community(linking);
         } else {
-            this._feed = empty;
+            this._posts = empty;
             this._comment = empty;
-            this._post = empty;
             this._profile = empty;
             this._notify = empty;
             this._hashTag = empty;
@@ -94,14 +91,12 @@ class Connector extends BasicConnector {
                     },
                 },
                 getPost: {
-                    handler: this._post.getPost,
-                    scope: this._post,
+                    handler: this._posts.getPost,
+                    scope: this._posts,
                     inherits: [
-                        'appSpecify',
+                        'communityId',
                         'userByName',
-                        'userByAnyName',
-                        'contentId',
-                        'contentType',
+                        'contentIdNew',
                         'userRelativity',
                         'onlyWhenPublicApiEnabled',
                     ],
@@ -114,11 +109,9 @@ class Connector extends BasicConnector {
                     handler: this._comment.getComment,
                     scope: this._comment,
                     inherits: [
-                        'appSpecify',
                         'userByName',
                         'userByAnyName',
                         'contentId',
-                        'contentType',
                         'userRelativity',
                         'onlyWhenPublicApiEnabled',
                     ],
@@ -132,10 +125,8 @@ class Connector extends BasicConnector {
                     scope: this._comment,
                     inherits: [
                         'feedPagination',
-                        'appSpecify',
                         'userByName',
                         'contentId',
-                        'contentType',
                         'optionalUserRelativity',
                         'onlyWhenPublicApiEnabled',
                     ],
@@ -155,14 +146,12 @@ class Connector extends BasicConnector {
                         },
                     },
                 },
-                getFeed: {
-                    handler: this._feed.getFeed,
-                    scope: this._feed,
+                getPosts: {
+                    handler: this._posts.getPosts,
+                    scope: this._posts,
                     inherits: [
-                        'feedPagination',
-                        'appSpecify',
+                        'pagination',
                         'userByName',
-                        'contentType',
                         'optionalUserRelativity',
                         'onlyWhenPublicApiEnabled',
                     ],
@@ -192,7 +181,7 @@ class Connector extends BasicConnector {
                                 ],
                                 default: 'day',
                             },
-                            requestedUserId: {
+                            userId: {
                                 type: 'string',
                             },
                             communityId: {
@@ -216,7 +205,7 @@ class Connector extends BasicConnector {
                     validation: {
                         required: [],
                         properties: {
-                            requestedUserId: {
+                            userId: {
                                 type: 'string',
                             },
                         },
@@ -225,7 +214,7 @@ class Connector extends BasicConnector {
                 suggestNames: {
                     handler: this._profile.suggestNames,
                     scope: this._profile,
-                    inherits: ['appSpecify', 'onlyWhenPublicApiEnabled'],
+                    inherits: ['onlyWhenPublicApiEnabled'],
                     validation: {
                         required: ['text'],
                         properties: {
@@ -238,7 +227,7 @@ class Connector extends BasicConnector {
                 getNotifyMeta: {
                     handler: this._notify.getMeta,
                     scope: this._notify,
-                    inherits: ['appSpecify', 'userByName', 'onlyWhenPublicApiEnabled'],
+                    inherits: ['userByName', 'onlyWhenPublicApiEnabled'],
                     validation: {
                         properties: {
                             userId: {
@@ -275,12 +264,7 @@ class Connector extends BasicConnector {
                 getLeadersTop: {
                     handler: this._leaders.getTop,
                     scope: this._leaders,
-                    inherits: [
-                        'feedPagination',
-                        'appSpecify',
-                        'userRelativity',
-                        'onlyWhenPublicApiEnabled',
-                    ],
+                    inherits: ['feedPagination', 'userRelativity', 'onlyWhenPublicApiEnabled'],
                     validation: {
                         required: ['communityId'],
                         properties: {
@@ -296,7 +280,7 @@ class Connector extends BasicConnector {
                 getProposals: {
                     handler: this._leaders.getProposals,
                     scope: this._leaders,
-                    inherits: ['feedPagination', 'appSpecify', 'onlyWhenPublicApiEnabled'],
+                    inherits: ['feedPagination', 'onlyWhenPublicApiEnabled'],
                     validation: {
                         required: ['communityId'],
                         properties: {
@@ -340,11 +324,10 @@ class Connector extends BasicConnector {
                         'contentId',
                         'userRelativity',
                         'feedPagination',
-                        'appSpecify',
                         'onlyWhenPublicApiEnabled',
                     ],
                     validation: {
-                        required: ['requestedUserId', 'permlink', 'type'],
+                        required: ['userId', 'permlink', 'type'],
                         properties: {
                             type: {
                                 type: 'string',
@@ -360,11 +343,10 @@ class Connector extends BasicConnector {
                         'contentId',
                         'userRelativity',
                         'feedPagination',
-                        'appSpecify',
                         'onlyWhenPublicApiEnabled',
                     ],
                     validation: {
-                        required: ['requestedUserId', 'permlink', 'type'],
+                        required: ['userId', 'permlink', 'type'],
                         properties: {
                             type: {
                                 type: 'string',
@@ -376,7 +358,7 @@ class Connector extends BasicConnector {
                 resolveProfile: {
                     handler: this._profile.resolveProfile,
                     scope: this._profile,
-                    inherits: ['appSpecify', 'userByName', 'onlyWhenPublicApiEnabled'],
+                    inherits: ['userByName', 'onlyWhenPublicApiEnabled'],
                     validation: {
                         required: ['username', 'app'],
                         properties: {},
@@ -385,16 +367,11 @@ class Connector extends BasicConnector {
                 getSubscriptions: {
                     handler: this._profile.getSubscriptions,
                     scope: this._profile,
-                    inherits: [
-                        'feedPagination',
-                        'appSpecify',
-                        'userRelativity',
-                        'onlyWhenPublicApiEnabled',
-                    ],
+                    inherits: ['feedPagination', 'userRelativity', 'onlyWhenPublicApiEnabled'],
                     validation: {
-                        required: ['requestedUserId'],
+                        required: ['userId'],
                         properties: {
-                            requestedUserId: {
+                            userId: {
                                 type: 'string',
                             },
                             type: {
@@ -407,16 +384,10 @@ class Connector extends BasicConnector {
                 getSubscribers: {
                     handler: this._profile.getSubscribers,
                     scope: this._profile,
-                    inherits: [
-                        'feedPagination',
-                        'appSpecify',
-                        'userRelativity',
-                        'onlyWhenPublicApiEnabled',
-                    ],
+                    inherits: ['feedPagination', 'userRelativity', 'onlyWhenPublicApiEnabled'],
                     validation: {
-                        required: ['requestedUserId'],
                         properties: {
-                            requestedUserId: {
+                            userId: {
                                 type: 'string',
                             },
                             type: {
@@ -451,7 +422,7 @@ class Connector extends BasicConnector {
                     validation: {
                         required: ['communityId'],
                         properties: {
-                            requestedUserId: {
+                            userId: {
                                 type: 'string',
                             },
                             communityId: {
@@ -467,7 +438,7 @@ class Connector extends BasicConnector {
                     validation: {
                         required: [],
                         properties: {
-                            requestedUserId: {
+                            userId: {
                                 type: 'string',
                             },
                         },
@@ -492,6 +463,22 @@ class Connector extends BasicConnector {
                             },
                         },
                     },
+                    pagination: {
+                        validation: {
+                            properties: {
+                                limit: {
+                                    type: 'number',
+                                    default: 20,
+                                    minValue: 1,
+                                    maxValue: env.GLS_MAX_FEED_LIMIT,
+                                },
+                                offset: {
+                                    type: ['number', 'null'],
+                                    default: 0,
+                                },
+                            },
+                        },
+                    },
                     feedPagination: {
                         validation: {
                             properties: {
@@ -503,17 +490,6 @@ class Connector extends BasicConnector {
                                 },
                                 sequenceKey: {
                                     type: ['string', 'null'],
-                                },
-                            },
-                        },
-                    },
-                    appSpecify: {
-                        validation: {
-                            properties: {
-                                app: {
-                                    type: 'string',
-                                    enum: ['cyber', 'gls'],
-                                    default: 'cyber',
                                 },
                             },
                         },
@@ -539,7 +515,7 @@ class Connector extends BasicConnector {
                     contentId: {
                         validation: {
                             properties: {
-                                requestedUserId: {
+                                userId: {
                                     type: 'string',
                                 },
                                 permlink: {
@@ -548,13 +524,23 @@ class Connector extends BasicConnector {
                             },
                         },
                     },
-                    contentType: {
+                    contentIdNew: {
                         validation: {
                             properties: {
-                                contentType: {
+                                userId: {
                                     type: 'string',
-                                    default: 'web',
-                                    enum: ['web', 'mobile', 'raw'],
+                                },
+                                permlink: {
+                                    type: 'string',
+                                },
+                            },
+                        },
+                    },
+                    communityId: {
+                        validation: {
+                            properties: {
+                                communityId: {
+                                    type: 'string',
                                 },
                             },
                         },

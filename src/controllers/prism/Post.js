@@ -24,7 +24,7 @@ class Post extends Abstract {
             contentId,
             content: processedContent,
             meta: {
-                time: blockTime,
+                creationTime: blockTime,
             },
             payout: {
                 meta: {
