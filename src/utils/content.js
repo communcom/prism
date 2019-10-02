@@ -34,7 +34,7 @@ async function isPost(content) {
     return postCount > 0;
 }
 
-async function processContent(connector, data, { isComment = false } = {}) {
+async function processContent(connector, data, allowedTypes) {
     const doc = JSON.parse(data.bodymssg);
     const tags = uniq(data.tags);
     let metadata = {};
@@ -45,21 +45,20 @@ async function processContent(connector, data, { isComment = false } = {}) {
 
     delete doc.attributes.title;
 
-    if (!isComment) {
-        // Заголовок из структры БЧ имеет приоритет над заголовком из схемы поста.
-        if (data.headermssg) {
-            doc.attributes.title = data.headermssg;
-        }
+    // Заголовок из структры БЧ имеет приоритет над заголовком из схемы поста.
+    if (data.headermssg) {
+        doc.attributes.title = data.headermssg;
     }
 
     const { type = 'basic' } = doc.attributes;
 
-    if (isComment && type !== 'basic') {
+    if (!allowedTypes.includes(type)) {
         return null;
     }
 
     switch (type) {
-        case 'basic': {
+        case 'basic':
+        case 'comment': {
             doc.content = doc.content.filter(
                 ({ type }) => type === 'paragraph' || type === 'attachments'
             );

@@ -7,9 +7,9 @@ const Vote = require('./Vote');
 const Subscribe = require('./Subscribe');
 const HashTag = require('./HashTag');
 const Leader = require('./Leader');
+const Community = require('./Community');
 const CommunitySettings = require('./CommunitySettings');
 const { isPost } = require('../../utils/content');
-const Community = require('./Community');
 
 const ACTION_PROCESSING_WARNING_LIMIT = 1000;
 
@@ -20,6 +20,7 @@ const communityRegistry = [
     'cyber.token',
     'cyber.msig',
     'comn.list',
+    'comn.gallery',
     'comn.social',
 ];
 class Main {
@@ -87,13 +88,15 @@ class Main {
         };
 
         switch (pathName) {
-            case `comn.list->create`:
+            case 'comn.list->create':
                 await this._community.handleCreate(actionArgs);
                 break;
-            case `comn.list->addinfo`:
+
+            case 'comn.list->addinfo':
                 await this._community.handleAddInfo(actionArgs);
                 break;
-            case `cyber->newaccount`:
+
+            case 'cyber->newaccount':
                 await this._profile.handleCreate(actionArgs, meta);
                 break;
 

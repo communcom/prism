@@ -5,6 +5,8 @@ const PostModel = require('../../models/Post');
 const ProfileModel = require('../../models/Profile');
 const { processContent, extractContentId } = require('../../utils/content');
 
+const ALLOWED_POST_TYPES = ['basic', 'article'];
+
 class Post extends Abstract {
     async handleCreate(content, { blockNum, blockTime }) {
         const contentId = extractContentId(content);
@@ -12,7 +14,7 @@ class Post extends Abstract {
         let processedContent = null;
 
         try {
-            processedContent = await processContent(this, content);
+            processedContent = await processContent(this, content, ALLOWED_POST_TYPES);
         } catch (err) {
             Logger.warn(`Invalid post content, block num: ${blockNum}`, contentId, err);
         }
@@ -41,7 +43,7 @@ class Post extends Abstract {
         let updatedContent = null;
 
         try {
-            updatedContent = await processContent(this, content);
+            updatedContent = await processContent(this, content, ALLOWED_POST_TYPES);
         } catch (err) {
             Logger.warn(`Invalid post content, block num: ${blockNum}`, contentId, err);
         }
