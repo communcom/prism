@@ -14,7 +14,14 @@ const Community = require('./Community');
 const ACTION_PROCESSING_WARNING_LIMIT = 1000;
 
 // TODO Change after MVP
-const communityRegistry = ['cyber', 'cyber.domain', 'cyber.token', 'cyber.msig', 'comn.list'];
+const communityRegistry = [
+    'cyber',
+    'cyber.domain',
+    'cyber.token',
+    'cyber.msig',
+    'comn.list',
+    'comn.social',
+];
 class Main {
     constructor({ connector, forkService }) {
         this._post = new Post({ connector, forkService });
@@ -142,12 +149,20 @@ class Main {
                 await this._vote.handleUnVote(actionArgs, meta);
                 break;
 
-            case `${communityId}.social->pin`:
+            case 'comn.social->pin':
                 await this._subscribe.pin(actionArgs, meta);
                 break;
 
-            case `${communityId}.social->unpin`:
+            case 'comn.social->unpin':
                 await this._subscribe.unpin(actionArgs, meta);
+                break;
+
+            case 'comn.social->block':
+                await this._subscribe.block(actionArgs);
+                break;
+
+            case 'comn.social->unblock':
+                await this._subscribe.unblock(actionArgs);
                 break;
 
             case `${communityId}.ctrl->regwitness`:
