@@ -10,6 +10,36 @@ class Subscribe extends Abstract {
         await this._manage(pinner, pinning, 'remove');
     }
 
+    async block({ blocker, blocking }) {
+        const previousModel = await ProfileModel.findOne({ userId: blocker });
+
+        await this.registerForkChanges({
+            type: 'update',
+            Model: ProfileModel,
+            documentId: previousModel,
+            data: {
+                $set: {
+                    blacklist: [...previousModel.blacklist, blocking],
+                },
+            },
+        });
+    }
+
+    async unblock({ blocker, blocking }) {
+        const previousModel = await ProfileModel.findOne({ userId: blocker });
+
+        await this.registerForkChanges({
+            type: 'update',
+            Model: ProfileModel,
+            documentId: previousModel,
+            data: {
+                $set: {
+                    blacklist: previousModel.blacklist.filter(user => user !== blocking),
+                },
+            },
+        });
+    }
+
     async _manage(pinner, pinning, action) {
         const [addAction, removeAction, increment] = this._getArrayEntityCommands(action);
         const applier = this._makeSubscriptionApplier({ addAction, removeAction, increment });

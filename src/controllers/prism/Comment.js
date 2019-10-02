@@ -14,7 +14,7 @@ class Comment extends Abstract {
         let processedContent = null;
 
         try {
-            processedContent = await processContent(this, content, { isComment: true });
+            processedContent = await processContent(this, content, ['comment']);
         } catch (err) {
             Logger.warn(`Invalid comment content, block num: ${blockNum}`, contentId, err);
         }
@@ -51,7 +51,7 @@ class Comment extends Abstract {
         let updatedContent = null;
 
         try {
-            updatedContent = await processContent(this, content);
+            updatedContent = await processContent(this, content, ['comment']);
         } catch (err) {
             Logger.warn(`Invalid comment content, block num: ${blockNum}`, contentId, err);
         }

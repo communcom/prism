@@ -79,6 +79,10 @@ const ProfileModel = MongoDB.makeModel(
                 default: 0,
             },
         },
+        blacklist: {
+            type: [String],
+            default: [],
+        },
         registration: {
             time: {
                 type: Date,

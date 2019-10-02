@@ -7,14 +7,22 @@ const Vote = require('./Vote');
 const Subscribe = require('./Subscribe');
 const HashTag = require('./HashTag');
 const Leader = require('./Leader');
+const Community = require('./Community');
 const CommunitySettings = require('./CommunitySettings');
 const { isPost } = require('../../utils/content');
-const Community = require('./Community');
 
 const ACTION_PROCESSING_WARNING_LIMIT = 1000;
 
 // TODO Change after MVP
-const communityRegistry = ['cyber', 'cyber.domain', 'cyber.token', 'cyber.msig', 'comn.list'];
+const communityRegistry = [
+    'cyber',
+    'cyber.domain',
+    'cyber.token',
+    'cyber.msig',
+    'comn.list',
+    'comn.gallery',
+    'comn.social',
+];
 class Main {
     constructor({ connector, forkService }) {
         this._post = new Post({ connector, forkService });
@@ -80,13 +88,15 @@ class Main {
         };
 
         switch (pathName) {
-            case `comn.list->create`:
+            case 'comn.list->create':
                 await this._community.handleCreate(actionArgs);
                 break;
-            case `comn.list->addinfo`:
+
+            case 'comn.list->addinfo':
                 await this._community.handleAddInfo(actionArgs);
                 break;
-            case `cyber->newaccount`:
+
+            case 'cyber->newaccount':
                 await this._profile.handleCreate(actionArgs, meta);
                 break;
 
@@ -142,12 +152,20 @@ class Main {
                 await this._vote.handleUnVote(actionArgs, meta);
                 break;
 
-            case `${communityId}.social->pin`:
+            case 'comn.social->pin':
                 await this._subscribe.pin(actionArgs, meta);
                 break;
 
-            case `${communityId}.social->unpin`:
+            case 'comn.social->unpin':
                 await this._subscribe.unpin(actionArgs, meta);
+                break;
+
+            case 'comn.social->block':
+                await this._subscribe.block(actionArgs);
+                break;
+
+            case 'comn.social->unblock':
+                await this._subscribe.unblock(actionArgs);
                 break;
 
             case `${communityId}.ctrl->regwitness`:
