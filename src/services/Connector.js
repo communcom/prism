@@ -28,13 +28,13 @@ class Connector extends BasicConnector {
         }
 
         if (env.GLS_ENABLE_PUBLIC_API) {
-            this._feed = new Feed({ postFeedCache, ...linking });
+            this._feed = new Feed(linking);
             this._comment = new Comment(linking);
             this._post = new Post(linking);
             this._profile = new Profile(linking);
             this._notify = new Notify(linking);
             this._hashTag = new HashTag(linking);
-            this._leaders = new Leaders({ leaderFeedCache, ...linking });
+            this._leaders = new Leaders(linking);
             this._search = new Search(linking);
             this._vote = new Vote(linking);
             this._communitySettings = new CommunitySettings(linking);
@@ -385,12 +385,7 @@ class Connector extends BasicConnector {
                 getSubscriptions: {
                     handler: this._profile.getSubscriptions,
                     scope: this._profile,
-                    inherits: [
-                        'feedPagination',
-                        'appSpecify',
-                        'userRelativity',
-                        'onlyWhenPublicApiEnabled',
-                    ],
+                    inherits: ['userRelativity', 'onlyWhenPublicApiEnabled'],
                     validation: {
                         required: ['requestedUserId'],
                         properties: {
@@ -407,12 +402,7 @@ class Connector extends BasicConnector {
                 getSubscribers: {
                     handler: this._profile.getSubscribers,
                     scope: this._profile,
-                    inherits: [
-                        'feedPagination',
-                        'appSpecify',
-                        'userRelativity',
-                        'onlyWhenPublicApiEnabled',
-                    ],
+                    inherits: ['userRelativity', 'onlyWhenPublicApiEnabled'],
                     validation: {
                         required: ['requestedUserId'],
                         properties: {

@@ -84,6 +84,18 @@ class Profile extends BasicController {
     suggestNames() {
         // TODO: suggest names based on input
     }
+
+    getSubscribers() {
+        // TODO
+    }
+
+    getSubscriptions() {
+        // TODO
+    }
+
+    resolveProfile() {
+        // TODO
+    }
 }
 
 module.exports = Profile;
