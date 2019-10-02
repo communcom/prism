@@ -80,7 +80,9 @@ class Posts extends BasicController {
         };
     }
 
-    async getPost({ communityId, userId, permlink }) {
+    async getPost({ communityId, userId, permlink }, auth) {
+        // "auth" can be used here
+
         const [post] = await PostModel.aggregate([
             {
                 $match: {
@@ -109,6 +111,13 @@ class Posts extends BasicController {
                 $project: baseProjection,
             },
         ]);
+
+        if (!post) {
+            throw {
+                code: 404,
+                message: 'Post not found',
+            };
+        }
 
         this._fixPost(post);
 

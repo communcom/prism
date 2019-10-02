@@ -3,7 +3,7 @@ const mongoose = core.services.MongoDB.mongoose;
 const BasicController = core.controllers.Basic;
 
 class Profile extends BasicController {
-    async getProfile({ userId, username, user }) {
+    async getProfile({ username, user }, auth) {
         const ProfileView = mongoose.connection.db.collection('CommunUsers');
 
         const filter = {};
@@ -26,7 +26,7 @@ class Profile extends BasicController {
 
         const aggregation = [{ $match: filter }];
 
-        if (userId) {
+        if (auth.userId) {
             aggregation.push({
                 $addFields: {
                     isSubscribed: {
@@ -35,7 +35,7 @@ class Profile extends BasicController {
                                 $eq: [
                                     -1,
                                     {
-                                        $indexOfArray: ['$subscribers.userIds', userId],
+                                        $indexOfArray: ['$subscribers.userIds', auth.userId],
                                     },
                                 ],
                             },
@@ -49,7 +49,7 @@ class Profile extends BasicController {
                                 $eq: [
                                     -1,
                                     {
-                                        $indexOfArray: ['$subscriptions.userIds', userId],
+                                        $indexOfArray: ['$subscriptions.userIds', auth.userId],
                                     },
                                 ],
                             },
@@ -73,9 +73,7 @@ class Profile extends BasicController {
         }
 
         if (result.length > 1) {
-            return result.find(resultUser => {
-                return resultUser.username === user;
-            });
+            return result.find(resultUser => resultUser.username === user);
         }
 
         return result[0];
