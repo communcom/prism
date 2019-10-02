@@ -34,7 +34,6 @@ class Profile extends BasicController {
                                     -1,
                                     {
                                         $indexOfArray: ['$subscribers.userIds', authUserId],
-
                                     },
                                 ],
                             },
