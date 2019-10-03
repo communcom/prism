@@ -21,7 +21,14 @@ module.exports = MongoDB.makeModel(
         },
         parents: {
             post: contentIdType,
-            comment: contentIdType,
+            comment: {
+                userId: {
+                    type: String,
+                },
+                permlink: {
+                    type: String,
+                },
+            },
         },
         content: {
             title: {

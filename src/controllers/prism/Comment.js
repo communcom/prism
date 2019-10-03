@@ -23,8 +23,9 @@ class Comment extends Abstract {
             Logger.warn(`Invalid comment content, block num: ${blockNum}`, contentId, err);
         }
 
-        const model = new CommentModel({
+        const modelData = {
             communityId,
+            parents: {},
             contentId,
             content: processedContent,
             meta: {
@@ -35,9 +36,12 @@ class Comment extends Abstract {
                     curatorsPercent: Number(content.curators_prcnt),
                 },
             },
-        });
+        };
 
-        await this.applyParentByContent(model, content);
+        await this.applyParentByContent(modelData, content);
+
+        const model = new CommentModel(modelData);
+
         await this.applyOrdering(model);
         await model.save();
         await this.registerForkChanges({
