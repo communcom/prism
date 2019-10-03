@@ -380,6 +380,169 @@ waitForTransaction               // Дождаться и получить от�
 }
 ```
 
+### getPost
+
+=> Запрос
+
+```json
+{
+  "id": "1",
+  "method": "getPost",
+  "jsonrpc": "2.0",
+  "params": {
+    "communityId": "LLUILA",
+    "userId": "tst5mwwhngaf",
+    "permlink": "hera-fights-with-abderus-against-prometheus-and-common-man-named-mr-delois-hegmanniv-on-new-ghis-1570113941304"
+  }
+}
+```
+
+<= Ответ
+
+```json
+{
+    "jsonrpc": "2.0",
+    "id": "1",
+    "result": {
+        "content": {
+            "type": "basic",
+            "body": {
+                "attributes": {
+                    "type": "basic",
+                    "version": "1.0",
+                    "title": "Hera fights with Abderus against Prometheus and common man named Mr.Delois HegmannIV on New Ghis"
+                },
+                "id": 1,
+                "type": "post",
+                "content": [
+                    {
+                        "id": 2,
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "id": 3,
+                                "type": "text",
+                                "content": "Chuck Norris doesn't have performance bottlenecks. He just makes the universe wait its turn.\n at the moment he lives at 4166 Daugherty Wells, New Bariland, PA 70019     \n\n and YODA said: Do. Or do not. There is no try. \n\n witcher quote: You cannot do it. You cannot do it, witcheress. In Kaer Morhen, they taught you to kill, so you kill like a machine. Instinctively. To kill yourself takes character, strength, determination and courage. But that, that they could not teach you. \n\n Rick and Morty quote: Great, now I have to take over an entire planet because of your stupid boobs. \n\n SuperHero Rhino Wolf has power to Levitation and Stealth \n\n Harry Potter quote: Never trust anything that can think for itself if you can't see where it keeps its brain. \n\n and some Lorem to finish text: Qui et est reiciendis quia dolorum exercitationem nulla explicabo et corrupti consequatur voluptas molestiae autem ut reiciendis quis sed qui est commodi doloremque vel pariatur sunt non illum quo eos quis alias qui repudiandae ut sed non distinctio consectetur eveniet eos magnam officia sequi et molestiae enim repudiandae sed delectus error et magnam ratione qui perspiciatis perspiciatis dolore hic adipisci est ut et excepturi ratione temporibus rerum molestiae aut totam eius velit est est aut quasi soluta quia est odio delectus numquam qui rem voluptatem sed quidem asperiores sed id aut sed aspernatur voluptas nostrum eos voluptates natus aut quo sunt at accusamus asperiores dolor voluptatem doloremque ab veritatis ratione tenetur eaque voluptatem distinctio eaque doloribus sequi voluptate hic nostrum vero explicabo exercitationem debitis provident qui natus nemo quasi ut voluptatem quis et voluptatem quasi ut fugit tempore voluptatem qui voluptates neque aut aliquid aperiam ullam similique eaque non consectetur et repellendus illo illo."
+                            }
+                        ]
+                    },
+                    {
+                        "id": 13,
+                        "type": "attachments",
+                        "content": [
+                            {
+                                "id": 14,
+                                "type": "image",
+                                "content": "https://i.gifer.com/1HOf.gif"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        "votes": {
+            "upCount": 0,
+            "downCount": 0
+        },
+        "meta": {
+            "creationTime": "2019-10-03T14:45:42.000Z"
+        },
+        "contentId": {
+            "userId": "tst5mwwhngaf",
+            "permlink": "hera-fights-with-abderus-against-prometheus-and-common-man-named-mr-delois-hegmanniv-on-new-ghis-1570113941304"
+        },
+        "author": {
+            "userId": "tst5mwwhngaf"
+        },
+        "community": {
+            "communityId": "LLUILA",
+            "communityName": "LLUILA comunity"
+        }
+    }
+}
+```
+
+### getPosts
+
+#### Id-sorted
+
+=> Запрос
+
+```json
+{
+  "id": "1",
+  "method": "getPost",
+  "jsonrpc": "2.0",
+  "params": {
+  }
+}
+```
+
+<= Ответ
+
+```json
+{
+    "jsonrpc": "2.0",
+    "id": "1",
+    "result": {
+        "content": {
+            "type": "basic",
+            "body": {
+                "attributes": {
+                    "type": "basic",
+                    "version": "1.0",
+                    "title": "Hera fights with Abderus against Prometheus and common man named Mr.Delois HegmannIV on New Ghis"
+                },
+                "id": 1,
+                "type": "post",
+                "content": [
+                    {
+                        "id": 2,
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "id": 3,
+                                "type": "text",
+                                "content": "Chuck Norris doesn't have performance bottlenecks. He just makes the universe wait its turn.\n at the moment he lives at 4166 Daugherty Wells, New Bariland, PA 70019     \n\n and YODA said: Do. Or do not. There is no try. \n\n witcher quote: You cannot do it. You cannot do it, witcheress. In Kaer Morhen, they taught you to kill, so you kill like a machine. Instinctively. To kill yourself takes character, strength, determination and courage. But that, that they could not teach you. \n\n Rick and Morty quote: Great, now I have to take over an entire planet because of your stupid boobs. \n\n SuperHero Rhino Wolf has power to Levitation and Stealth \n\n Harry Potter quote: Never trust anything that can think for itself if you can't see where it keeps its brain. \n\n and some Lorem to finish text: Qui et est reiciendis quia dolorum exercitationem nulla explicabo et corrupti consequatur voluptas molestiae autem ut reiciendis quis sed qui est commodi doloremque vel pariatur sunt non illum quo eos quis alias qui repudiandae ut sed non distinctio consectetur eveniet eos magnam officia sequi et molestiae enim repudiandae sed delectus error et magnam ratione qui perspiciatis perspiciatis dolore hic adipisci est ut et excepturi ratione temporibus rerum molestiae aut totam eius velit est est aut quasi soluta quia est odio delectus numquam qui rem voluptatem sed quidem asperiores sed id aut sed aspernatur voluptas nostrum eos voluptates natus aut quo sunt at accusamus asperiores dolor voluptatem doloremque ab veritatis ratione tenetur eaque voluptatem distinctio eaque doloribus sequi voluptate hic nostrum vero explicabo exercitationem debitis provident qui natus nemo quasi ut voluptatem quis et voluptatem quasi ut fugit tempore voluptatem qui voluptates neque aut aliquid aperiam ullam similique eaque non consectetur et repellendus illo illo."
+                            }
+                        ]
+                    },
+                    {
+                        "id": 13,
+                        "type": "attachments",
+                        "content": [
+                            {
+                                "id": 14,
+                                "type": "image",
+                                "content": "https://i.gifer.com/1HOf.gif"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        "votes": {
+            "upCount": 0,
+            "downCount": 0
+        },
+        "meta": {
+            "creationTime": "2019-10-03T14:45:42.000Z"
+        },
+        "contentId": {
+            "userId": "tst5mwwhngaf",
+            "permlink": "hera-fights-with-abderus-against-prometheus-and-common-man-named-mr-delois-hegmanniv-on-new-ghis-1570113941304"
+        },
+        "author": {
+            "userId": "tst5mwwhngaf"
+        },
+        "community": {
+            "communityId": "LLUILA",
+            "communityName": "LLUILA comunity"
+        }
+    }
+}
+```
+
 Возможные переменные окружения `ENV`:
 
 -   `GLS_CONNECTOR_HOST` _(обязательно)_ - адрес, который будет использован для входящих подключений связи микросервисов.  
