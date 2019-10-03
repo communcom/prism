@@ -54,7 +54,7 @@ class Community extends BasicController {
         return community;
     }
 
-    async getCommunities({ userId, limit, offset }, { userId: authUserId }) {
+    async getCommunities({ limit, offset }, { userId: authUserId }) {
         const aggregation = [
             { $match: {} },
             {
