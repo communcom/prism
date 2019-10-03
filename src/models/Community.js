@@ -12,13 +12,6 @@ module.exports = MongoDB.makeModel(
             type: String,
             required: true,
         },
-        tokenName: {
-            type: String,
-            required: true,
-        },
-        ticker: {
-            type: String,
-        },
         avatar: {
             type: String,
         },
@@ -38,6 +31,9 @@ module.exports = MongoDB.makeModel(
         subscribersCount: {
             type: Number,
             default: 0,
+        },
+        language: {
+            type: String,
         },
     },
     {

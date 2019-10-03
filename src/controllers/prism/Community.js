@@ -7,11 +7,10 @@ class Community {
         this._forkService = forkService;
     }
 
-    async handleCreate({ community_name: communityName, token_name: tokenName }) {
+    async handleCreate({ community_name: communityName, commun_code: communityId }) {
         const newObject = await CommunityModel.create({
             communityName,
-            tokenName,
-            communityId: tokenName,
+            communityId,
         });
 
         await this._forkService.registerChanges({
@@ -22,24 +21,20 @@ class Community {
     }
 
     async handleAddInfo({
-        community_name: communityName,
-        token_name: tokenName,
-        ticker,
-        avatar,
+        commun_code: communityId,
+        avatar_image: avatar,
         cover_img_link: coverImageLink,
         description,
         rules,
+        language,
     }) {
-        const communityId = tokenName;
         const oldObject = await CommunityModel.findOne({ communityId }, {}, { lean: true });
 
         await CommunityModel.updateOne(
             { communityId },
             {
                 $set: {
-                    tokenName,
-                    ticker,
-                    communityName,
+                    language,
                     avatar,
                     coverImageLink,
                     description,

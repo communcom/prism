@@ -92,7 +92,7 @@ class Main {
                 await this._community.handleCreate(actionArgs);
                 break;
 
-            case 'comn.list->addinfo':
+            case 'comn.list->setinfo':
                 await this._community.handleAddInfo(actionArgs);
                 break;
 

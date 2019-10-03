@@ -35,19 +35,19 @@ async function isPost(content) {
 }
 
 async function processContent(connector, data, allowedTypes) {
-    const doc = JSON.parse(data.bodymssg);
+    const doc = JSON.parse(data.body);
     const tags = uniq(data.tags);
     let metadata = {};
 
     try {
-        metadata = JSON.parse(data.jsonmetadata);
+        metadata = JSON.parse(data.metadata);
     } catch {}
 
     delete doc.attributes.title;
 
     // Заголовок из структры БЧ имеет приоритет над заголовком из схемы поста.
-    if (data.headermssg) {
-        doc.attributes.title = data.headermssg;
+    if (data.header) {
+        doc.attributes.title = data.header;
     }
 
     const { type = 'basic' } = doc.attributes;
