@@ -37,6 +37,11 @@ const baseProjection = {
     },
 };
 
+const fullPostProjection = {
+    ...baseProjection,
+    'content.article': true,
+};
+
 class Posts extends BasicController {
     async getPosts({ type, limit, offset = 0 }) {
         if (offset < 0) {
@@ -108,7 +113,7 @@ class Posts extends BasicController {
                 },
             },
             {
-                $project: baseProjection,
+                $project: fullPostProjection,
             },
         ]);
 
@@ -119,12 +124,12 @@ class Posts extends BasicController {
             };
         }
 
-        this._fixPost(post);
+        this._fixPost(post, true);
 
         return post;
     }
 
-    _fixPost(post) {
+    _fixPost(post, isFullPostQuery) {
         if (!post.author.userId) {
             post.author = {
                 userId: post.contentId.userId,
@@ -142,6 +147,14 @@ class Posts extends BasicController {
         }
 
         delete post.communityId;
+
+        post.type = post.content.type;
+
+        if (isFullPostQuery) {
+            post.content = post.content.article || post.content.body;
+        } else {
+            post.content = post.content.body;
+        }
     }
 }
 
