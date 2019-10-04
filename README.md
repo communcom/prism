@@ -313,7 +313,6 @@ waitForTransaction               // Дождаться и получить от�
     "jsonrpc": "2.0",
     "params": {
         "communityId": "TWO comunity",
-        "userId": "lol"
     }
 }
 ```
@@ -327,7 +326,6 @@ waitForTransaction               // Дождаться и получить от�
     "result": {
         "subscribersCount": 0,
         "communityId": "TWO comunity",
-        "tokenName": "TWO",
         "isSubscribed": false
     }
 }
@@ -343,7 +341,6 @@ waitForTransaction               // Дождаться и получить от�
     "method": "getCommunitiesList",
     "jsonrpc": "2.0",
     "params": {
-        "userId": "lol",
         "offset": 1
     }
 }
@@ -360,7 +357,6 @@ waitForTransaction               // Дождаться и получить от�
             {
                 "subscribersCount": 0,
                 "communityId": "TWO comunity",
-                "tokenName": "TWO",
                 "isSubscribed": false
             }
         ]
