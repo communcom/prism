@@ -29,9 +29,9 @@ const baseProjection = {
                 community: { $arrayElemAt: ['$community', 0] },
             },
             in: {
-                communityId: '$$community.communityId',
-                communityName: '$$community.communityName',
-                avatarUrl: '$$community.avatar',
+                id: '$$community.communityId',
+                name: '$$community.communityName',
+                avatarUrl: '$$community.avatarUrl',
             },
         },
     },
@@ -140,8 +140,8 @@ class Posts extends BasicController {
 
         if (!post.community.communityId) {
             post.community = {
-                communityId: post.communityId,
-                communityName: null,
+                id: post.communityId,
+                name: null,
                 avatarUrl: null,
             };
         }
