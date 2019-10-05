@@ -64,7 +64,7 @@ class Profile extends BasicController {
 
         const result = await ProfileModel.aggregate(aggregation);
 
-        if (!result) {
+        if (result.length === 0) {
             throw {
                 code: -1101,
                 message: 'User not found',
