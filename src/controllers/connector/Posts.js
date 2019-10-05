@@ -29,6 +29,7 @@ const baseProjection = {
     'content.body': true,
     'votes.upCount': true,
     'votes.downCount': true,
+    stats: true,
     meta: true,
     author: {
         $let: {
