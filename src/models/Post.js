@@ -84,14 +84,6 @@ module.exports = MongoDB.makeModel(
             },
             {
                 fields: {
-                    url: 1,
-                },
-                options: {
-                    unique: true,
-                },
-            },
-            {
-                fields: {
                     communityCode: 1,
                 },
             },
