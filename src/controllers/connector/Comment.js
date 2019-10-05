@@ -45,7 +45,7 @@ const baseProjection = {
 };
 
 class Comment extends BasicController {
-    async getComment({ userId, permlink, communityId }, { userId: authUserId }) {
+    async getComment({ userId, permlink, communityId, json = false }, { userId: authUserId }) {
         const filter = { contentId: { userId, permlink }, communityId };
         const projection = { ...baseProjection };
         const aggregation = [{ $match: filter }];
@@ -120,11 +120,23 @@ class Comment extends BasicController {
             };
         }
 
+        this._fixComment(comment, json);
+
         return comment;
     }
 
     getComments() {
         // TODO: get comments fot specific post
+    }
+
+    _fixComment(comment, stayJSON) {
+        if (comment.content) {
+            comment.content = comment.content.body;
+
+            if (stayJSON) {
+                comment.content = JSON.stringify(comment.content);
+            }
+        }
     }
 }
 
