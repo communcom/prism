@@ -8,7 +8,7 @@ const ProfileModel = require('../../models/Profile');
 const { processContent, getContentId, extractContentId } = require('../../utils/content');
 
 class Comment extends Abstract {
-    async handleCreate(content, { communityId, blockNum, blockTime }) {
+    async handleCreate(content, { blockNum, blockTime }) {
         const contentId = extractContentId(content);
 
         if (await this._isTrash(contentId)) {
@@ -24,12 +24,12 @@ class Comment extends Abstract {
         }
 
         const modelData = {
-            communityId,
+            communityId: content.commun_code,
             parents: {},
             contentId,
             content: processedContent,
             meta: {
-                time: blockTime,
+                creationTime: blockTime,
             },
             payout: {
                 meta: {

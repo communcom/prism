@@ -32,7 +32,7 @@ class Community {
     async handleAddInfo({
         commun_code: code,
         avatar_image: avatarUrl,
-        cover_img_link: coverImageLink,
+        cover_image: coverImageLink,
         description,
         rules,
         language,

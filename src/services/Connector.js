@@ -107,16 +107,7 @@ class Connector extends BasicConnector {
                 getComment: {
                     handler: this._comment.getComment,
                     scope: this._comment,
-                    inherits: [
-                        'userByName',
-                        'userByAnyName',
-                        'contentId',
-                        'onlyWhenPublicApiEnabled',
-                    ],
-                    validation: {
-                        required: ['permlink'],
-                        properties: {},
-                    },
+                    inherits: ['contentId', 'communityId', 'onlyWhenPublicApiEnabled'],
                 },
                 getComments: {
                     handler: this._comment.getComments,

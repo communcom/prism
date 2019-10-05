@@ -49,21 +49,9 @@ getPost:                           // Получение конкретного 
     communityId <string>           // Идетификатор сообщества, в котором опубликован пост
 
 getComment:                        // Получение конкретного комментария
-    userId <string/null>           // Идетификатор запрошенного пользователя
-    username <string>              // Имя пользователя относительно домена
-    user <string>                  // Любое из имен выше
-    app <string>('cyber')          // Тип приложения / домена
-        [
-          cyber                    // CyberWay
-        | gls                      // Golos
-        ]
-    permlink <string>              // Пермлинк поста
-    contentType <string>('web')    // Определить тип получаемого контента
-        [
-          web                      // Контент, пригодный для веб-клиентов
-        | mobile                   // Контент, пригодный для мобильных устройств
-        | raw                      // Сырой контент без обработки
-        ]
+    userId <string>                // Идетификатор запрошенного пользователя
+    communityId <string>           // Идетификатор запрошенного сообщества
+    permlink <string>              // Пермлинк комментария
 
 getFeed:                           // Получение ленты постов
     type <string>('community')     // Тип ленты
@@ -642,6 +630,99 @@ waitForTransaction               // Дождаться и получить от�
                 }
             }
         ]
+    }
+}
+```
+
+
+### getComment
+
+=> Запрос
+
+```json
+{
+    "id": "1",
+    "method": "getComment",
+    "jsonrpc": "2.0",
+    "params": {
+        "userId": "tst2fxgvjzkf",
+        "permlink": "hermes-fights-with-ajax-against-rhea-and-common-man-named-ms-david-hoppe-ivmd-on-asshai-1570275616566",
+        "communityId": "ETE"
+    }
+}
+```
+
+<= Ответ
+
+```json
+{
+    "jsonrpc": "2.0",
+    "id": "1",
+    "result": {
+        "parents": {
+            "post": {
+                "userId": "tst2qlxxtbcw",
+                "permlink": "apollo-fights-with-dana-against-oceanus-and-common-man-named-dr-johnetta-wizadds-on-volantis-1570275616221"
+            }
+        },
+        "votes": {
+            "upCount": 0,
+            "downCount": 0
+        },
+        "meta": {
+            "creationTime": "2019-10-05T11:40:18.000Z"
+        },
+        "communityId": "ETE",
+        "contentId": {
+            "userId": "tst2fxgvjzkf",
+            "permlink": "hermes-fights-with-ajax-against-rhea-and-common-man-named-ms-david-hoppe-ivmd-on-asshai-1570275616566"
+        },
+        "content": {
+            "body": {
+                "attributes": {
+                    "type": "comment",
+                    "version": "1.0",
+                    "title": "Hermes fights with Ajax against Rhea and common man named Ms.David Hoppe IVMD on Asshai"
+                },
+                "id": 1,
+                "type": "post",
+                "content": [
+                    {
+                        "id": 2,
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "id": 3,
+                                "type": "text",
+                                "content": "Chuck Norris' addition operator doesn't commute; it teleports to where he needs it to be.\n at the moment he lives at Suite 207 2556 Yesenia Dale, West Gordon, GA 31819-8803     \n\n and YODA said: Adventure. Excitement. A Jedi craves not these things. \n\n witcher quote: The sword of destiny has two edges. You are one of them. \n\n Rick and Morty quote: Hello Jerry, come to rub my face in urine again? \n\n SuperHero Doc Samson has power to Reflexes and Human physical perfection \n\n Harry Potter quote: It is the unknown we fear when we look upon death and darkness, nothing more. \n\n and some Lorem to finish text: Distinctio earum autem quia tempora minus ut ab odit rerum sed sed earum vel esse soluta perspiciatis sunt et non hic officia eum consequuntur laborum libero soluta maiores tempora et ut quaerat velit ipsa aut cupiditate veritatis voluptas dolorem et rem possimus et accusamus modi amet tenetur voluptatem velit perferendis quia non quod ea ullam omnis dolorem et ut molestias praesentium illum voluptates qui amet voluptas earum quia sed magni facilis consequatur aliquam necessitatibus aspernatur fugit aliquid a amet provident id repellat quis nesciunt sapiente consectetur quia et id nihil pariatur illo et suscipit ullam vel alias ut repellendus beatae voluptatum quia et cum aperiam pariatur quam accusamus expedita odit omnis quia delectus explicabo rem est incidunt et accusamus ratione a vitae ab officiis architecto rerum et corrupti debitis laboriosam ut nihil necessitatibus eaque voluptatem quia vel rerum cupiditate cumque voluptatem impedit omnis tempora aut ut quisquam aliquid optio consequatur placeat fugit."
+                            }
+                        ]
+                    },
+                    {
+                        "id": 13,
+                        "type": "attachments",
+                        "content": [
+                            {
+                                "id": 14,
+                                "type": "website",
+                                "content": "https://bash.im/"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        "author": {
+            "userId": "tst2fxgvjzkf",
+            "username": "predovic-bailey-dds",
+            "avatarUrl": "https://i.pravatar.cc/300?u=4a70ae36926fb12b9cff57731434d45cdf3680cb"
+
+        },
+        "community": {
+            "communityId": "ETE",
+            "communityName": "ETE comunity",
+            "avatarUrl": "https://i.pravatar.cc/300?u=4a70ae36926fb12b9cff57731434d45cdf3680cb"
+        }
     }
 }
 ```

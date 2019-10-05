@@ -21,6 +21,7 @@ class Profile extends Abstract {
 
         const model = await ProfileModel.create({
             userId,
+            username,
             registration: {
                 time: blockTime,
             },
@@ -66,30 +67,20 @@ class Profile extends Abstract {
             const value = data[key];
 
             switch (key) {
-                case 'profile_image':
-                case 'user_image':
+                case 'avatar_url':
                     query['personal.avatarUrl'] = value;
                     break;
 
-                case 'background_image':
-                case 'cover_image':
+                case 'cover_url':
                     query['personal.coverUrl'] = value;
                     break;
 
-                case 'about':
+                case 'biography':
                     query['personal.biography'] = value;
-                    break;
-
-                case 'vk':
-                    query['personal.contacts.vkontakte'] = value;
                     break;
 
                 case 'facebook':
                     query['personal.contacts.facebook'] = value;
-                    break;
-
-                case 'instagram':
-                    query['personal.contacts.instagram'] = value;
                     break;
 
                 case 'telegram':

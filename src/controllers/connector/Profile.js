@@ -7,8 +7,10 @@ class Profile extends BasicController {
         const filter = {};
         if (username) {
             filter.username = username;
-        } else {
+        } else if (user) {
             filter.$or = [{ userId: user }, { username: user }];
+        } else {
+            filter.userId = userId;
         }
 
         const projection = {
