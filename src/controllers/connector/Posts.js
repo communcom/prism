@@ -50,6 +50,7 @@ const baseProjection = {
             in: {
                 id: '$$community.accountName',
                 name: '$$community.name',
+                code: '$$community.code',
                 avatarUrl: '$$community.avatarUrl',
             },
         },

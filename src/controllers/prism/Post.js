@@ -14,7 +14,7 @@ class Post extends Abstract {
         const communityCode = content.commun_code;
 
         if (!(await lookUpCommunity(communityCode))) {
-            Logger.warn(`Post into unknown community: ${communityCode},`, contentId);
+            Logger.warn(`New post into unknown community: ${communityCode},`, contentId);
             return;
         }
 

@@ -6,10 +6,17 @@ const PostModel = require('../../models/Post');
 const CommentModel = require('../../models/Comment');
 const ProfileModel = require('../../models/Profile');
 const { processContent, getContentId, extractContentId } = require('../../utils/content');
+const { lookUpCommunity } = require('../../utils/community');
 
 class Comment extends Abstract {
     async handleCreate(content, { blockNum, blockTime }) {
         const contentId = extractContentId(content);
+        const communityCode = content.commun_code;
+
+        if (!(await lookUpCommunity(communityCode))) {
+            Logger.warn(`New comment into unknown community: ${communityCode},`, contentId);
+            return;
+        }
 
         if (await this._isTrash(contentId)) {
             return;
@@ -24,7 +31,7 @@ class Comment extends Abstract {
         }
 
         const modelData = {
-            communityId: content.commun_code,
+            communityCode,
             parents: {},
             contentId,
             content: processedContent,

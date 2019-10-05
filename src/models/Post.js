@@ -76,7 +76,7 @@ module.exports = MongoDB.makeModel(
                 fields: {
                     'contentId.userId': 1,
                     'contentId.permlink': 1,
-                    communityId: 1,
+                    communityCode: 1,
                 },
                 options: {
                     unique: true,
@@ -92,7 +92,7 @@ module.exports = MongoDB.makeModel(
             },
             {
                 fields: {
-                    communityId: 1,
+                    communityCode: 1,
                 },
             },
         ],

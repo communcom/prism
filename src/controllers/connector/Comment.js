@@ -34,8 +34,9 @@ const baseProjection = {
                 community: { $arrayElemAt: ['$community', 0] },
             },
             in: {
-                communityId: '$$community.communityId',
-                communityName: '$$community.communityName',
+                id: '$$community.accountName',
+                name: '$$community.name',
+                code: '$$community.code',
                 avatarUrl: '$$community.avatarUrl',
                 subscribers: '$$community.subscribers',
             },
