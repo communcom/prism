@@ -1,7 +1,7 @@
 const CommunityModel = require('../models/Community');
 
-async function lookUpCommunity(communityCode) {
-    return Boolean(await CommunityModel.findOne({ communityCode }, { _id: true }));
+async function lookUpCommunity(code) {
+    return Boolean(await CommunityModel.findOne({ code }, { _id: true }));
 }
 
 async function lookUpCommunityCode(communityId) {
@@ -17,7 +17,7 @@ async function lookUpCommunityCode(communityId) {
             ],
         },
         {
-            communityCode: true,
+            code: true,
         },
         {
             lean: true,
@@ -28,7 +28,7 @@ async function lookUpCommunityCode(communityId) {
         return null;
     }
 
-    return community.communityCode;
+    return community.code;
 }
 
 module.exports = {
