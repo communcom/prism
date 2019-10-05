@@ -98,7 +98,6 @@ class Connector extends BasicConnector {
                         'userByName',
                         'contentIdNew',
                         'onlyWhenPublicApiEnabled',
-                        'json',
                     ],
                     validation: {
                         required: ['permlink'],
@@ -108,7 +107,7 @@ class Connector extends BasicConnector {
                 getComment: {
                     handler: this._comment.getComment,
                     scope: this._comment,
-                    inherits: ['contentId', 'communityId', 'json', 'onlyWhenPublicApiEnabled'],
+                    inherits: ['contentId', 'communityId', 'onlyWhenPublicApiEnabled'],
                 },
                 getComments: {
                     handler: this._comment.getComments,
@@ -117,7 +116,6 @@ class Connector extends BasicConnector {
                         'feedPagination',
                         'userByName',
                         'contentId',
-                        'json',
                         'onlyWhenPublicApiEnabled',
                     ],
                     validation: {
@@ -139,7 +137,7 @@ class Connector extends BasicConnector {
                 getPosts: {
                     handler: this._posts.getPosts,
                     scope: this._posts,
-                    inherits: ['pagination', 'userByName', 'json', 'onlyWhenPublicApiEnabled'],
+                    inherits: ['pagination', 'userByName', 'onlyWhenPublicApiEnabled'],
                     validation: {
                         required: [],
                         properties: {
@@ -511,16 +509,6 @@ class Connector extends BasicConnector {
                             properties: {
                                 communityId: {
                                     type: 'string',
-                                },
-                            },
-                        },
-                    },
-                    json: {
-                        validation: {
-                            properties: {
-                                json: {
-                                    type: 'boolean',
-                                    default: false,
                                 },
                             },
                         },

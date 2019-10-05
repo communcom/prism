@@ -64,7 +64,7 @@ const fullPostProjection = {
 };
 
 class Posts extends BasicController {
-    async getPosts({ type, json = false, limit, offset = 0 }) {
+    async getPosts({ type, limit, offset = 0 }) {
         if (offset < 0) {
             throw {
                 code: 500,
@@ -91,7 +91,7 @@ class Posts extends BasicController {
         ]);
 
         for (const post of items) {
-            this._fixPost(post, json);
+            this._fixPost(post);
         }
 
         return {
@@ -99,7 +99,7 @@ class Posts extends BasicController {
         };
     }
 
-    async getPost({ communityId, userId, permlink, json }, auth) {
+    async getPost({ communityId, userId, permlink }, auth) {
         // "auth" can be used here
 
         const communityCode = await lookUpCommunityCode(communityId);
@@ -132,12 +132,12 @@ class Posts extends BasicController {
             };
         }
 
-        this._fixPost(post, json, true);
+        this._fixPost(post, true);
 
         return post;
     }
 
-    _fixPost(post, stayJSON, isFullPostQuery) {
+    _fixPost(post, isFullPostQuery) {
         if (!post.author.userId) {
             post.author = {
                 userId: post.contentId.userId,
@@ -153,10 +153,6 @@ class Posts extends BasicController {
                 post.content = post.content.article || post.content.body;
             } else {
                 post.content = post.content.body;
-            }
-
-            if (stayJSON) {
-                post.content = JSON.stringify(post.content);
             }
         } else {
             post.type = 'basic';

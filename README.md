@@ -47,15 +47,13 @@ getPost:                           // Получение конкретного 
     userId <string>                // Идетификатор запрошенного пользователя
     permlink <string>              // Пермлинк поста
     communityId <string>           // Идетификатор сообщества, в котором опубликован пост
-    json <boolean>                 // Вернуть тело в виде JSON строки
 
 getComment:                        // Получение конкретного комментария
     userId <string>                // Идетификатор запрошенного пользователя
     communityId <string>           // Идетификатор запрошенного сообщества
     permlink <string>              // Пермлинк комментария
-    json <boolean>                 // Вернуть тело в виде JSON строки
 
-getPosts:                          // Получение ленты постов
+getFeed:                           // Получение ленты постов
     type <string>('community')     // Тип ленты
         [
           community                // Лента комьюнити, требует communityId
@@ -78,13 +76,12 @@ getPosts:                          // Получение ленты постов
         | WilsonHot                // Aлгоритм Вилсона, актуальный контент сейчас
         | WilsonTrending           // Aлгоритм Вилсона, в целом популярный контент
         ]
-    offset <number>                // Сдвиг пагинации
+    sequenceKey <string/null>      // Идентификатор пагинации для получения следующего контента
     limit <number>                 // Количество элементов
     userId <string/null>           // Идетификатор запрошенного пользователя
     communityId <string/null>      // Идентификатор комьюнити
     tags <string[]/null>           // Теги для фильтрации (только для community и сортировкой по времени)
     username <string>              // Имя пользователя относительно домена
-    json <boolean>                 // Вернуть тело в виде JSON строки
 
 getComments:                       // Получение ленты комментариев
     sortBy <string>('time')        // Способ сортировки
@@ -102,14 +99,7 @@ getComments:                       // Получение ленты коммен
         ]
     userId <string/null>           // Идетификатор запрошенного пользователя
     permlink <string/null>         // Пермлинк поста
-    contentType <string>('web')    // Определить тип получаемого контента
-        [
-          web                      // Контент, пригодный для веб-клиентов
-        | mobile                   // Контент, пригодный для мобильных устройств
-        | raw                      // Сырой контент без обработки
-        ]
     username <string>              // Имя пользователя относительно домена
-    json <boolean>                 // Вернуть тело в виде JSON строки
 
 getNotifyMeta:                // Получение мета-данных для отображения нотификации
     userId <string>           // Получить данные пользователя по идентификатору
@@ -134,11 +124,6 @@ getPostVotes:                 // Получение списка голосов 
            like               // Лайки
          | dislike            // Дизлайка
          ]
-    app <string>('cyber')     // Тип приложения / домена
-        [
-          cyber               // CyberWay
-        | gls                 // Golos
-        ]
 
 getCommentVotes:              // Получение списка голосов за коммент
     sequenceKey <string/null> // Идентификатор пагинации для получения следующего контента
@@ -150,19 +135,9 @@ getCommentVotes:              // Получение списка голосов 
            like               // Лайки
          | dislike            // Дизлайка
          ]
-    app <string>('cyber')     // Тип приложения / домена
-        [
-          cyber               // CyberWay
-        | gls                 // Golos
-        ]
 
 resolveProfile:               // Резолв идентификатора пользователя и аватара по имени с доменом
     username <string>         // Имя пользователя относительно домена
-    app <string>('cyber')     // Тип приложения / домена
-        [
-          cyber               // CyberWay
-        | gls                 // Golos
-        ]
 
 getSubscriptions:                // Получить подписки пользователя
     userId <string>              // Идентификатор пользователя
@@ -173,11 +148,6 @@ getSubscriptions:                // Получить подписки польз
         ]
     sequenceKey <string/null>    // Идентификатор пагинации для получения следующего контента
     limit <number>(10)           // Количество элементов
-    app <string>('cyber')        // Тип приложения / домена
-        [
-          cyber                  // CyberWay
-        | gls                    // Golos
-        ]
 
 getSubscribers:                  // Получить подписчиков пользователя
     userId <string>              // Идентификатор пользователя
@@ -188,11 +158,6 @@ getSubscribers:                  // Получить подписчиков по
         ]
     sequenceKey <string/null>    // Идентификатор пагинации для получения следующего контента
     limit <number>(10)           // Количество элементов
-    app <string>('cyber')        // Тип приложения / домена
-        [
-          cyber                  // CyberWay
-        | gls                    // Golos
-        ]
 
 getHashTagTop:                   // Получение топа хеш-тегов
     communityId <string>         // Идентификатор комьюнити
@@ -204,21 +169,11 @@ getLeadersTop:                   // Получить топ лидеров
     sequenceKey <string/null>    // Идентификатор пагинации для получения следующего контента
     limit <number>(10)           // Количество элементов
     query <string>               // Префиксный поиск по имени аккаунта
-    app <string>('cyber')        // Тип приложения / домена
-        [
-          cyber                  // CyberWay
-        | gls                    // Golos
-        ]
 
 getProposals:                    // Получить список предлагаемых изменений параметров сообществ
     communityId <string>         // Идентификатор комьюнити
     sequenceKey <string/null>    // Идентификатор пагинации для получения следующего контента
     limit <number>(10)           // Количество элементов
-    app <string>('cyber')        // Тип приложения / домена
-        [
-          cyber                  // CyberWay
-        | gls                    // Golos
-        ]
 
 waitForBlock                     // Дождаться и получить ответ когда призма обработает указанный блок
     blockNum <number>            // Номер блока
