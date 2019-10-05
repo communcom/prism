@@ -32,7 +32,7 @@ class Community {
     async handleAddInfo({
         commun_code: code,
         avatar_image: avatarUrl,
-        cover_image: coverImageLink,
+        cover_image: coverUrl,
         description,
         rules,
         language,
@@ -45,7 +45,7 @@ class Community {
                 $set: {
                     language,
                     avatarUrl,
-                    coverImageLink,
+                    coverUrl,
                     description,
                     rules,
                 },

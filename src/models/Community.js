@@ -22,7 +22,7 @@ module.exports = MongoDB.makeModel(
         avatarUrl: {
             type: String,
         },
-        coverImageLink: {
+        coverUrl: {
             type: String,
         },
         description: {
