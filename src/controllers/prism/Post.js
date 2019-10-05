@@ -4,12 +4,19 @@ const Abstract = require('./Abstract');
 const PostModel = require('../../models/Post');
 const ProfileModel = require('../../models/Profile');
 const { processContent, extractContentId } = require('../../utils/content');
+const { lookUpCommunity } = require('../../utils/community');
 
 const ALLOWED_POST_TYPES = ['basic', 'article'];
 
 class Post extends Abstract {
     async handleCreate(content, { blockNum, blockTime }) {
         const contentId = extractContentId(content);
+        const communityCode = content.commun_code;
+
+        if (!(await lookUpCommunity(communityCode))) {
+            Logger.warn(`Post into unknown community: ${communityCode},`, contentId);
+            return;
+        }
 
         if (await this._isTrash(contentId)) {
             return;
@@ -24,7 +31,7 @@ class Post extends Abstract {
         }
 
         const model = await PostModel.create({
-            communityId: content.commun_code,
+            communityCode,
             contentId,
             content: processedContent,
             meta: {
@@ -131,6 +138,29 @@ class Post extends Abstract {
             documentId: previousModel._id,
             data: previousModel.toObject(),
         });
+    }
+
+    async _getUniqueUrl(baseUrl) {
+        let url = baseUrl;
+        let postfix = 0;
+
+        while (true) {
+            const post = await PostModel.findOne(
+                {
+                    url,
+                },
+                { _id: true }
+            );
+
+            if (post) {
+                break;
+            } else {
+                postfix++;
+                url = `${baseUrl}-${postfix}`;
+            }
+        }
+
+        return url;
     }
 }
 

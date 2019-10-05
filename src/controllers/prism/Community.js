@@ -1,16 +1,25 @@
-const core = require('cyberway-core-service');
-const { Logger } = core.utils;
+const crypto = require('crypto');
+
 const CommunityModel = require('../../models/Community');
+
+// Менять соль нельзя, это приведет к расхождению в communityId между призмами.
+const SALT = 'AL1tsa3up0at';
 
 class Community {
     constructor({ forkService }) {
         this._forkService = forkService;
     }
 
-    async handleCreate({ community_name: communityName, commun_code: communityId }) {
+    async handleCreate({ community_name: name, commun_code: code }) {
+        const communityId = `id${this._extractCommunityId(code)}`;
+
         const newObject = await CommunityModel.create({
-            communityName,
             communityId,
+            code,
+            name,
+            // В начале accountName является тем же что и communityId,
+            // но в будущем можно задать accountName красивым именем
+            accountName: communityId,
         });
 
         await this._forkService.registerChanges({
@@ -21,17 +30,17 @@ class Community {
     }
 
     async handleAddInfo({
-        commun_code: communityId,
+        commun_code: code,
         avatar_image: avatarUrl,
         cover_img_link: coverImageLink,
         description,
         rules,
         language,
     }) {
-        const oldObject = await CommunityModel.findOne({ communityId }, {}, { lean: true });
+        const oldObject = await CommunityModel.findOne({ code }, {}, { lean: true });
 
         await CommunityModel.updateOne(
-            { communityId },
+            { code },
             {
                 $set: {
                     language,
@@ -48,6 +57,14 @@ class Community {
             Model: CommunityModel,
             documentId: oldObject._id,
         });
+    }
+
+    _extractCommunityId(code) {
+        return crypto
+            .createHash('sha1')
+            .update(`${SALT}${code.toLowerCase()}`)
+            .digest()
+            .readUInt32LE(16);
     }
 }
 

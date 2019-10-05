@@ -8,9 +8,16 @@ module.exports = MongoDB.makeModel(
             type: String,
             required: true,
         },
-        communityName: {
+        code: {
             type: String,
             required: true,
+        },
+        name: {
+            type: String,
+            required: true,
+        },
+        accountName: {
+            type: String,
         },
         avatarUrl: {
             type: String,
@@ -42,6 +49,14 @@ module.exports = MongoDB.makeModel(
             {
                 fields: {
                     communityId: 1,
+                },
+                options: {
+                    unique: true,
+                },
+            },
+            {
+                fields: {
+                    code: 1,
                 },
                 options: {
                     unique: true,

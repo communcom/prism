@@ -14,8 +14,9 @@ module.exports = MongoDB.makeModel(
                 required: true,
             },
         },
-        communityId: {
+        communityCode: {
             type: String,
+            require: true,
         },
         content: {
             type: {
@@ -76,6 +77,14 @@ module.exports = MongoDB.makeModel(
                     'contentId.userId': 1,
                     'contentId.permlink': 1,
                     communityId: 1,
+                },
+                options: {
+                    unique: true,
+                },
+            },
+            {
+                fields: {
+                    url: 1,
                 },
                 options: {
                     unique: true,

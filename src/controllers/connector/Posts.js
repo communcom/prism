@@ -1,10 +1,29 @@
 const core = require('cyberway-core-service');
 const BasicController = core.controllers.Basic;
 const PostModel = require('../../models/Post');
+const { lookUpCommunityCode } = require('../../utils/community');
+
+const lookups = [
+    {
+        $lookup: {
+            from: 'profiles',
+            localField: 'contentId.userId',
+            foreignField: 'userId',
+            as: 'profile',
+        },
+    },
+    {
+        $lookup: {
+            from: 'communities',
+            localField: 'communityCode',
+            foreignField: 'code',
+            as: 'community',
+        },
+    },
+];
 
 const baseProjection = {
     _id: false,
-    communityId: true,
     contentId: true,
     'content.type': true,
     'content.body': true,
@@ -29,8 +48,8 @@ const baseProjection = {
                 community: { $arrayElemAt: ['$community', 0] },
             },
             in: {
-                id: '$$community.communityId',
-                name: '$$community.communityName',
+                id: '$$community.accountName',
+                name: '$$community.name',
                 avatarUrl: '$$community.avatarUrl',
             },
         },
@@ -63,14 +82,7 @@ class Posts extends BasicController {
             {
                 $limit: limit,
             },
-            {
-                $lookup: {
-                    from: 'profiles',
-                    localField: 'contentId.userId',
-                    foreignField: 'userId',
-                    as: 'profile',
-                },
-            },
+            ...lookups,
             {
                 $project: baseProjection,
             },
@@ -88,30 +100,24 @@ class Posts extends BasicController {
     async getPost({ communityId, userId, permlink }, auth) {
         // "auth" can be used here
 
+        const communityCode = await lookUpCommunityCode(communityId);
+
+        if (!communityCode) {
+            throw {
+                code: 404,
+                message: 'Post not found',
+            };
+        }
+
         const [post] = await PostModel.aggregate([
             {
                 $match: {
-                    communityId,
+                    communityCode,
                     'contentId.userId': userId,
                     'contentId.permlink': permlink,
                 },
             },
-            {
-                $lookup: {
-                    from: 'profiles',
-                    localField: 'contentId.userId',
-                    foreignField: 'userId',
-                    as: 'profile',
-                },
-            },
-            {
-                $lookup: {
-                    from: 'communities',
-                    localField: 'communityId',
-                    foreignField: 'communityId',
-                    as: 'community',
-                },
-            },
+            ...lookups,
             {
                 $project: fullPostProjection,
             },
@@ -137,16 +143,6 @@ class Posts extends BasicController {
                 avatarUrl: null,
             };
         }
-
-        if (!post.community.communityId) {
-            post.community = {
-                id: post.communityId,
-                name: null,
-                avatarUrl: null,
-            };
-        }
-
-        delete post.communityId;
 
         post.type = post.content.type;
 

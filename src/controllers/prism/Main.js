@@ -66,11 +66,6 @@ class Main {
     }
 
     async _disperseAction(action, previous = { args: {} }, { blockNum, blockTime }) {
-        if (!action) {
-            Logger.error('Empty transaction! But continue.');
-            return;
-        }
-
         if (!communityRegistry.includes(action.receiver)) {
             return;
         }
