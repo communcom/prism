@@ -90,8 +90,33 @@ class Profile extends BasicController {
         // TODO
     }
 
-    resolveProfile() {
-        // TODO
+    async resolveProfile({ username }) {
+        const profile = await ProfileModel.findOne(
+            {
+                username,
+            },
+            {
+                userId: true,
+                username: true,
+                'personal.avatarUrl': true,
+            },
+            {
+                lean: true,
+            }
+        );
+
+        if (!profile) {
+            throw {
+                code: 404,
+                message: 'Not found',
+            };
+        }
+
+        return {
+            userId: profile.userId,
+            username: profile.username,
+            avatarUrl: (profile.personal && profile.personal.avatarUrl) || null,
+        };
     }
 }
 
