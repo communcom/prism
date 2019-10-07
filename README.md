@@ -175,6 +175,12 @@ getProposals:                    // Получить список предлаг
     sequenceKey <string/null>    // Идентификатор пагинации для получения следующего контента
     limit <number>(10)           // Количество элементов
 
+getCommunities:
+    type 'all'|'user' ('all')    // Тип списка
+    userId <string/null>         // Необходим при type='user'
+    offset <number>              // Сдвиг пагинации
+    limit <number>               // Количество элементов
+
 waitForBlock                     // Дождаться и получить ответ когда призма обработает указанный блок
     blockNum <number>            // Номер блока
 

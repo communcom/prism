@@ -406,6 +406,11 @@ class Connector extends BasicConnector {
                     validation: {
                         required: [],
                         properties: {
+                            type: {
+                                type: 'string',
+                                enum: ['all', 'user'],
+                                default: 'all',
+                            },
                             userId: {
                                 type: 'string',
                             },

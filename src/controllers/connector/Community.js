@@ -54,19 +54,31 @@ class Community extends BasicController {
         return community;
     }
 
-    async getCommunities({ limit, offset }, { userId: authUserId }) {
+    async getCommunities({ type, userId, limit, offset }, { userId: authUserId }) {
+        const query = {};
+        let isQuerySubscriptions = false;
+
+        if (type === 'user') {
+            query.subscribers = userId;
+            isQuerySubscriptions = authUserId === userId;
+        }
+
         const aggregation = [
-            { $match: {} },
+            {
+                $match: query,
+            },
             {
                 $skip: offset,
             },
             {
                 $limit: limit,
             },
-            { $sort: { subscribersCount: -1 } },
+            {
+                $sort: { subscribersCount: -1 },
+            },
         ];
 
-        if (authUserId) {
+        if (authUserId && !isQuerySubscriptions) {
             aggregation.push({
                 $addFields: {
                     isSubscribed: {
@@ -100,6 +112,12 @@ class Community extends BasicController {
         });
 
         const communities = await CommunityModel.aggregate(aggregation);
+
+        if (isQuerySubscriptions) {
+            for (const community of communities) {
+                community.isSubscribed = true;
+            }
+        }
 
         return { communities };
     }
