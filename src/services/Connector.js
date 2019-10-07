@@ -328,7 +328,7 @@ class Connector extends BasicConnector {
                     scope: this._profile,
                     inherits: ['userByName', 'onlyWhenPublicApiEnabled'],
                     validation: {
-                        required: ['username', 'app'],
+                        required: ['username'],
                         properties: {},
                     },
                 },
