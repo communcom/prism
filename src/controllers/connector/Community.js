@@ -4,6 +4,7 @@ const BasicController = core.controllers.Basic;
 const CommunityModel = require('../../models/Community');
 
 const baseProjection = {
+    _id: false,
     communityId: true,
     code: true,
     name: true,
