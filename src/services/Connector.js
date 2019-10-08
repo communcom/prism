@@ -399,7 +399,7 @@ class Connector extends BasicConnector {
                         },
                     },
                 },
-                getCommunitiesList: {
+                getCommunities: {
                     handler: this._community.getCommunities,
                     scope: this._community,
                     inherits: ['onlyWhenPublicApiEnabled', 'paging'],

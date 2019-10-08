@@ -119,7 +119,9 @@ class Community extends BasicController {
             }
         }
 
-        return { communities };
+        return {
+            items: communities,
+        };
     }
 }
 
