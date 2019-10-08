@@ -3,6 +3,17 @@ const BasicController = core.controllers.Basic;
 
 const CommunityModel = require('../../models/Community');
 
+const baseProjection = {
+    communityId: true,
+    code: true,
+    name: true,
+    accountName: true,
+    avatarUrl: true,
+    subscribersCount: true,
+    language: true,
+    isSubscribed: true,
+};
+
 class Community extends BasicController {
     async getCommunity({ userId, communityId }, { userId: authUserId }) {
         const aggregation = [
@@ -34,11 +45,11 @@ class Community extends BasicController {
 
         aggregation.push({
             $project: {
-                subscribers: false,
-                _id: false,
-                __v: false,
-                createdAt: false,
-                updatedAt: false,
+                ...baseProjection,
+                coverUrl: true,
+                description: true,
+                rules: true,
+                isSubscribed: true,
             },
         });
 
@@ -51,7 +62,7 @@ class Community extends BasicController {
             };
         }
 
-        return community;
+        return this._fixCommunity(community);
     }
 
     async getCommunities({ type, userId, limit, offset }, { userId: authUserId }) {
@@ -100,18 +111,12 @@ class Community extends BasicController {
         }
 
         aggregation.push({
-            $project: {
-                subscribers: false,
-                _id: false,
-                __v: false,
-                createdAt: false,
-                updatedAt: false,
-                rules: false,
-                description: false,
-            },
+            $project: baseProjection,
         });
 
-        const communities = await CommunityModel.aggregate(aggregation);
+        let communities = await CommunityModel.aggregate(aggregation);
+
+        communities = communities.map(community => this._fixCommunity(community));
 
         if (isQuerySubscriptions) {
             for (const community of communities) {
@@ -121,6 +126,15 @@ class Community extends BasicController {
 
         return {
             items: communities,
+        };
+    }
+
+    _fixCommunity(community) {
+        return {
+            ...community,
+            id: community.accountName || community.communityId,
+            accountName: undefined,
+            communityId: undefined,
         };
     }
 }
