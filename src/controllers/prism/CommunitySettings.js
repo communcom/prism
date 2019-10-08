@@ -8,6 +8,15 @@ class CommunitySettings {
     }
 
     async handleSetParams(communityId, contractName, actionName, structures) {
+        // TODO: Temporary disabled, throws errors.
+        Logger.info('handleSetParams calling with params:', {
+            communityId,
+            contractName,
+            actionName,
+            structures,
+        });
+        return;
+
         for (const [structureName, data] of structures) {
             const current = await CommunitySettingsModel.findOne({
                 communityId,
