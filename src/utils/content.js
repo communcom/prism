@@ -65,7 +65,9 @@ async function processContent(connector, data, allowedTypes) {
 
             const attachments = doc.content.find(({ type }) => type === 'attachments');
 
-            attachments.content = await processEmbeds(connector, attachments.content);
+            if (attachments) {
+                attachments.content = await processEmbeds(connector, attachments.content);
+            }
 
             return {
                 type,
