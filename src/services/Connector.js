@@ -137,7 +137,12 @@ class Connector extends BasicConnector {
                 getPosts: {
                     handler: this._posts.getPosts,
                     scope: this._posts,
-                    inherits: ['pagination', 'userByName', 'onlyWhenPublicApiEnabled'],
+                    inherits: [
+                        'pagination',
+                        'nsfwFilter',
+                        'userByName',
+                        'onlyWhenPublicApiEnabled',
+                    ],
                     validation: {
                         required: [],
                         properties: {
@@ -513,6 +518,16 @@ class Connector extends BasicConnector {
                             properties: {
                                 communityId: {
                                     type: 'string',
+                                },
+                            },
+                        },
+                    },
+                    nsfwFilter: {
+                        validation: {
+                            properties: {
+                                allowNsfw: {
+                                    type: 'boolean',
+                                    default: false,
                                 },
                             },
                         },

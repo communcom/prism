@@ -40,6 +40,7 @@ const baseProjection = {
                 userId: '$$profile.userId',
                 username: '$$profile.username',
                 avatarUrl: '$$profile.personal.avatarUrl',
+                subscribers: '$$profile.subscribers.userIds',
             },
         },
     },
@@ -53,8 +54,16 @@ const baseProjection = {
                 alias: '$$community.alias',
                 name: '$$community.name',
                 avatarUrl: '$$community.avatarUrl',
+                subscribers: '$$community.subscribers',
             },
         },
+    },
+};
+
+const subscribersProjection = {
+    $project: {
+        'community.subscribers': false,
+        'author.subscribers': false,
     },
 };
 
@@ -64,12 +73,16 @@ const fullPostProjection = {
 };
 
 class Posts extends BasicController {
-    async getPosts({ type, limit, offset = 0 }) {
+    async getPosts({ type, allowNsfw, userId, limit, offset = 0 }, auth) {
         if (offset < 0) {
             throw {
                 code: 500,
                 message: 'Invalid offset value',
             };
+        }
+
+        if (type === 'byUser') {
+            return await this._getPostsByUser({ userId, limit, offset, allowNsfw }, auth);
         }
 
         const items = await PostModel.aggregate([
@@ -88,6 +101,7 @@ class Posts extends BasicController {
             {
                 $project: baseProjection,
             },
+            subscribersProjection,
         ]);
 
         for (const post of items) {
@@ -144,6 +158,65 @@ class Posts extends BasicController {
         this._fixPost(post, true);
 
         return post;
+    }
+
+    async _getPostsByUser({ userId, allowNsfw, limit, offset }, { userId: authUserId }) {
+        const aggregation = [];
+
+        const filter = { $match: { 'contentId.userId': userId } };
+
+        if (!allowNsfw) {
+            filter.$match['content.tags'] = { $ne: 'nsfw' };
+        }
+
+        const paging = [{ $skip: offset }, { $limit: limit }];
+        const sort = { $sort: { 'meta.creationTime': 1 } };
+        const projection = {
+            $project: baseProjection,
+        };
+
+        aggregation.push(filter, ...paging, sort, ...lookups, projection);
+
+        if (authUserId) {
+            aggregation.push({
+                $addFields: {
+                    isSubscribedAuthor: {
+                        $cond: {
+                            if: {
+                                $eq: [
+                                    -1,
+                                    {
+                                        $indexOfArray: ['$author.subscribers', authUserId],
+                                    },
+                                ],
+                            },
+                            then: false,
+                            else: true,
+                        },
+                    },
+                    isSubscribedCommunity: {
+                        $cond: {
+                            if: {
+                                $eq: [
+                                    -1,
+                                    {
+                                        $indexOfArray: ['$community.subscribers', authUserId],
+                                    },
+                                ],
+                            },
+                            then: false,
+                            else: true,
+                        },
+                    },
+                },
+            });
+        }
+
+        aggregation.push(subscribersProjection);
+
+        const items = await PostModel.aggregate(aggregation);
+
+        return { items };
     }
 
     _fixPost(post, isFullPostQuery) {

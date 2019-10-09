@@ -47,6 +47,25 @@ getPost:                           // Получение конкретного 
     userId <string>                // Id пользователя
     permlink <string>              // Пермлинк поста
     communityId <string>           // Идетификатор сообщества, в котором опубликован пост
+    
+getPosts:                          // Получение ленты по определенному принципу
+    userId <string>                // Id пользователя
+    communityId <string>           // Идетификатор сообщества
+    allowNsfw <boolean>(false)     // Разрешать выдачу NSFW-контента
+    type <string>('community')     // Тип ленты
+        [
+          community                // Лента сообщества
+        | subscriptions            // Лента пользователя по подпискам
+        | byUser                   // Лента постов с авторством пользователя
+        ]
+    sortBy <string>('time')        // Тип ленты
+        [
+          time                     // Сортировка по времени (от новых к старым)
+        | timeDesc                 // Обратная сортировка по времени (от старых к новым)
+        | popular                  // Сортировка по популярности (сначала популярное)
+        ]    
+    limit <number>(10)             // Ограничение на размер найденных результатов
+    offset <number>(0)             // Количество результатов, которое надо "пропустить"
 
 getComment:                        // Получение конкретного комментария
     userId <string>                // Id пользователя
@@ -541,6 +560,103 @@ waitForTransaction               // Дождаться и получить от�
                     "communityName": null,
                     "avatarUrl": null
                 }
+            }
+        ]
+    }
+}
+```
+
+#### Timeline by user
+
+Посты пользователя сортированные по времени
+
+=> Запрос
+
+```json
+{
+    "id": "1",
+    "method": "getPosts",
+    "jsonrpc": "2.0",
+    "params": {
+        "userId": "tst1koocxwbz",
+        "type": "byUser",
+        "allowNsfw": true
+    }
+}
+```
+
+<= Ответ
+
+```json
+{
+    "jsonrpc": "2.0",
+    "id": "1",
+    "result": {
+        "items": [
+            {
+                "content": {
+                    "type": "basic",
+                    "body": {
+                        "attributes": {
+                            "type": "basic",
+                            "version": "1.0",
+                            "title": "Demeter fights with Andromeda against Coeus and common man named Mrs.Julissa TillmanIII on Sar Meel"
+                        },
+                        "id": 1,
+                        "type": "post",
+                        "content": [
+                            {
+                                "id": 2,
+                                "type": "paragraph",
+                                "content": [
+                                    {
+                                        "id": 3,
+                                        "type": "text",
+                                        "content": "Chuck Norris went out of an infinite loop.\n at the moment he lives at 357 Andree Junction, Johnstonburgh, RI 56523-9571     \n\n and YODA said: Adventure. Excitement. A Jedi craves not these things. \n\n witcher quote: What is truth? The negation of lies? Or the statement of a fact? And if the fact is a lie, what then is the truth? \n\n Rick and Morty quote: You're our boy dog, don't even trip. \n\n SuperHero Yellowjacket X has power to Intelligence and Sonar \n\n Harry Potter quote: If you want to know what a man’s like, take a good look at how he treats his inferiors, not his equals. \n\n and some Lorem to finish text: Expedita beatae enim est possimus ut inventore consectetur rerum aliquid praesentium fugit qui velit enim cumque unde ut dolor in voluptas voluptates enim maxime vitae qui sit cum qui enim officia dicta repudiandae sed deserunt exercitationem odit et suscipit unde maiores est facilis aliquam sed sed veritatis velit deleniti qui placeat praesentium porro neque repellendus autem deserunt numquam non sint deleniti rerum esse laboriosam magnam et blanditiis eos dignissimos eos et earum et aut fuga eaque dignissimos maiores fuga ea magnam minus odio ad tempore omnis dolor fugiat maxime tenetur impedit quae id voluptatum voluptatem libero est ut iure qui architecto iste aut vel odio et quisquam ut et est consequatur incidunt sequi in et veritatis reprehenderit aut culpa voluptas ducimus veniam culpa veniam repellat fugiat magni earum repellendus quisquam et amet consequatur illum doloremque rerum voluptatum vero perspiciatis rerum quo illo rerum repellat dolores et adipisci earum in quia esse."
+                                    }
+                                ]
+                            },
+                            {
+                                "id": 13,
+                                "type": "attachments",
+                                "content": [
+                                    {
+                                        "id": 14,
+                                        "type": "image",
+                                        "content": "https://i.gifer.com/1HOf.gif"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                },
+                "votes": {
+                    "upCount": 0,
+                    "downCount": 0
+                },
+                "stats": {
+                    "commentsCount": 0
+                },
+                "meta": {
+                    "creationTime": "2019-10-09T11:52:30.000Z"
+                },
+                "contentId": {
+                    "userId": "tst1koocxwbz",
+                    "permlink": "demeter-fights-with-andromeda-against-coeus-and-common-man-named-mrs-julissa-tillmaniii-on-sar-meel-1570621947245"
+                },
+                "author": {
+                    "userId": "tst1koocxwbz",
+                    "username": "boehm-garland-md",
+                    "avatarUrl": "https://i.pravatar.cc/300?u=86a9be2732fb54fccdb294e555cab54fc5f7c729"
+                },
+                "community": {
+                    "communityId": "WWAPUPO",
+                    "alias": "id1377443613",
+                    "name": "WWAPUPO comunity",
+                    "avatarUrl": "https://i.pravatar.cc/300?u=7a180c543a5ce7adb504de330105542daece71f"
+                },
+                "isSubscribedAuthor": false,
+                "isSubscribedCommunity": false
             }
         ]
     }

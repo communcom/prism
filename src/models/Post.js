@@ -84,6 +84,19 @@ module.exports = MongoDB.makeModel(
             },
             {
                 fields: {
+                    'contentId.userId': 1,
+                    'content.tags': 1,
+                    'meta.creationTime': 1,
+                },
+            },
+            {
+                fields: {
+                    'contentId.userId': 1,
+                    'meta.creationTime': 1,
+                },
+            },
+            {
+                fields: {
                     communityId: 1,
                 },
             },
