@@ -335,9 +335,9 @@ class Connector extends BasicConnector {
                 getSubscriptions: {
                     handler: this._profile.getSubscriptions,
                     scope: this._profile,
-                    inherits: ['feedPagination', 'onlyWhenPublicApiEnabled'],
+                    inherits: ['pagination', 'onlyWhenPublicApiEnabled'],
                     validation: {
-                        required: ['userId'],
+                        required: ['userId', 'type'],
                         properties: {
                             userId: {
                                 type: 'string',
@@ -352,15 +352,14 @@ class Connector extends BasicConnector {
                 getSubscribers: {
                     handler: this._profile.getSubscribers,
                     scope: this._profile,
-                    inherits: ['feedPagination', 'onlyWhenPublicApiEnabled'],
+                    inherits: ['pagination', 'onlyWhenPublicApiEnabled'],
                     validation: {
                         properties: {
                             userId: {
                                 type: 'string',
                             },
-                            type: {
+                            communityId: {
                                 type: 'string',
-                                enum: ['user', 'community'],
                             },
                         },
                     },

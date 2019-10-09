@@ -1,6 +1,7 @@
 const core = require('cyberway-core-service');
 const BasicController = core.controllers.Basic;
 const ProfileModel = require('../../models/Profile');
+const CommunityModel = require('../../models/Community');
 
 class Profile extends BasicController {
     async getProfile({ userId, username, user }, { userId: authUserId }) {
@@ -82,12 +83,311 @@ class Profile extends BasicController {
         // TODO: suggest names based on input
     }
 
-    getSubscribers() {
-        // TODO
+    async _getUserSubscribers({ userId, limit, offset }, { userId: authUserId }) {
+        const aggregation = [];
+
+        const filter = {};
+        const subscribersProject = {};
+        const unwind = {};
+        const lookup = {};
+        const resultProject = {};
+        const paging = [{ $skip: offset }, { $limit: limit }];
+
+        filter.$match = { userId };
+        subscribersProject.$project = {
+            subscribers: '$subscribers.userIds',
+        };
+        unwind.$unwind = { path: '$subscribers' };
+        lookup.$lookup = {
+            from: 'profiles',
+            localField: 'subscribers',
+            foreignField: 'userId',
+            as: 'subscribers',
+        };
+        resultProject.$project = {
+            subscriber: {
+                $let: {
+                    vars: {
+                        subscriber: { $arrayElemAt: ['$subscribers', 0] },
+                    },
+                    in: {
+                        userId: '$$subscriber.userId',
+                        username: '$$subscriber.username',
+                        avatarUrl: '$$subscriber.personal.avatarUrl',
+                        subscribers: '$$subscriber.subscribers.userIds',
+                    },
+                },
+            },
+        };
+        aggregation.push(filter, subscribersProject, unwind, lookup, resultProject, ...paging);
+
+        if (authUserId) {
+            aggregation.push({
+                $addFields: {
+                    isSubscribed: {
+                        $cond: {
+                            if: {
+                                $eq: [
+                                    -1,
+                                    {
+                                        $indexOfArray: ['$subscriber.subscribers', authUserId],
+                                    },
+                                ],
+                            },
+                            then: false,
+                            else: true,
+                        },
+                    },
+                },
+            });
+        }
+
+        aggregation.push({
+            $replaceRoot: {
+                newRoot: {
+                    userId: '$subscriber.userId',
+                    username: '$subscriber.username',
+                    avatarUrl: '$subscriber.avatarUrl',
+                    isSubscribed: '$isSubscribed',
+                },
+            },
+        });
+
+        const items = await ProfileModel.aggregate(aggregation);
+
+        return { items };
     }
 
-    getSubscriptions() {
-        // TODO
+    async _getCommunitySubscribers({ communityId, limit, offset }, { userId: authUserId }) {
+        const aggregation = [];
+
+        const filter = {};
+        const subscribersProject = {};
+        const unwind = {};
+        const lookup = {};
+        const resultProject = {};
+        const paging = [{ $skip: offset }, { $limit: limit }];
+
+        filter.$match = { communityId };
+        subscribersProject.$project = {
+            subscribers: true,
+        };
+        unwind.$unwind = { path: '$subscribers' };
+        lookup.$lookup = {
+            from: 'profiles',
+            localField: 'subscribers',
+            foreignField: 'userId',
+            as: 'subscribers',
+        };
+        resultProject.$project = {
+            subscriber: {
+                $let: {
+                    vars: {
+                        subscriber: { $arrayElemAt: ['$subscribers', 0] },
+                    },
+                    in: {
+                        userId: '$$subscriber.userId',
+                        username: '$$subscriber.username',
+                        avatarUrl: '$$subscriber.personal.avatarUrl',
+                        subscribers: '$$subscriber.subscribers.userIds',
+                    },
+                },
+            },
+        };
+        aggregation.push(filter, subscribersProject, unwind, lookup, resultProject, ...paging);
+        if (authUserId) {
+            aggregation.push({
+                $addFields: {
+                    isSubscribed: {
+                        $cond: {
+                            if: {
+                                $eq: [
+                                    -1,
+                                    {
+                                        $indexOfArray: ['$subscriber.subscribers', authUserId],
+                                    },
+                                ],
+                            },
+                            then: false,
+                            else: true,
+                        },
+                    },
+                },
+            });
+        }
+        aggregation.push({
+            $replaceRoot: {
+                newRoot: {
+                    userId: '$subscriber.userId',
+                    username: '$subscriber.username',
+                    avatarUrl: '$subscriber.avatarUrl',
+                    isSubscribed: '$isSubscribed',
+                },
+            },
+        });
+
+        const items = await CommunityModel.aggregate(aggregation);
+
+        return { items };
+    }
+
+    async getSubscribers({ communityId, userId, limit, offset }, auth) {
+        if (communityId && userId) {
+            throw {
+                code: 409,
+                message: 'communityId and userId should not be both set',
+            };
+        }
+
+        if (!communityId && !userId) {
+            throw {
+                code: 409,
+                message: 'One of communityId and userId should not be set',
+            };
+        }
+
+        if (userId) {
+            return await this._getUserSubscribers({ userId, limit, offset }, auth);
+        } else {
+            return await this._getCommunitySubscribers({ communityId, offset, limit }, auth);
+        }
+    }
+
+    async getSubscriptions({ type, userId, offset, limit }, { userId: authUserId }) {
+        const aggregation = [];
+
+        const filter = { $match: { userId } };
+        aggregation.push(filter);
+
+        const projectionOnSubscriptions = {};
+        const unwindSubscriptions = {};
+        const unwindProject = {};
+        const lookupSubscriptions = {};
+        const subscriptionsProjection = {};
+        const finalRoot = {};
+
+        switch (type) {
+            case 'user':
+                projectionOnSubscriptions.$project = { 'subscriptions.userIds': true };
+                unwindSubscriptions.$unwind = { path: '$subscriptions.userIds' };
+                unwindProject.$project = {
+                    userId: '$subscriptions.userIds',
+                };
+                lookupSubscriptions.$lookup = {
+                    from: 'profiles',
+                    localField: 'userId',
+                    foreignField: 'userId',
+                    as: 'profile',
+                };
+                subscriptionsProjection.$project = {
+                    profile: {
+                        $let: {
+                            vars: {
+                                profile: { $arrayElemAt: ['$profile', 0] },
+                            },
+                            in: {
+                                userId: '$$profile.userId',
+                                username: '$$profile.username',
+                                avatarUrl: '$$profile.personal.avatarUrl',
+                                subscribers: '$$profile.subscribers.userIds',
+                            },
+                        },
+                    },
+                };
+                finalRoot.$replaceRoot = {
+                    newRoot: {
+                        userId: '$profile.userId',
+                        username: '$profile.username',
+                        avatarUrl: '$profile.avatarUrl',
+                        isSubscribed: '$isSubscribed',
+                    },
+                };
+                break;
+            case 'community':
+                projectionOnSubscriptions.$project = { 'subscriptions.communityIds': true };
+                unwindSubscriptions.$unwind = { path: '$subscriptions.communityIds' };
+                unwindProject.$project = {
+                    communityId: '$subscriptions.communityIds',
+                };
+                lookupSubscriptions.$lookup = {
+                    from: 'communities',
+                    localField: 'communityId',
+                    foreignField: 'communityId',
+                    as: 'community',
+                };
+                subscriptionsProjection.$project = {
+                    community: {
+                        $let: {
+                            vars: {
+                                community: { $arrayElemAt: ['$community', 0] },
+                            },
+                            in: {
+                                communityId: '$$community.communityId',
+                                name: '$$community.name',
+                                code: '$$community.code',
+                                avatarUrl: '$$community.avatarUrl',
+                                subscribers: '$$community.subscribers.userIds',
+                            },
+                        },
+                    },
+                };
+                finalRoot.$replaceRoot = {
+                    newRoot: {
+                        communityId: '$community.communityId',
+                        name: '$community.name',
+                        code: '$community.code',
+                        avatarUrl: '$community.avatarUrl',
+                        isSubscribed: '$isSubscribed',
+                    },
+                };
+                break;
+        }
+        aggregation.push(
+            projectionOnSubscriptions,
+            unwindSubscriptions,
+            unwindProject,
+            lookupSubscriptions
+        );
+
+        aggregation.push({ $limit: limit });
+        aggregation.push({ $skip: offset });
+
+        aggregation.push(subscriptionsProjection);
+
+        if (authUserId) {
+            let pathPrefix = '';
+            switch (type) {
+                case 'user':
+                    pathPrefix = 'profile';
+                    break;
+                case 'community':
+                    pathPrefix = 'communities';
+                    break;
+            }
+
+            aggregation.push({
+                $addFields: {
+                    isSubscribed: {
+                        $cond: {
+                            if: {
+                                $eq: [
+                                    -1,
+                                    {
+                                        $indexOfArray: [`$${pathPrefix}.subscribers`, authUserId],
+                                    },
+                                ],
+                            },
+                            then: false,
+                            else: true,
+                        },
+                    },
+                },
+            });
+        }
+
+        aggregation.push(finalRoot);
+
+        return { items: await ProfileModel.aggregate(aggregation) };
     }
 
     async resolveProfile({ username }) {
