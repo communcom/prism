@@ -8,16 +8,13 @@ module.exports = MongoDB.makeModel(
             type: String,
             required: true,
         },
-        code: {
+        alias: {
             type: String,
             required: true,
         },
         name: {
             type: String,
             required: true,
-        },
-        accountName: {
-            type: String,
         },
         avatarUrl: {
             type: String,
@@ -56,7 +53,7 @@ module.exports = MongoDB.makeModel(
             },
             {
                 fields: {
-                    code: 1,
+                    alias: 1,
                 },
                 options: {
                     unique: true,

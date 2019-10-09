@@ -2,7 +2,7 @@ const crypto = require('crypto');
 
 const CommunityModel = require('../../models/Community');
 
-// Менять соль нельзя, это приведет к расхождению в communityId между призмами.
+// Менять соль нельзя, это приведет к расхождению в alias между призмами.
 const SALT = 'AL1tsa3up0at';
 
 class Community {
@@ -10,16 +10,13 @@ class Community {
         this._forkService = forkService;
     }
 
-    async handleCreate({ community_name: name, commun_code: code }) {
-        const communityId = `id${this._extractCommunityId(code)}`;
+    async handleCreate({ community_name: name, commun_code: communityId }) {
+        const alias = `id${this._extractAlias(communityId)}`;
 
         const newObject = await CommunityModel.create({
             communityId,
-            code,
+            alias,
             name,
-            // В начале accountName является тем же что и communityId,
-            // но в будущем можно задать accountName красивым именем
-            accountName: communityId,
         });
 
         await this._forkService.registerChanges({
@@ -30,17 +27,15 @@ class Community {
     }
 
     async handleAddInfo({
-        commun_code: code,
+        commun_code: communityId,
         avatar_image: avatarUrl,
         cover_image: coverUrl,
         description,
         rules,
         language,
     }) {
-        const oldObject = await CommunityModel.findOne({ code }, {}, { lean: true });
-
-        await CommunityModel.updateOne(
-            { code },
+        const oldObject = await CommunityModel.findOneAndUpdate(
+            { communityId },
             {
                 $set: {
                     language,
@@ -52,14 +47,25 @@ class Community {
             }
         );
 
-        await this._forkService.registerChanges({
-            type: 'update',
-            Model: CommunityModel,
-            documentId: oldObject._id,
-        });
+        if (oldObject) {
+            await this._forkService.registerChanges({
+                type: 'update',
+                Model: CommunityModel,
+                documentId: oldObject._id,
+                data: {
+                    $set: {
+                        language: oldObject.language,
+                        avatarUrl: oldObject.avatarUrl,
+                        coverUrl: oldObject.coverUrl,
+                        description: oldObject.description,
+                        rules: oldObject.rules,
+                    },
+                },
+            });
+        }
     }
 
-    _extractCommunityId(code) {
+    _extractAlias(code) {
         return crypto
             .createHash('sha1')
             .update(`${SALT}${code.toLowerCase()}`)

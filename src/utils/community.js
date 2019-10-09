@@ -1,23 +1,16 @@
 const CommunityModel = require('../models/Community');
 
-async function lookUpCommunity(code) {
-    return Boolean(await CommunityModel.findOne({ code }, { _id: true }));
+async function isCommunityExists(communityId) {
+    return Boolean(await CommunityModel.findOne({ communityId }, { _id: true }));
 }
 
-async function lookUpCommunityCode(communityId) {
+async function lookUpCommunityByAlias(alias) {
     const community = await CommunityModel.findOne(
         {
-            $or: [
-                {
-                    communityId,
-                },
-                {
-                    accountName: communityId,
-                },
-            ],
+            alias,
         },
         {
-            code: true,
+            communityId: true,
         },
         {
             lean: true,
@@ -28,10 +21,10 @@ async function lookUpCommunityCode(communityId) {
         return null;
     }
 
-    return community.code;
+    return community.communityId;
 }
 
 module.exports = {
-    lookUpCommunityCode,
-    lookUpCommunity,
+    isCommunityExists,
+    lookUpCommunityByAlias,
 };

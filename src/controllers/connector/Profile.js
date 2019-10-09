@@ -67,7 +67,7 @@ class Profile extends BasicController {
 
         if (result.length === 0) {
             throw {
-                code: -1101,
+                code: 404,
                 message: 'User not found',
             };
         }

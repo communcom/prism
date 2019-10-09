@@ -1,7 +1,7 @@
 const core = require('cyberway-core-service');
 const BasicController = core.controllers.Basic;
 const PostModel = require('../../models/Post');
-const { lookUpCommunityCode } = require('../../utils/community');
+const { lookUpCommunityByAlias } = require('../../utils/community');
 
 const lookups = [
     {
@@ -15,8 +15,8 @@ const lookups = [
     {
         $lookup: {
             from: 'communities',
-            localField: 'communityCode',
-            foreignField: 'code',
+            localField: 'communityId',
+            foreignField: 'communityId',
             as: 'community',
         },
     },
@@ -49,9 +49,9 @@ const baseProjection = {
                 community: { $arrayElemAt: ['$community', 0] },
             },
             in: {
-                id: '$$community.accountName',
+                communityId: '$$community.communityId',
+                alias: '$$community.alias',
                 name: '$$community.name',
-                code: '$$community.code',
                 avatarUrl: '$$community.avatarUrl',
             },
         },
@@ -99,12 +99,21 @@ class Posts extends BasicController {
         };
     }
 
-    async getPost({ communityId, userId, permlink }, auth) {
+    async getPost({ communityId, communityAlias, userId, permlink }, auth) {
         // "auth" can be used here
 
-        const communityCode = await lookUpCommunityCode(communityId);
+        if (!communityId && !communityAlias) {
+            throw {
+                code: 409,
+                message: 'Invalid params',
+            };
+        }
 
-        if (!communityCode) {
+        if (!communityId) {
+            communityId = lookUpCommunityByAlias(communityAlias);
+        }
+
+        if (!communityId) {
             throw {
                 code: 404,
                 message: 'Post not found',
@@ -114,7 +123,7 @@ class Posts extends BasicController {
         const [post] = await PostModel.aggregate([
             {
                 $match: {
-                    communityCode,
+                    communityId,
                     'contentId.userId': userId,
                     'contentId.permlink': permlink,
                 },

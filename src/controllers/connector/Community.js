@@ -6,9 +6,8 @@ const CommunityModel = require('../../models/Community');
 const baseProjection = {
     _id: false,
     communityId: true,
-    code: true,
+    alias: true,
     name: true,
-    accountName: true,
     avatarUrl: true,
     subscribersCount: true,
     language: true,
@@ -58,12 +57,12 @@ class Community extends BasicController {
 
         if (!community) {
             throw {
-                code: -1101,
+                code: 404,
                 message: 'Community not found',
             };
         }
 
-        return this._fixCommunity(community);
+        return community;
     }
 
     async getCommunities({ type, userId, limit, offset }, { userId: authUserId }) {
@@ -115,9 +114,7 @@ class Community extends BasicController {
             $project: baseProjection,
         });
 
-        let communities = await CommunityModel.aggregate(aggregation);
-
-        communities = communities.map(community => this._fixCommunity(community));
+        const communities = await CommunityModel.aggregate(aggregation);
 
         if (isQuerySubscriptions) {
             for (const community of communities) {
@@ -127,15 +124,6 @@ class Community extends BasicController {
 
         return {
             items: communities,
-        };
-    }
-
-    _fixCommunity(community) {
-        return {
-            ...community,
-            id: community.accountName || community.communityId,
-            accountName: undefined,
-            communityId: undefined,
         };
     }
 }

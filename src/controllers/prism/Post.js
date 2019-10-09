@@ -4,17 +4,17 @@ const Abstract = require('./Abstract');
 const PostModel = require('../../models/Post');
 const ProfileModel = require('../../models/Profile');
 const { processContent, extractContentId } = require('../../utils/content');
-const { lookUpCommunity } = require('../../utils/community');
+const { isCommunityExists } = require('../../utils/community');
 
 const ALLOWED_POST_TYPES = ['basic', 'article'];
 
 class Post extends Abstract {
     async handleCreate(content, { blockNum, blockTime }) {
         const contentId = extractContentId(content);
-        const communityCode = content.commun_code;
+        const communityId = content.commun_code;
 
-        if (!(await lookUpCommunity(communityCode))) {
-            Logger.warn(`New post into unknown community: ${communityCode},`, contentId);
+        if (!(await isCommunityExists(communityId))) {
+            Logger.warn(`New post into unknown community: ${communityId},`, contentId);
             return;
         }
 
@@ -31,7 +31,7 @@ class Post extends Abstract {
         }
 
         const model = await PostModel.create({
-            communityCode,
+            communityId,
             contentId,
             content: processedContent,
             meta: {

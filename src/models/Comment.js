@@ -16,7 +16,7 @@ module.exports = MongoDB.makeModel(
     'Comment',
     {
         contentId: contentIdType,
-        communityCode: {
+        communityId: {
             type: String,
             required: true,
         },
@@ -89,7 +89,7 @@ module.exports = MongoDB.makeModel(
                 fields: {
                     'contentId.userId': 1,
                     'contentId.permlink': 1,
-                    communityCode: 1,
+                    communityId: 1,
                 },
                 options: {
                     unique: true,
