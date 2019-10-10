@@ -17,6 +17,20 @@ function extractContentId(content) {
     };
 }
 
+function extractParentContentId(content) {
+    const { author, permlink } = content.parent_id;
+
+    if (!author) {
+        return null;
+    }
+
+    return {
+        communityId: content.commun_code,
+        userId: author,
+        permlink,
+    };
+}
+
 async function isPost(content) {
     const id = content.parent_id;
 
@@ -202,6 +216,7 @@ async function getEmbedsInfo(connector, items) {
 
 module.exports = {
     extractContentId,
+    extractParentContentId,
     isPost,
     processContent,
     processEmbeds,

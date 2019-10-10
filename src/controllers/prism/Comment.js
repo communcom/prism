@@ -5,13 +5,13 @@ const Abstract = require('./Abstract');
 const PostModel = require('../../models/Post');
 const CommentModel = require('../../models/Comment');
 const ProfileModel = require('../../models/Profile');
-const { processContent, extractContentId } = require('../../utils/content');
+const { processContent, extractContentId, extractParentContentId } = require('../../utils/content');
 const { isCommunityExists } = require('../../utils/community');
 
 class Comment extends Abstract {
     async handleCreate(content, { blockNum, blockTime }) {
         const contentId = extractContentId(content);
-        const communityId = content.commun_code;
+        const { communityId } = contentId;
 
         if (!(await isCommunityExists(communityId))) {
             Logger.warn(`New comment into unknown community: ${communityId},`, contentId);
@@ -22,18 +22,9 @@ class Comment extends Abstract {
             return;
         }
 
-        let processedContent = null;
-
-        try {
-            processedContent = await processContent(this, content, ['comment']);
-        } catch (err) {
-            Logger.warn(`Invalid comment content, block num: ${blockNum}`, contentId, err);
-        }
-
         const modelData = {
             contentId,
             parents: {},
-            content: processedContent,
             meta: {
                 creationTime: blockTime,
             },
@@ -44,11 +35,20 @@ class Comment extends Abstract {
             },
         };
 
-        await this.applyParentById(modelData, contentId);
+        if (!(await this.applyParentById(modelData, content))) {
+            // Если не найден родитель то пропускаем комментарий.
+            return;
+        }
+
+        try {
+            modelData.content = await processContent(this, content, ['comment']);
+        } catch (err) {
+            modelData.content = null;
+            Logger.warn(`Invalid comment content, block num: ${blockNum}`, contentId, err);
+        }
 
         const model = new CommentModel(modelData);
 
-        await this.applyOrdering(model);
         await model.save();
         await this.registerForkChanges({
             type: 'create',
@@ -61,12 +61,12 @@ class Comment extends Abstract {
 
     async handleUpdate(content, { blockNum }) {
         const contentId = extractContentId(content);
-
-        let updatedContent = null;
+        const updateFields = {};
 
         try {
-            updatedContent = await processContent(this, content, ['comment']);
+            updateFields.content = await processContent(this, content, ['comment']);
         } catch (err) {
+            updateFields.content = null;
             Logger.warn(`Invalid comment content, block num: ${blockNum}`, contentId, err);
         }
 
@@ -77,9 +77,7 @@ class Comment extends Abstract {
                 'contentId.permlink': contentId.permlink,
             },
             {
-                $set: {
-                    content: updatedContent,
-                },
+                $set: updateFields,
             }
         );
 
@@ -160,47 +158,34 @@ class Comment extends Abstract {
         }
     }
 
-    async applyParentById(model, contentId) {
-        const post = await this._getParentPost(contentId);
+    async applyParentById(model, content) {
+        const contentId = extractParentContentId(content);
+
+        const post = await this._getPost(contentId);
 
         if (post) {
             model.parents.post = contentId;
             model.parents.comment = null;
             model.nestedLevel = 1;
-            return;
+            model.ordering.byTime = Date.now().toString();
+            return true;
         }
 
-        const comment = await this._getParentComment(contentId);
+        const comment = await this._getComment(contentId);
 
         if (comment) {
             model.parents.post = comment.parents.post;
             model.parents.comment = contentId;
             model.nestedLevel = comment.nestedLevel + 1;
+            this._applyOrdering(model, comment);
+            return true;
         }
+
+        Logger.warn(`Comment's parent is not found:`, contentId);
+        return false;
     }
 
-    async applyOrdering(model) {
-        if (!model.parents.comment) {
-            model.ordering.byTime = Date.now().toString();
-            return;
-        }
-
-        const parentCommentId = model.parents.comment;
-        const parentComment = await CommentModel.findOne(
-            {
-                'contentId.communityId': parentCommentId.communityId,
-                'contentId.userId': parentCommentId.userId,
-                'contentId.permlink': parentCommentId.permlink,
-            },
-            { 'ordering.byTime': true, nestedLevel: true },
-            { lean: true }
-        );
-
-        if (!parentComment) {
-            Logger.warn('Unknown parent comment for ordering:', parentCommentId);
-            return;
-        }
-
+    _applyOrdering(model, parentComment) {
         let indexBase = parentComment.ordering.byTime;
 
         // Если уровень вложенности превышает максимум, то удаляем из индекса ключ родителя
@@ -215,7 +200,7 @@ class Comment extends Abstract {
         model.ordering.byTime = `${indexBase}-${Date.now()}`;
     }
 
-    async _getParentPost(contentId) {
+    async _getPost(contentId) {
         return await PostModel.findOne(
             {
                 'contentId.userId': contentId.userId,
@@ -226,14 +211,14 @@ class Comment extends Abstract {
         );
     }
 
-    async _getParentComment(contentId) {
+    async _getComment(contentId) {
         return await CommentModel.findOne(
             {
                 'contentId.userId': contentId.userId,
                 'contentId.permlink': contentId.permlink,
                 'contentId.communityId': contentId.communityId,
             },
-            { contentId: true, parents: true, nestedLevel: true },
+            { contentId: true, parents: true, nestedLevel: true, 'ordering.byTime': true },
             { lean: true }
         );
     }
