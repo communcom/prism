@@ -131,15 +131,15 @@ class Main {
                 await this._profile.handleMeta(actionArgs, meta);
                 break;
 
-            case `${communityId}.publish->upvote`:
+            case 'comn.gallery->upvote':
                 await this._vote.handleUpVote(actionArgs, meta);
                 break;
 
-            case `${communityId}.publish->downvote`:
+            case 'comn.gallery->downvote':
                 await this._vote.handleDownVote(actionArgs, meta);
                 break;
 
-            case `${communityId}.publish->unvote`:
+            case 'comn.gallery->unvote':
                 await this._vote.handleUnVote(actionArgs, meta);
                 break;
 
