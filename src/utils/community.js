@@ -60,7 +60,7 @@ async function normalizeContentId(params) {
     }
 
     if (!userId) {
-        userId = lookUpUserIdByUsername(username);
+        userId = await lookUpUserIdByUsername(username);
     }
 
     if (!communityId || !userId) {
