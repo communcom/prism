@@ -33,6 +33,7 @@ class Comment extends Abstract {
                     curatorsPercent: Number(content.curators_prcnt),
                 },
             },
+            ordering: {},
         };
 
         if (!(await this.applyParentById(modelData, content))) {
