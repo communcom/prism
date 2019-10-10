@@ -42,13 +42,13 @@ class Vote extends Abstract {
             'contentId.communityId': contentId.communityId,
         };
 
-        const post = await PostModel.findOne(query, { _id: true }, { lean: true });
+        const post = await PostModel.findOne(query, { _id: true });
 
         if (post) {
             return post;
         }
 
-        const comment = await CommentModel.findOne(query, { _id: true }, { lean: true });
+        const comment = await CommentModel.findOne(query, { _id: true });
 
         if (comment) {
             return comment;
