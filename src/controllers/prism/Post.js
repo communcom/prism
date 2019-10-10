@@ -61,6 +61,7 @@ class Post extends Abstract {
 
         const previousModel = await PostModel.findOneAndUpdate(
             {
+                'contentId.communityId': contentId.communityId,
                 'contentId.userId': contentId.userId,
                 'contentId.permlink': contentId.permlink,
             },
@@ -88,6 +89,7 @@ class Post extends Abstract {
     async handleDelete(content) {
         const contentId = extractContentId(content);
         const previousModel = await PostModel.findOneAndRemove({
+            'contentId.communityId': contentId.communityId,
             'contentId.userId': contentId.userId,
             'contentId.permlink': contentId.permlink,
         });
@@ -119,11 +121,11 @@ class Post extends Abstract {
         }
     }
 
-    async handleRemoveRepost({ rebloger: userId, ...content }, { communityId }) {
+    async handleRemoveRepost({ rebloger: userId, ...content }) {
         const contentId = extractContentId(content);
         const previousModel = await PostModel.findOneAndRemove({
-            communityId,
             'repost.userId': userId,
+            'contentId.communityId': contentId.communityId,
             'contentId.userId': contentId.userId,
             'contentId.permlink': contentId.permlink,
         });
@@ -138,29 +140,6 @@ class Post extends Abstract {
             documentId: previousModel._id,
             data: previousModel.toObject(),
         });
-    }
-
-    async _getUniqueUrl(baseUrl) {
-        let url = baseUrl;
-        let postfix = 0;
-
-        while (true) {
-            const post = await PostModel.findOne(
-                {
-                    url,
-                },
-                { _id: true }
-            );
-
-            if (post) {
-                break;
-            } else {
-                postfix++;
-                url = `${baseUrl}-${postfix}`;
-            }
-        }
-
-        return url;
     }
 }
 

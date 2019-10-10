@@ -183,9 +183,9 @@ class Main {
                 await this._leader.unvote(actionArgs, meta);
                 break;
 
-            case `${communityId}.publish->erasereblog`:
-                await this._post.handleRemoveRepost(actionArgs, meta);
-                break;
+            // case `${communityId}.publish->erasereblog`:
+            //     await this._post.handleRemoveRepost(actionArgs, meta);
+            //     break;
 
             case 'cyber.msig->propose':
                 await this._leader.handleNewProposal(actionArgs, meta);

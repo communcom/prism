@@ -72,6 +72,7 @@ class Comment extends Abstract {
 
         const previousModel = await CommentModel.findOneAndUpdate(
             {
+                'contentId.communityId': contentId.communityId,
                 'contentId.userId': contentId.userId,
                 'contentId.permlink': contentId.permlink,
             },
@@ -103,6 +104,7 @@ class Comment extends Abstract {
         const model = await CommentModel.findOne({
             'contentId.userId': contentId.userId,
             'contentId.permlink': contentId.permlink,
+            'contentId.communityId': contentId.communityId,
         });
 
         if (!model) {
@@ -127,6 +129,7 @@ class Comment extends Abstract {
             {
                 'contentId.userId': contentId.userId,
                 'contentId.permlink': contentId.permlink,
+                'contentId.communityId': contentId.communityId,
             },
             { $inc: { 'stats.commentsCount': increment } }
         );
@@ -177,7 +180,7 @@ class Comment extends Abstract {
     }
 
     async applyOrdering(model) {
-        if (!model.parents.comment.userId) {
+        if (!model.parents.comment) {
             model.ordering.byTime = Date.now().toString();
             return;
         }
@@ -185,6 +188,7 @@ class Comment extends Abstract {
         const parentCommentId = model.parents.comment;
         const parentComment = await CommentModel.findOne(
             {
+                'contentId.communityId': parentCommentId.communityId,
                 'contentId.userId': parentCommentId.userId,
                 'contentId.permlink': parentCommentId.permlink,
             },
@@ -216,6 +220,7 @@ class Comment extends Abstract {
             {
                 'contentId.userId': contentId.userId,
                 'contentId.permlink': contentId.permlink,
+                'contentId.communityId': contentId.communityId,
             },
             { contentId: true }
         );
@@ -226,6 +231,7 @@ class Comment extends Abstract {
             {
                 'contentId.userId': contentId.userId,
                 'contentId.permlink': contentId.permlink,
+                'contentId.communityId': contentId.communityId,
             },
             { contentId: true, parents: true, nestedLevel: true },
             { lean: true }

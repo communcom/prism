@@ -74,9 +74,9 @@ module.exports = MongoDB.makeModel(
         index: [
             {
                 fields: {
-                    'contentId.communityId': 1,
                     'contentId.userId': 1,
                     'contentId.permlink': 1,
+                    'contentId.communityId': 1,
                 },
                 options: {
                     unique: true,
