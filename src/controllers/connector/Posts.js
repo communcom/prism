@@ -15,7 +15,7 @@ const lookups = [
     {
         $lookup: {
             from: 'communities',
-            localField: 'communityId',
+            localField: 'contentId.communityId',
             foreignField: 'communityId',
             as: 'community',
         },
@@ -137,7 +137,7 @@ class Posts extends BasicController {
         const [post] = await PostModel.aggregate([
             {
                 $match: {
-                    communityId,
+                    'contentId.communityId': communityId,
                     'contentId.userId': userId,
                     'contentId.permlink': permlink,
                 },

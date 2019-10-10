@@ -5,6 +5,10 @@ module.exports = MongoDB.makeModel(
     'Post',
     {
         contentId: {
+            communityId: {
+                type: String,
+                required: true,
+            },
             userId: {
                 type: String,
                 required: true,
@@ -13,10 +17,6 @@ module.exports = MongoDB.makeModel(
                 type: String,
                 required: true,
             },
-        },
-        communityId: {
-            type: String,
-            require: true,
         },
         content: {
             type: {
@@ -74,9 +74,9 @@ module.exports = MongoDB.makeModel(
         index: [
             {
                 fields: {
+                    'contentId.communityId': 1,
                     'contentId.userId': 1,
                     'contentId.permlink': 1,
-                    communityId: 1,
                 },
                 options: {
                     unique: true,
@@ -97,7 +97,7 @@ module.exports = MongoDB.makeModel(
             },
             {
                 fields: {
-                    communityId: 1,
+                    'contentId.communityId': 1,
                 },
             },
         ],

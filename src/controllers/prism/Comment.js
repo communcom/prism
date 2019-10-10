@@ -5,7 +5,7 @@ const Abstract = require('./Abstract');
 const PostModel = require('../../models/Post');
 const CommentModel = require('../../models/Comment');
 const ProfileModel = require('../../models/Profile');
-const { processContent, getContentId, extractContentId } = require('../../utils/content');
+const { processContent, extractContentId } = require('../../utils/content');
 const { isCommunityExists } = require('../../utils/community');
 
 class Comment extends Abstract {
@@ -31,9 +31,8 @@ class Comment extends Abstract {
         }
 
         const modelData = {
-            communityId,
-            parents: {},
             contentId,
+            parents: {},
             content: processedContent,
             meta: {
                 creationTime: blockTime,
@@ -45,7 +44,7 @@ class Comment extends Abstract {
             },
         };
 
-        await this.applyParentByContent(modelData, content);
+        await this.applyParentById(modelData, contentId);
 
         const model = new CommentModel(modelData);
 
@@ -175,12 +174,6 @@ class Comment extends Abstract {
             model.parents.comment = contentId;
             model.nestedLevel = comment.nestedLevel + 1;
         }
-    }
-
-    async applyParentByContent(model, content) {
-        const contentId = getContentId(content.parent_id);
-
-        await this.applyParentById(model, contentId);
     }
 
     async applyOrdering(model) {

@@ -8,13 +8,12 @@ const EMBED_TYPES = ['image', 'video', 'website'];
 const IFRAMELY_TYPES = ['video', 'website'];
 
 function extractContentId(content) {
-    return getContentId(content.message_id);
-}
+    const { author, permlink } = content.message_id;
 
-function getContentId(id) {
     return {
-        userId: id.author,
-        permlink: id.permlink,
+        communityId: content.commun_code,
+        userId: author,
+        permlink,
     };
 }
 
@@ -203,7 +202,6 @@ async function getEmbedsInfo(connector, items) {
 
 module.exports = {
     extractContentId,
-    getContentId,
     isPost,
     processContent,
     processEmbeds,
