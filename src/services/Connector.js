@@ -94,8 +94,8 @@ class Connector extends BasicConnector {
                     handler: this._posts.getPost,
                     scope: this._posts,
                     inherits: [
-                        'communityId',
-                        'userByName',
+                        'username',
+                        'communityAlias',
                         'contentIdNew',
                         'onlyWhenPublicApiEnabled',
                     ],
@@ -114,7 +114,7 @@ class Connector extends BasicConnector {
                     scope: this._comment,
                     inherits: [
                         'feedPagination',
-                        'userByName',
+                        'username',
                         'contentId',
                         'onlyWhenPublicApiEnabled',
                     ],
@@ -137,12 +137,7 @@ class Connector extends BasicConnector {
                 getPosts: {
                     handler: this._posts.getPosts,
                     scope: this._posts,
-                    inherits: [
-                        'pagination',
-                        'nsfwFilter',
-                        'userByName',
-                        'onlyWhenPublicApiEnabled',
-                    ],
+                    inherits: ['pagination', 'nsfwFilter', 'username', 'onlyWhenPublicApiEnabled'],
                     validation: {
                         required: [],
                         properties: {
@@ -184,7 +179,7 @@ class Connector extends BasicConnector {
                 getProfile: {
                     handler: this._profile.getProfile,
                     scope: this._profile,
-                    inherits: ['userByName', 'onlyWhenPublicApiEnabled', 'userByAnyName'],
+                    inherits: ['username', 'onlyWhenPublicApiEnabled', 'userByAnyName'],
                     validation: {
                         required: [],
                         properties: {
@@ -210,7 +205,7 @@ class Connector extends BasicConnector {
                 getNotifyMeta: {
                     handler: this._notify.getMeta,
                     scope: this._notify,
-                    inherits: ['userByName', 'onlyWhenPublicApiEnabled'],
+                    inherits: ['username', 'onlyWhenPublicApiEnabled'],
                     validation: {
                         properties: {
                             userId: {
@@ -331,7 +326,7 @@ class Connector extends BasicConnector {
                 resolveProfile: {
                     handler: this._profile.resolveProfile,
                     scope: this._profile,
-                    inherits: ['userByName', 'onlyWhenPublicApiEnabled'],
+                    inherits: ['username', 'onlyWhenPublicApiEnabled'],
                     validation: {
                         required: ['username'],
                         properties: {},
@@ -471,7 +466,7 @@ class Connector extends BasicConnector {
                             },
                         },
                     },
-                    userByName: {
+                    username: {
                         validation: {
                             properties: {
                                 username: {
@@ -484,6 +479,15 @@ class Connector extends BasicConnector {
                         validation: {
                             properties: {
                                 user: {
+                                    type: 'string',
+                                },
+                            },
+                        },
+                    },
+                    communityAlias: {
+                        validation: {
+                            properties: {
+                                communityAlias: {
                                     type: 'string',
                                 },
                             },
@@ -504,6 +508,9 @@ class Connector extends BasicConnector {
                     contentIdNew: {
                         validation: {
                             properties: {
+                                communityId: {
+                                    type: 'string',
+                                },
                                 userId: {
                                     type: 'string',
                                 },

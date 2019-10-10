@@ -1,7 +1,7 @@
 const core = require('cyberway-core-service');
 const BasicController = core.controllers.Basic;
 const PostModel = require('../../models/Post');
-const { lookUpCommunityByAlias } = require('../../utils/community');
+const { normalizeContentId } = require('../../utils/community');
 
 const lookups = [
     {
@@ -113,26 +113,8 @@ class Posts extends BasicController {
         };
     }
 
-    async getPost({ communityId, communityAlias, userId, permlink }, auth) {
-        // "auth" can be used here
-
-        if (!communityId && !communityAlias) {
-            throw {
-                code: 409,
-                message: 'Invalid params',
-            };
-        }
-
-        if (!communityId) {
-            communityId = lookUpCommunityByAlias(communityAlias);
-        }
-
-        if (!communityId) {
-            throw {
-                code: 404,
-                message: 'Post not found',
-            };
-        }
+    async getPost(params, auth) {
+        const { communityId, userId, permlink } = await normalizeContentId(params);
 
         const [post] = await PostModel.aggregate([
             {
