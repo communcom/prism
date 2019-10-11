@@ -341,7 +341,9 @@ waitForTransaction               // Дождаться и получить от�
         },
         "votes": {
             "upCount": 0,
-            "downCount": 0
+            "downCount": 0,
+            "hasUpVote": false,
+            "hasDownVote": false
         },
         "meta": {
             "creationTime": "2019-10-03T14:45:42.000Z"
@@ -422,7 +424,9 @@ waitForTransaction               // Дождаться и получить от�
                 },
                 "votes": {
                     "upCount": 0,
-                    "downCount": 0
+                    "downCount": 0,
+                    "hasUpVote": false,
+                    "hasDownVote": false
                 },
                 "meta": {
                     "creationTime": "2019-10-03T14:46:00.000Z"
@@ -478,7 +482,9 @@ waitForTransaction               // Дождаться и получить от�
                 },
                 "votes": {
                     "upCount": 0,
-                    "downCount": 0
+                    "downCount": 0,
+                    "hasUpVote": false,
+                    "hasDownVote": false
                 },
                 "meta": {
                     "creationTime": "2019-10-03T14:45:45.000Z"
@@ -534,7 +540,9 @@ waitForTransaction               // Дождаться и получить от�
                 },
                 "votes": {
                     "upCount": 0,
-                    "downCount": 0
+                    "downCount": 0,
+                    "hasUpVote": false,
+                    "hasDownVote": false
                 },
                 "meta": {
                     "creationTime": "2019-10-03T14:45:42.000Z"
@@ -622,7 +630,9 @@ waitForTransaction               // Дождаться и получить от�
                 },
                 "votes": {
                     "upCount": 0,
-                    "downCount": 0
+                    "downCount": 0,
+                    "hasUpVote": false,
+                    "hasDownVote": false
                 },
                 "stats": {
                     "commentsCount": 0
@@ -685,7 +695,9 @@ waitForTransaction               // Дождаться и получить от�
         },
         "votes": {
             "upCount": 0,
-            "downCount": 0
+            "downCount": 0,
+            "hasUpVote": false,
+            "hasDownVote": false
         },
         "meta": {
             "creationTime": "2019-10-05T11:40:18.000Z"
