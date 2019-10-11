@@ -180,7 +180,7 @@ waitForTransaction               // Дождаться и получить от�
 
 ```json
 {
-    "id": "1",
+    "id": 1,
     "method": "getProfile",
     "jsonrpc": "2.0",
     "params": {
@@ -195,7 +195,7 @@ waitForTransaction               // Дождаться и получить от�
 ```json
 {
     "jsonrpc": "2.0",
-    "id": "1",
+    "id": 1,
     "result": {
         "username": "username",
         "subscriptions": {
@@ -228,7 +228,7 @@ waitForTransaction               // Дождаться и получить от�
 
 ```json
 {
-    "id": "1",
+    "id": 1,
     "method": "getCommunity",
     "jsonrpc": "2.0",
     "params": {
@@ -242,7 +242,7 @@ waitForTransaction               // Дождаться и получить от�
 ```json
 {
     "jsonrpc": "2.0",
-    "id": "1",
+    "id": 1,
     "result": {
         "subscribersCount": 0,
         "communityId": "TWO comunity",
@@ -257,7 +257,7 @@ waitForTransaction               // Дождаться и получить от�
 
 ```json
 {
-    "id": "1",
+    "id": 1,
     "method": "getCommunities",
     "jsonrpc": "2.0",
     "params": {
@@ -272,7 +272,7 @@ waitForTransaction               // Дождаться и получить от�
 ```json
 {
     "jsonrpc": "2.0",
-    "id": "1",
+    "id": 1,
     "result": {
         "communities": [
             {
@@ -291,7 +291,7 @@ waitForTransaction               // Дождаться и получить от�
 
 ```json
 {
-    "id": "1",
+    "id": 1,
     "method": "getPost",
     "jsonrpc": "2.0",
     "params": {
@@ -307,7 +307,7 @@ waitForTransaction               // Дождаться и получить от�
 ```json
 {
     "jsonrpc": "2.0",
-    "id": "1",
+    "id": 1,
     "result": {
         "content": {
             "type": "article",
@@ -371,7 +371,7 @@ waitForTransaction               // Дождаться и получить от�
 
 ```json
 {
-    "id": "1",
+    "id": 1,
     "method": "getPosts",
     "jsonrpc": "2.0",
     "params": {}
@@ -383,7 +383,7 @@ waitForTransaction               // Дождаться и получить от�
 ```json
 {
     "jsonrpc": "2.0",
-    "id": "1",
+    "id": 1,
     "result": {
         "items": [
             {
@@ -573,7 +573,7 @@ waitForTransaction               // Дождаться и получить от�
 
 ```json
 {
-    "id": "1",
+    "id": 1,
     "method": "getPosts",
     "jsonrpc": "2.0",
     "params": {
@@ -589,7 +589,7 @@ waitForTransaction               // Дождаться и получить от�
 ```json
 {
     "jsonrpc": "2.0",
-    "id": "1",
+    "id": 1,
     "result": {
         "items": [
             {
@@ -669,7 +669,7 @@ waitForTransaction               // Дождаться и получить от�
 
 ```json
 {
-    "id": "1",
+    "id": 1,
     "method": "getComment",
     "jsonrpc": "2.0",
     "params": {
@@ -685,7 +685,7 @@ waitForTransaction               // Дождаться и получить от�
 ```json
 {
     "jsonrpc": "2.0",
-    "id": "1",
+    "id": 1,
     "result": {
         "parents": {
             "post": {
@@ -762,7 +762,7 @@ waitForTransaction               // Дождаться и получить от�
 
 ```json
 {
-    "id": "1",
+    "id": 1,
     "method": "getSubscriptions",
     "jsonrpc": "2.0",
     "params": {
@@ -779,7 +779,7 @@ waitForTransaction               // Дождаться и получить от�
 ```json
 {
     "jsonrpc": "2.0",
-    "id": "1",
+    "id": 1,
     "result": {
         "items": [
             {
@@ -801,7 +801,7 @@ waitForTransaction               // Дождаться и получить от�
 
 ```json
 {
-    "id": "1",
+    "id": 1,
     "method": "getSubscriptions",
     "jsonrpc": "2.0",
     "params": {
@@ -818,7 +818,7 @@ waitForTransaction               // Дождаться и получить от�
 ```json
 {
     "jsonrpc": "2.0",
-    "id": "1",
+    "id": 1,
     "result": {
         "items": [
             {
@@ -837,7 +837,7 @@ waitForTransaction               // Дождаться и получить от�
 
 ```json
 {
-    "id": "1",
+    "id": 1,
     "method": "getSubscribers",
     "jsonrpc": "2.0",
     "params": {
@@ -853,7 +853,7 @@ waitForTransaction               // Дождаться и получить от�
 ```json
 {
     "jsonrpc": "2.0",
-    "id": "1",
+    "id": 1,
     "result": {
         "items": [
             {
@@ -870,7 +870,7 @@ waitForTransaction               // Дождаться и получить от�
 
 ```json
 {
-    "id": "1",
+    "id": 1,
     "method": "getSubscribers",
     "jsonrpc": "2.0",
     "params": {
@@ -886,7 +886,7 @@ waitForTransaction               // Дождаться и получить от�
 ```json
 {
     "jsonrpc": "2.0",
-    "id": "1",
+    "id": 1,
     "result": {
         "items": [
             {
