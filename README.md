@@ -310,10 +310,10 @@ waitForTransaction               // Дождаться и получить от�
     "id": "1",
     "result": {
         "content": {
-            "type": "basic",
+            "type": "article",
             "body": {
                 "attributes": {
-                    "type": "basic",
+                    "type": "article",
                     "version": "1.0",
                     "title": "Hera fights with Abderus against Prometheus and common man named Mr.Delois HegmannIV on New Ghis"
                 },
@@ -332,15 +332,9 @@ waitForTransaction               // Дождаться и получить от�
                         ]
                     },
                     {
-                        "id": 13,
-                        "type": "attachments",
-                        "content": [
-                            {
-                                "id": 14,
-                                "type": "image",
-                                "content": "https://i.gifer.com/1HOf.gif"
-                            }
-                        ]
+                        "id": 4,
+                        "type": "image",
+                        "content": "https://i.gifer.com/1HOf.gif"
                     }
                 ]
             }
@@ -396,8 +390,7 @@ waitForTransaction               // Дождаться и получить от�
                     "body": {
                         "attributes": {
                             "type": "basic",
-                            "version": "1.0",
-                            "title": "Apollo fights with Hercules against Astraeus and common man named Mr.Gary HartmannPhD on New Ghis"
+                            "version": "1.0"
                         },
                         "id": 1,
                         "type": "post",
@@ -453,8 +446,7 @@ waitForTransaction               // Дождаться и получить от�
                     "body": {
                         "attributes": {
                             "type": "basic",
-                            "version": "1.0",
-                            "title": "Hera fights with Abderus against Prometheus and common man named Mr.Delois HegmannIV on New Ghis"
+                            "version": "1.0"
                         },
                         "id": 1,
                         "type": "post",
@@ -510,8 +502,7 @@ waitForTransaction               // Дождаться и получить от�
                     "body": {
                         "attributes": {
                             "type": "basic",
-                            "version": "1.0",
-                            "title": "Hera fights with Abderus against Prometheus and common man named Mr.Delois HegmannIV on New Ghis"
+                            "version": "1.0"
                         },
                         "id": 1,
                         "type": "post",
@@ -599,8 +590,7 @@ waitForTransaction               // Дождаться и получить от�
                     "body": {
                         "attributes": {
                             "type": "basic",
-                            "version": "1.0",
-                            "title": "Demeter fights with Andromeda against Coeus and common man named Mrs.Julissa TillmanIII on Sar Meel"
+                            "version": "1.0"
                         },
                         "id": 1,
                         "type": "post",
