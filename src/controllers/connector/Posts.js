@@ -2,6 +2,7 @@ const core = require('cyberway-core-service');
 const BasicController = core.controllers.Basic;
 const PostModel = require('../../models/Post');
 const { normalizeContentId } = require('../../utils/community');
+const { isIncludes } = require('../../utils/mongodb');
 
 const lookups = [
     {
@@ -23,57 +24,62 @@ const lookups = [
 ];
 
 const baseProjection = {
-    _id: false,
-    contentId: true,
-    'content.type': true,
-    'content.body': true,
-    'votes.upCount': true,
-    'votes.downCount': true,
-    stats: true,
-    meta: true,
-    author: {
-        $let: {
-            vars: {
-                profile: { $arrayElemAt: ['$profile', 0] },
-            },
-            in: {
-                userId: '$$profile.userId',
-                username: '$$profile.username',
-                avatarUrl: '$$profile.personal.avatarUrl',
-                subscribers: '$$profile.subscribers.userIds',
-            },
-        },
-    },
-    community: {
-        $let: {
-            vars: {
-                community: { $arrayElemAt: ['$community', 0] },
-            },
-            in: {
-                communityId: '$$community.communityId',
-                alias: '$$community.alias',
-                name: '$$community.name',
-                avatarUrl: '$$community.avatarUrl',
-                subscribers: '$$community.subscribers',
-            },
-        },
-    },
-};
-
-const subscribersProjection = {
     $project: {
-        'community.subscribers': false,
-        'author.subscribers': false,
+        _id: false,
+        contentId: true,
+        'content.type': true,
+        'content.body': true,
+        votes: true,
+        stats: true,
+        meta: true,
+        author: {
+            $let: {
+                vars: {
+                    profile: { $arrayElemAt: ['$profile', 0] },
+                },
+                in: {
+                    userId: '$$profile.userId',
+                    username: '$$profile.username',
+                    avatarUrl: '$$profile.personal.avatarUrl',
+                    subscribers: '$$profile.subscribers.userIds',
+                },
+            },
+        },
+        community: {
+            $let: {
+                vars: {
+                    community: { $arrayElemAt: ['$community', 0] },
+                },
+                in: {
+                    communityId: '$$community.communityId',
+                    alias: '$$community.alias',
+                    name: '$$community.name',
+                    avatarUrl: '$$community.avatarUrl',
+                    subscribers: '$$community.subscribers',
+                },
+            },
+        },
     },
 };
 
 const fullPostProjection = {
-    ...baseProjection,
-    'content.article': true,
+    $project: {
+        ...baseProjection.$project,
+        'content.article': true,
+    },
+};
+
+const cleanUpProjection = {
+    $project: {
+        'community.subscribers': false,
+        'author.subscribers': false,
+        'votes.upVotes': false,
+        'votes.downVotes': false,
+    },
 };
 
 class Posts extends BasicController {
-    async getPosts({ type, allowNsfw, userId, limit, offset = 0 }, auth) {
+    async getPosts({ type, allowNsfw, userId, limit, offset = 0 }, { userId: authUserId }) {
         if (offset < 0) {
             throw {
                 code: 500,
@@ -82,10 +88,10 @@ class Posts extends BasicController {
         }
 
         if (type === 'byUser') {
-            return await this._getPostsByUser({ userId, limit, offset, allowNsfw }, auth);
+            return await this._getPostsByUser({ userId, limit, offset, allowNsfw }, authUserId);
         }
 
-        const items = await PostModel.aggregate([
+        const aggregation = [
             {
                 $sort: {
                     _id: -1,
@@ -98,25 +104,22 @@ class Posts extends BasicController {
                 $limit: limit,
             },
             ...lookups,
-            {
-                $project: baseProjection,
-            },
-            subscribersProjection,
-        ]);
+            baseProjection,
+            ...this._addCurrentUserFields(authUserId),
+            cleanUpProjection,
+        ];
 
-        for (const post of items) {
-            this._fixPost(post);
-        }
+        const items = await this._aggregate(aggregation);
 
         return {
             items,
         };
     }
 
-    async getPost(params, auth) {
+    async getPost(params, { userId: authUserId }) {
         const { communityId, userId, permlink } = await normalizeContentId(params);
 
-        const [post] = await PostModel.aggregate([
+        const aggregation = [
             {
                 $match: {
                     'contentId.communityId': communityId,
@@ -125,10 +128,12 @@ class Posts extends BasicController {
                 },
             },
             ...lookups,
-            {
-                $project: fullPostProjection,
-            },
-        ]);
+            fullPostProjection,
+            ...this._addCurrentUserFields(authUserId),
+            cleanUpProjection,
+        ];
+
+        const [post] = await this._aggregate(aggregation, true);
 
         if (!post) {
             throw {
@@ -137,14 +142,10 @@ class Posts extends BasicController {
             };
         }
 
-        this._fixPost(post, true);
-
         return post;
     }
 
-    async _getPostsByUser({ userId, allowNsfw, limit, offset }, { userId: authUserId }) {
-        const aggregation = [];
-
+    async _getPostsByUser({ userId, allowNsfw, limit, offset }, authUserId) {
         const filter = { $match: { 'contentId.userId': userId } };
 
         if (!allowNsfw) {
@@ -153,50 +154,16 @@ class Posts extends BasicController {
 
         const paging = [{ $skip: offset }, { $limit: limit }];
         const sort = { $sort: { 'meta.creationTime': 1 } };
-        const projection = {
-            $project: baseProjection,
-        };
 
-        aggregation.push(filter, ...paging, sort, ...lookups, projection);
-
-        if (authUserId) {
-            aggregation.push({
-                $addFields: {
-                    isSubscribedAuthor: {
-                        $cond: {
-                            if: {
-                                $eq: [
-                                    -1,
-                                    {
-                                        $indexOfArray: ['$author.subscribers', authUserId],
-                                    },
-                                ],
-                            },
-                            then: false,
-                            else: true,
-                        },
-                    },
-                    isSubscribedCommunity: {
-                        $cond: {
-                            if: {
-                                $eq: [
-                                    -1,
-                                    {
-                                        $indexOfArray: ['$community.subscribers', authUserId],
-                                    },
-                                ],
-                            },
-                            then: false,
-                            else: true,
-                        },
-                    },
-                },
-            });
-        }
-
-        aggregation.push(subscribersProjection);
-
-        const items = await PostModel.aggregate(aggregation);
+        const items = await this._aggregate([
+            filter,
+            ...paging,
+            sort,
+            ...lookups,
+            baseProjection,
+            ...this._addCurrentUserFields(authUserId),
+            cleanUpProjection,
+        ]);
 
         return { items };
     }
@@ -221,6 +188,47 @@ class Posts extends BasicController {
         } else {
             post.type = 'basic';
         }
+    }
+
+    _addCurrentUserFields(userId) {
+        if (!userId) {
+            return [];
+        }
+
+        return [
+            isIncludes({
+                newField: 'author.isSubscribed',
+                arrayPath: '$author.subscribers',
+                value: userId,
+            }),
+            isIncludes({
+                newField: 'community.isSubscribed',
+                arrayPath: '$community.subscribers',
+                value: userId,
+            }),
+            isIncludes({
+                newField: 'votes.hasUpVote',
+                arrayPath: '$votes.upVotes.userId',
+                value: userId,
+            }),
+            isIncludes({
+                newField: 'votes.hasDownVote',
+                arrayPath: '$votes.downVotes.userId',
+                value: userId,
+            }),
+        ];
+    }
+
+    async _aggregate(aggregation, isFullPostQuery = false) {
+        const finalAggregation = aggregation.filter(item => Boolean(item));
+
+        const items = await PostModel.aggregate(finalAggregation);
+
+        for (const post of items) {
+            this._fixPost(post, isFullPostQuery);
+        }
+
+        return items;
     }
 }
 
