@@ -357,7 +357,7 @@ waitForTransaction               // Дождаться и получить от�
         },
         "community": {
             "communityId": "LLUILA",
-            "communityName": "LLUILA comunity"
+            "name": "LLUILA comunity"
         }
     }
 }
@@ -440,7 +440,7 @@ waitForTransaction               // Дождаться и получить от�
                 },
                 "community": {
                     "communityId": "LLUPLO",
-                    "communityName": null,
+                    "name": null,
                     "avatarUrl": null
                 }
             },
@@ -498,7 +498,7 @@ waitForTransaction               // Дождаться и получить от�
                 },
                 "community": {
                     "communityId": "LLUILA",
-                    "communityName": null,
+                    "name": null,
                     "avatarUrl": null
                 }
             },
@@ -556,7 +556,7 @@ waitForTransaction               // Дождаться и получить от�
                 },
                 "community": {
                     "communityId": "LLUILA",
-                    "communityName": null,
+                    "name": null,
                     "avatarUrl": null
                 }
             }
@@ -749,7 +749,7 @@ waitForTransaction               // Дождаться и получить от�
         },
         "community": {
             "communityId": "ETE",
-            "communityName": "ETE comunity",
+            "name": "ETE comunity",
             "avatarUrl": "https://i.pravatar.cc/300?u=4a70ae36926fb12b9cff57731434d45cdf3680cb"
         }
     }
