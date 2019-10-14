@@ -40,11 +40,9 @@ module.exports = MongoDB.makeModel(
                 type: Object,
             },
         },
-        stats: {
-            commentsCount: {
-                type: Number,
-                default: 0,
-            },
+        childCommentsCount: {
+            type: Number,
+            default: 0,
         },
         votes: {
             upVotes: {

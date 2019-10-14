@@ -115,6 +115,8 @@ class Connector extends BasicConnector {
                     inherits: [
                         'feedPagination',
                         'username',
+                        'pagination',
+                        'communityId',
                         'contentId',
                         'onlyWhenPublicApiEnabled',
                     ],
@@ -130,6 +132,14 @@ class Connector extends BasicConnector {
                                 type: 'string',
                                 enum: ['time', 'timeDesc'],
                                 default: 'time',
+                            },
+                            parentComment: {
+                                permlink: {
+                                    type: 'string',
+                                },
+                                userId: {
+                                    type: 'string',
+                                },
                             },
                         },
                     },

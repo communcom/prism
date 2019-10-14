@@ -58,6 +58,9 @@ class Comment extends Abstract {
         });
         await this.updatePostCommentsCount(model, 1);
         await this.updateUserCommentsCount(model.contentId.userId, 1);
+        if (model.parents.comment) {
+            await this.updateChildCommentsCount(model.parents.comment, 1);
+        }
     }
 
     async handleUpdate(content, { blockNum }) {
@@ -111,6 +114,11 @@ class Comment extends Abstract {
         }
 
         await this.updatePostCommentsCount(model, -1);
+        await this.updateUserCommentsCount(model.contentId.userId, -1);
+
+        if (model.parents.comment) {
+            await this.updateChildCommentsCount(model.parents.comment, -1);
+        }
 
         const removed = await model.remove();
 
@@ -139,6 +147,26 @@ class Comment extends Abstract {
                 Model: PostModel,
                 documentId: previousModel._id,
                 data: { $inc: { 'stats.commentsCount': -increment } },
+            });
+        }
+    }
+
+    async updateChildCommentsCount(contentId, increment) {
+        const previousModel = await CommentModel.findOneAndUpdate(
+            {
+                'contentId.userId': contentId.userId,
+                'contentId.permlink': contentId.permlink,
+                'contentId.communityId': contentId.communityId,
+            },
+            { $inc: { childCommentsCount: increment } }
+        );
+
+        if (previousModel) {
+            await this.registerForkChanges({
+                type: 'update',
+                Model: CommentModel,
+                documentId: previousModel._id,
+                data: { $inc: { childCommentsCount: -increment } },
             });
         }
     }

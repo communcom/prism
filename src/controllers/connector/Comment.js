@@ -1,8 +1,11 @@
 const core = require('cyberway-core-service');
 const BasicController = core.controllers.Basic;
 const CommentModel = require('../../models/Comment');
+const { lookUpCommunityByAlias } = require('../../utils/community');
+const { isIncludes } = require('../../utils/mongodb');
 const env = require('../../data/env');
 
+// todo: fix projection
 const baseProjection = {
     _id: false,
     communityId: true,
@@ -11,6 +14,7 @@ const baseProjection = {
     'content.body': true,
     'votes.upCount': true,
     'votes.downCount': true,
+    childCommentsCount: true,
     isSubscribedAuthor: true,
     isSubscribedCommunity: true,
     parents: true,
@@ -44,29 +48,35 @@ const baseProjection = {
     },
 };
 
+const profileLookup = {
+    $lookup: {
+        from: 'profiles',
+        localField: 'contentId.userId',
+        foreignField: 'userId',
+        as: 'profile',
+    },
+};
+
+const communityLookup = {
+    $lookup: {
+        from: 'communities',
+        localField: 'contentId.communityId',
+        foreignField: 'communityId',
+        as: 'community',
+    },
+};
+
 class Comment extends BasicController {
-    async getComment({ userId, permlink, communityId }, { userId: authUserId }) {
-        const filter = { contentId: { userId, permlink }, communityId };
+    async getComment({ userId, permlink, communityId, communityAlias }, { userId: authUserId }) {
+        communityId = await this._fixCommunityId({ communityId, communityAlias });
+
+        const filter = {
+            'contentId.userId': userId,
+            'contentId.permlink': permlink,
+            'contentId.communityId': communityId,
+        };
         const projection = { ...baseProjection };
         const aggregation = [{ $match: filter }];
-
-        const profileLookup = {
-            $lookup: {
-                from: 'profiles',
-                localField: 'contentId.userId',
-                foreignField: 'userId',
-                as: 'profile',
-            },
-        };
-
-        const communityLookup = {
-            $lookup: {
-                from: 'communities',
-                localField: 'communityId',
-                foreignField: 'communityId',
-                as: 'community',
-            },
-        };
 
         aggregation.push(profileLookup);
         aggregation.push(communityLookup);
@@ -123,8 +133,141 @@ class Comment extends BasicController {
         return comment;
     }
 
-    getComments() {
-        // TODO: get comments fot specific post
+    async getComments({ type, ...params }, auth) {
+        switch (type) {
+            case 'post':
+                return await this._getPostComments({ ...params }, auth);
+        }
+    }
+
+    async _getPostComments(
+        { userId, communityId, communityAlias, permlink, limit, offset, sortBy, parentComment },
+        { userId: authUserId }
+    ) {
+        let parentCommentPermlink;
+        let parentCommentUserId;
+
+        if (parentComment) {
+            parentCommentPermlink = parentComment.permlink;
+            parentCommentUserId = parentComment.userId;
+        }
+
+        communityId = await this._fixCommunityId({ communityId, communityAlias });
+
+        const filter = {
+            'parents.post.userId': userId,
+            'parents.post.permlink': permlink,
+            'parents.post.communityId': communityId,
+        };
+
+        let nestedLevel = 1;
+
+        if (parentCommentPermlink && parentCommentUserId) {
+            nestedLevel = 2;
+            filter['parents.comment.permlink'] = parentCommentPermlink;
+            filter['parents.comment.userId'] = parentCommentUserId;
+        }
+
+        filter.nestedLevel = nestedLevel;
+
+        const sorting = {
+            $sort: {
+                'meta.creationTime': sortBy === 'time' ? -1 : 1,
+            },
+        };
+
+        const projection = { ...baseProjection };
+        const aggregation = [{ $match: filter }, sorting, { $skip: offset }, { $limit: limit }];
+
+        aggregation.push(profileLookup);
+        aggregation.push(communityLookup);
+        aggregation.push({ $project: projection });
+
+        aggregation.push(...this._addCurrentUserFields(authUserId));
+
+        aggregation.push({
+            $project: { 'author.subscribers': false, 'community.subscribers': false },
+        });
+
+        const items = await CommentModel.aggregate(aggregation);
+
+        if (nestedLevel === 1) {
+            const getCommentChildren = async comment => {
+                comment.children = (await this._getPostComments(
+                    {
+                        userId,
+                        communityId,
+                        permlink,
+                        limit: 5,
+                        offset: 0,
+                        sortBy,
+                        parentComment: comment.contentId,
+                    },
+                    { userId: authUserId }
+                )).items;
+            };
+
+            const commentChildrenPopulation = [];
+            for (const comment of items) {
+                if (comment.childCommentsCount <= 5) {
+                    commentChildrenPopulation.push(getCommentChildren(comment));
+                }
+            }
+            await Promise.all(commentChildrenPopulation);
+        }
+
+        return { items };
+    }
+
+    _addCurrentUserFields(userId) {
+        if (!userId) {
+            return [];
+        }
+
+        return [
+            isIncludes({
+                newField: 'author.isSubscribed',
+                arrayPath: '$author.subscribers.userIds',
+                value: userId,
+            }),
+            isIncludes({
+                newField: 'community.isSubscribed',
+                arrayPath: '$community.subscribers',
+                value: userId,
+            }),
+            isIncludes({
+                newField: 'votes.hasUpVote',
+                arrayPath: '$votes.upVotes.userId',
+                value: userId,
+            }),
+            isIncludes({
+                newField: 'votes.hasDownVote',
+                arrayPath: '$votes.downVotes.userId',
+                value: userId,
+            }),
+        ];
+    }
+
+    async _fixCommunityId({ communityId, communityAlias }) {
+        if (!communityId && !communityAlias) {
+            throw {
+                code: 409,
+                message: 'Invalid params',
+            };
+        }
+
+        if (!communityId) {
+            communityId = await lookUpCommunityByAlias(communityAlias);
+        }
+
+        if (!communityId) {
+            throw {
+                code: 404,
+                message: 'Community not found',
+            };
+        }
+
+        return communityId;
     }
 }
 
