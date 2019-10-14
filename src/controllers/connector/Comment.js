@@ -137,7 +137,45 @@ class Comment extends BasicController {
         switch (type) {
             case 'post':
                 return await this._getPostComments({ ...params }, auth);
+            case 'user':
+            case 'replies':
+                return await this._getProfileComments({ ...params, type }, auth);
         }
+    }
+
+    async _getProfileComments({ userId, limit, offset, sortBy, type }, { userId: authUserId }) {
+        const filter = {};
+
+        if (type === 'user') {
+            filter.$match = { 'contentId.userId': userId };
+        } else {
+            filter.$match = {
+                $or: [{ 'parents.comment.userId': userId }, { 'parents.post.userId': userId }],
+            };
+        }
+
+        const paging = [{ $skip: offset }, { $limit: limit }];
+        const sorting = {
+            $sort: {
+                'meta.creationTime': sortBy === 'time' ? -1 : 1,
+            },
+        };
+        const aggregation = [
+            filter,
+            ...paging,
+            sorting,
+            profileLookup,
+            communityLookup,
+            { $project: baseProjection },
+            ...this._addCurrentUserFields(authUserId),
+            {
+                $project: { 'author.subscribers': false, 'community.subscribers': false },
+            },
+        ];
+
+        const items = await CommentModel.aggregate(aggregation);
+
+        return { items };
     }
 
     async _getPostComments(

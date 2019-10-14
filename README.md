@@ -1366,6 +1366,488 @@ waitForTransaction               // Дождаться и получить от�
 }
 ```
 
+=> Запрос комментариев пользователя
+
+```json
+{
+    "id": 1,
+    "method": "getComments",
+    "jsonrpc": "2.0",
+    "params": {
+    	"type": "user",
+        "userId": "tst4zphxiuon",
+        "sortBy": "timeDesc"
+    }
+}
+```
+
+<= Ответ
+
+```json
+{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "result": {
+        "items": [
+            {
+                "votes": {
+                    "upCount": 0,
+                    "downCount": 0
+                },
+                "meta": {
+                    "creationTime": "2019-10-09T12:06:09.000Z"
+                },
+                "childCommentsCount": 1,
+                "contentId": {
+                    "communityId": "WWAPUPO",
+                    "userId": "tst4zphxiuon",
+                    "permlink": "apollo-fights-with-chrysippus-against-eurynome-and-common-man-named-mr-albertha-shieldssr-on-volantis-1570622768771"
+                },
+                "parents": {
+                    "post": {
+                        "communityId": "WWAPUPO",
+                        "userId": "tst3ydywtehj",
+                        "permlink": "apollo-fights-with-ajax-against-phoebe-and-common-man-named-dr-nicky-carrolldds-on-sar-meel-1570622762914"
+                    },
+                    "comment": null
+                },
+                "content": {
+                    "body": {
+                        "attributes": {
+                            "type": "comment",
+                            "version": "1.0",
+                            "title": "Apollo fights with Chrysippus against Eurynome and common man named Mr.Albertha ShieldsSr. on Volantis"
+                        },
+                        "id": 1,
+                        "type": "post",
+                        "content": [
+                            {
+                                "id": 2,
+                                "type": "paragraph",
+                                "content": [
+                                    {
+                                        "id": 3,
+                                        "type": "text",
+                                        "content": "The class object inherits from Chuck Norris.\n at the moment he lives at Apt. 358 8882 Oswaldo Crossing, Collierton, ID 02087-9324     \n\n and YODA said: Luminous beings are we - not this crude matter. \n\n witcher quote: You’ve mistaken the stars reflected on the surface of the lake at night for the heavens. \n\n Rick and Morty quote: You're like Hitler, except...Hitler cared about Germany, or something. \n\n SuperHero Doctor Longshot Brain has power to Toxikinesis and Astral Projection \n\n Harry Potter quote: We could all have been killed - or worse, expelled. \n\n and some Lorem to finish text: Consequatur explicabo quas beatae et labore facere ea debitis unde consequatur qui voluptas consectetur rerum facere non et porro pariatur doloremque est ullam exercitationem eligendi eius dolor quas inventore quo soluta adipisci aut quae molestias aspernatur et ad aut unde voluptates nostrum qui voluptatem vitae itaque sapiente maiores rerum beatae nobis tempora quae omnis occaecati quia tenetur molestiae commodi nam magnam quia dignissimos rerum exercitationem nobis saepe et deleniti iure sint rerum qui nihil corrupti et ea et numquam id accusamus enim eos repellat dignissimos omnis omnis distinctio nisi esse iure iusto exercitationem dolorem dolores illum dolores aperiam dolor est consequatur repudiandae corporis et placeat nostrum harum quaerat ut rem minima quae et deleniti iusto voluptatem et corrupti sed quo error laboriosam est ea ratione quo et voluptas tenetur quidem sint laboriosam odit eum dolorem adipisci consequatur officiis pariatur magnam facere eos minus voluptates incidunt tenetur hic molestiae qui animi dignissimos dolor natus."
+                                    }
+                                ]
+                            },
+                            {
+                                "id": 13,
+                                "type": "attachments",
+                                "content": [
+                                    {
+                                        "id": 14,
+                                        "type": "image",
+                                        "content": "https://i.gifer.com/1HOf.gif"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                },
+                "author": {
+                    "userId": "tst4zphxiuon",
+                    "username": "bergstrom-donnie-dvm",
+                    "avatarUrl": "https://i.pravatar.cc/300?u=8acb26411b5e082e1b6358dd1c3621aed0161cba"
+                },
+                "community": {
+                    "communityId": "WWAPUPO",
+                    "alias": "id1377443613",
+                    "name": "WWAPUPO comunity",
+                    "avatarUrl": "https://i.pravatar.cc/300?u=7a180c543a5ce7adb504de330105542daece71f"
+                }
+            },
+            {
+                "votes": {
+                    "upCount": 0,
+                    "downCount": 0
+                },
+                "meta": {
+                    "creationTime": "2019-10-09T12:06:12.000Z"
+                },
+                "childCommentsCount": 1,
+                "contentId": {
+                    "communityId": "WWAPUPO",
+                    "userId": "tst4zphxiuon",
+                    "permlink": "hera-fights-with-pandion-against-eurybia-and-common-man-named-mrs-gwendolyn-goyettemd-on-king-s-landing-1570622769714"
+                },
+                "parents": {
+                    "post": {
+                        "communityId": "WWAPUPO",
+                        "userId": "tst4oysprhyz",
+                        "permlink": "ares-fights-with-bellerophon-against-cronus-and-common-man-named-ms-miss-sophie-mrazii-on-lannisport-1570622762365"
+                    },
+                    "comment": {
+                        "communityId": "WWAPUPO",
+                        "userId": "tst2gdfxuyvm",
+                        "permlink": "apollo-fights-with-abderus-against-tethys-and-common-man-named-missemery-considinedds-on-new-ghis-1570622768902"
+                    }
+                },
+                "content": {
+                    "body": {
+                        "attributes": {
+                            "type": "comment",
+                            "version": "1.0",
+                            "title": "Hera fights with Pandion against Eurybia and common man named Mrs.Gwendolyn GoyetteMD on King's Landing"
+                        },
+                        "id": 1,
+                        "type": "post",
+                        "content": [
+                            {
+                                "id": 2,
+                                "type": "paragraph",
+                                "content": [
+                                    {
+                                        "id": 3,
+                                        "type": "text",
+                                        "content": "Chuck Norris went out of an infinite loop.\n at the moment he lives at Apt. 074 5408 Jenna Oval, North Lyleburgh, TN 22898     \n\n and YODA said: Good relations with the Wookiees, I have. \n\n witcher quote: There's a grain of truth in every fairy tale. \n\n Rick and Morty quote: Aww, gee, you got me there Rick. \n\n SuperHero General Toxin has power to Radiation Control and Elasticity \n\n Harry Potter quote: Dark and difficult times lie ahead. Soon we must all face the choice between what is right and what is easy. \n\n and some Lorem to finish text: Et nihil ullam necessitatibus quidem nihil ab delectus odit quisquam assumenda facilis quos eos fugiat animi sint rem eum est qui minus est quia in voluptatem totam nisi iste a ratione quia et et aut blanditiis aut non tenetur laborum quia autem et quo velit quod quia aut et eligendi dolorem voluptatem est reprehenderit eveniet omnis et tenetur facere quas praesentium et expedita sunt vel velit itaque ut qui quo occaecati aut voluptatem voluptas totam soluta sed ea voluptatum ex aut quia consequatur autem aut laudantium natus sequi optio voluptates voluptas saepe dolor eum quis enim repudiandae voluptatibus repellendus maxime quasi consequuntur sed eius unde qui iusto a numquam quo architecto quaerat non optio debitis minus veniam nisi quo dolor sed rem nobis quidem corporis vel ut voluptatem ipsam aut dolor atque cumque eos quos voluptatem ab officiis dolores aut et nobis fugiat eius labore cumque ea quisquam eveniet dolorem fugiat."
+                                    }
+                                ]
+                            },
+                            {
+                                "id": 13,
+                                "type": "attachments",
+                                "content": [
+                                    {
+                                        "id": 14,
+                                        "type": "website",
+                                        "content": "https://bash.im/"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                },
+                "author": {
+                    "userId": "tst4zphxiuon",
+                    "username": "bergstrom-donnie-dvm",
+                    "avatarUrl": "https://i.pravatar.cc/300?u=8acb26411b5e082e1b6358dd1c3621aed0161cba"
+                },
+                "community": {
+                    "communityId": "WWAPUPO",
+                    "alias": "id1377443613",
+                    "name": "WWAPUPO comunity",
+                    "avatarUrl": "https://i.pravatar.cc/300?u=7a180c543a5ce7adb504de330105542daece71f"
+                }
+            }
+        ]
+    }
+}
+```
+
+=> Запрос ответов пользователю
+
+```json
+{
+    "id": 1,
+    "method": "getComments",
+    "jsonrpc": "2.0",
+    "params": {
+    	"type": "replies",
+        "userId": "tst3ydywtehj",
+        "sortBy": "timeDesc"
+    }
+}
+```
+
+<= Ответ
+
+```json
+{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "result": {
+        "items": [
+            {
+                "votes": {
+                    "upCount": 0,
+                    "downCount": 0
+                },
+                "meta": {
+                    "creationTime": "2019-10-09T12:06:09.000Z"
+                },
+                "childCommentsCount": 0,
+                "contentId": {
+                    "communityId": "WWAPUPO",
+                    "userId": "tst4ywpbdkfd",
+                    "permlink": "aphrodite-fights-with-orpheus-against-helios-and-common-man-named-misslamont-dicki-phdjr-on-bhorash-1570622767790"
+                },
+                "parents": {
+                    "post": {
+                        "communityId": "WWAPUPO",
+                        "userId": "tst3ydywtehj",
+                        "permlink": "apollo-fights-with-ajax-against-phoebe-and-common-man-named-dr-nicky-carrolldds-on-sar-meel-1570622762914"
+                    },
+                    "comment": null
+                },
+                "content": {
+                    "body": {
+                        "attributes": {
+                            "type": "comment",
+                            "version": "1.0",
+                            "title": "Aphrodite fights with Orpheus against Helios and common man named MissLamont Dicki PhDJr. on Bhorash"
+                        },
+                        "id": 1,
+                        "type": "post",
+                        "content": [
+                            {
+                                "id": 2,
+                                "type": "paragraph",
+                                "content": [
+                                    {
+                                        "id": 3,
+                                        "type": "text",
+                                        "content": "Chuck Norris programs do not accept input.\n at the moment he lives at Suite 025 6412 Nikolaus Pike, Runolfsdottirfort, IA 46613-1306     \n\n and YODA said: Younglings, younglings gather ’round. \n\n witcher quote: Finish all your business before you die. Bid loved ones farewell. Write your will. Apologize to those you’ve wronged. Otherwise, you’ll never truly leave this world. \n\n Rick and Morty quote: This isn't Game of Thrones, Morty. \n\n SuperHero General Bolt Woman has power to Empathy and Adaptation \n\n Harry Potter quote: After all this time? Always. \n\n and some Lorem to finish text: Laborum est aut mollitia expedita voluptatibus est quasi nulla et velit et enim et rerum dolores iure vel harum quo modi culpa rerum cum quia et alias quidem quam sunt doloribus omnis omnis illum quo asperiores sint blanditiis facere minima nulla in incidunt quia eius vel maxime totam atque quod velit vero et voluptas beatae vel dolorem qui occaecati repellendus sint voluptatem nostrum nemo expedita ut iure quia quisquam fuga veniam qui et in ut animi libero optio cum ut voluptas quis a enim quia iusto fugiat dignissimos dolores omnis ex officia sint deserunt corrupti qui labore quasi et vel culpa ut unde dolore ut atque fugiat cum soluta quae commodi aspernatur aut vel et est voluptas aut culpa placeat inventore tenetur ullam et voluptas molestias ab id et sit quae maxime reprehenderit quae exercitationem est assumenda perferendis architecto sit laboriosam voluptatem et dignissimos distinctio nam in aut sunt soluta earum minima accusantium quis."
+                                    }
+                                ]
+                            },
+                            {
+                                "id": 13,
+                                "type": "attachments",
+                                "content": [
+                                    {
+                                        "id": 14,
+                                        "type": "image",
+                                        "content": "https://i.gifer.com/1HOf.gif"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                },
+                "author": {
+                    "userId": "tst4ywpbdkfd",
+                    "username": "price-otelia-i",
+                    "avatarUrl": "https://i.pravatar.cc/300?u=727bd6acdb84203af624f5f9ab364fa8b9b67a69"
+                },
+                "community": {
+                    "communityId": "WWAPUPO",
+                    "alias": "id1377443613",
+                    "name": "WWAPUPO comunity",
+                    "avatarUrl": "https://i.pravatar.cc/300?u=7a180c543a5ce7adb504de330105542daece71f"
+                }
+            },
+            {
+                "votes": {
+                    "upCount": 0,
+                    "downCount": 0
+                },
+                "meta": {
+                    "creationTime": "2019-10-09T12:06:09.000Z"
+                },
+                "childCommentsCount": 1,
+                "contentId": {
+                    "communityId": "WWAPUPO",
+                    "userId": "tst4zphxiuon",
+                    "permlink": "apollo-fights-with-chrysippus-against-eurynome-and-common-man-named-mr-albertha-shieldssr-on-volantis-1570622768771"
+                },
+                "parents": {
+                    "post": {
+                        "communityId": "WWAPUPO",
+                        "userId": "tst3ydywtehj",
+                        "permlink": "apollo-fights-with-ajax-against-phoebe-and-common-man-named-dr-nicky-carrolldds-on-sar-meel-1570622762914"
+                    },
+                    "comment": null
+                },
+                "content": {
+                    "body": {
+                        "attributes": {
+                            "type": "comment",
+                            "version": "1.0",
+                            "title": "Apollo fights with Chrysippus against Eurynome and common man named Mr.Albertha ShieldsSr. on Volantis"
+                        },
+                        "id": 1,
+                        "type": "post",
+                        "content": [
+                            {
+                                "id": 2,
+                                "type": "paragraph",
+                                "content": [
+                                    {
+                                        "id": 3,
+                                        "type": "text",
+                                        "content": "The class object inherits from Chuck Norris.\n at the moment he lives at Apt. 358 8882 Oswaldo Crossing, Collierton, ID 02087-9324     \n\n and YODA said: Luminous beings are we - not this crude matter. \n\n witcher quote: You’ve mistaken the stars reflected on the surface of the lake at night for the heavens. \n\n Rick and Morty quote: You're like Hitler, except...Hitler cared about Germany, or something. \n\n SuperHero Doctor Longshot Brain has power to Toxikinesis and Astral Projection \n\n Harry Potter quote: We could all have been killed - or worse, expelled. \n\n and some Lorem to finish text: Consequatur explicabo quas beatae et labore facere ea debitis unde consequatur qui voluptas consectetur rerum facere non et porro pariatur doloremque est ullam exercitationem eligendi eius dolor quas inventore quo soluta adipisci aut quae molestias aspernatur et ad aut unde voluptates nostrum qui voluptatem vitae itaque sapiente maiores rerum beatae nobis tempora quae omnis occaecati quia tenetur molestiae commodi nam magnam quia dignissimos rerum exercitationem nobis saepe et deleniti iure sint rerum qui nihil corrupti et ea et numquam id accusamus enim eos repellat dignissimos omnis omnis distinctio nisi esse iure iusto exercitationem dolorem dolores illum dolores aperiam dolor est consequatur repudiandae corporis et placeat nostrum harum quaerat ut rem minima quae et deleniti iusto voluptatem et corrupti sed quo error laboriosam est ea ratione quo et voluptas tenetur quidem sint laboriosam odit eum dolorem adipisci consequatur officiis pariatur magnam facere eos minus voluptates incidunt tenetur hic molestiae qui animi dignissimos dolor natus."
+                                    }
+                                ]
+                            },
+                            {
+                                "id": 13,
+                                "type": "attachments",
+                                "content": [
+                                    {
+                                        "id": 14,
+                                        "type": "image",
+                                        "content": "https://i.gifer.com/1HOf.gif"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                },
+                "author": {
+                    "userId": "tst4zphxiuon",
+                    "username": "bergstrom-donnie-dvm",
+                    "avatarUrl": "https://i.pravatar.cc/300?u=8acb26411b5e082e1b6358dd1c3621aed0161cba"
+                },
+                "community": {
+                    "communityId": "WWAPUPO",
+                    "alias": "id1377443613",
+                    "name": "WWAPUPO comunity",
+                    "avatarUrl": "https://i.pravatar.cc/300?u=7a180c543a5ce7adb504de330105542daece71f"
+                }
+            },
+            {
+                "votes": {
+                    "upCount": 0,
+                    "downCount": 0
+                },
+                "meta": {
+                    "creationTime": "2019-10-09T12:06:12.000Z"
+                },
+                "childCommentsCount": 1,
+                "contentId": {
+                    "communityId": "WWAPUPO",
+                    "userId": "tst3xtckjyrn",
+                    "permlink": "apollo-fights-with-ariadne-against-helios-and-common-man-named-missdr-misha-priceii-on-norvos-1570622769603"
+                },
+                "parents": {
+                    "post": {
+                        "communityId": "WWAPUPO",
+                        "userId": "tst3ydywtehj",
+                        "permlink": "apollo-fights-with-ajax-against-phoebe-and-common-man-named-dr-nicky-carrolldds-on-sar-meel-1570622762914"
+                    },
+                    "comment": {
+                        "communityId": "WWAPUPO",
+                        "userId": "tst4zphxiuon",
+                        "permlink": "apollo-fights-with-chrysippus-against-eurynome-and-common-man-named-mr-albertha-shieldssr-on-volantis-1570622768771"
+                    }
+                },
+                "content": {
+                    "body": {
+                        "attributes": {
+                            "type": "comment",
+                            "version": "1.0",
+                            "title": "Apollo fights with Ariadne against Helios and common man named MissDr. Misha PriceII on Norvos"
+                        },
+                        "id": 1,
+                        "type": "post",
+                        "content": [
+                            {
+                                "id": 2,
+                                "type": "paragraph",
+                                "content": [
+                                    {
+                                        "id": 3,
+                                        "type": "text",
+                                        "content": "Chuck Norris doesn't believe in floating point numbers because they can't be typed on his binary keyboard.\n at the moment he lives at 96927 Rogahn Fall, Kulasfurt, NV 32997-9407     \n\n and YODA said: Reckless he is. Matters are worse. \n\n witcher quote: I'll stick me boot so far up yer arse your tongue'll taste like wench twat \n\n Rick and Morty quote: What is my purpose. You pass butter. Oh My God. Yeah, Welcome to the club pal. \n\n SuperHero Thunderbird has power to Natural Weapons and Power Cosmic \n\n Harry Potter quote: It does not do to dwell on dreams and forget to live. \n\n and some Lorem to finish text: Non itaque enim necessitatibus facere quia dolorem delectus optio aspernatur sapiente illum quam a autem et animi dolore quaerat in dolor qui maxime assumenda tenetur qui perferendis qui voluptatem vero tempore saepe ut totam dolore dolores suscipit non dolor excepturi cumque earum saepe qui asperiores veniam porro laborum expedita officiis repellat iure consequatur numquam asperiores omnis aut eveniet facilis inventore facilis porro sequi sunt distinctio odio voluptatibus dicta est nihil et fugiat autem id voluptatem et qui illo iusto possimus enim dicta ducimus eum facere et nihil cum a quia dignissimos nostrum est repudiandae sint rerum repellat necessitatibus amet accusantium eum consectetur eos cum voluptatem qui sunt sed tenetur temporibus non libero reiciendis doloribus natus vero inventore et voluptatem ratione earum qui est animi sapiente ea nihil similique consectetur quasi saepe officia ipsum sit quidem cum aut labore blanditiis voluptatem et officia labore quisquam officiis ea atque ex earum placeat vitae molestiae ipsum."
+                                    }
+                                ]
+                            },
+                            {
+                                "id": 13,
+                                "type": "attachments",
+                                "content": [
+                                    {
+                                        "id": 14,
+                                        "type": "website",
+                                        "content": "https://www.youtube.com/watch?v=KIJ8MrIR2Gw"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                },
+                "author": {
+                    "userId": "tst3xtckjyrn",
+                    "username": "von-chi-iv",
+                    "avatarUrl": "https://i.pravatar.cc/300?u=fa98c7309783247e76d30664dbb5441dddc7b006"
+                },
+                "community": {
+                    "communityId": "WWAPUPO",
+                    "alias": "id1377443613",
+                    "name": "WWAPUPO comunity",
+                    "avatarUrl": "https://i.pravatar.cc/300?u=7a180c543a5ce7adb504de330105542daece71f"
+                }
+            },
+            {
+                "votes": {
+                    "upCount": 0,
+                    "downCount": 0
+                },
+                "meta": {
+                    "creationTime": "2019-10-09T12:06:12.000Z"
+                },
+                "childCommentsCount": 0,
+                "contentId": {
+                    "communityId": "WWAPUPO",
+                    "userId": "tst1xztkgyhq",
+                    "permlink": "demeter-fights-with-cassiopeia-against-lelantos-and-common-man-named-dr-mayme-hills-dvmdvm-on-asshai-1570622770381"
+                },
+                "parents": {
+                    "post": {
+                        "communityId": "WWAPUPO",
+                        "userId": "tst3ydywtehj",
+                        "permlink": "apollo-fights-with-ajax-against-phoebe-and-common-man-named-dr-nicky-carrolldds-on-sar-meel-1570622762914"
+                    },
+                    "comment": {
+                        "communityId": "WWAPUPO",
+                        "userId": "tst3xtckjyrn",
+                        "permlink": "apollo-fights-with-ariadne-against-helios-and-common-man-named-missdr-misha-priceii-on-norvos-1570622769603"
+                    }
+                },
+                "content": {
+                    "body": {
+                        "attributes": {
+                            "type": "comment",
+                            "version": "1.0",
+                            "title": "Demeter fights with Cassiopeia against Lelantos and common man named Dr.Mayme Hills DVMDVM on Asshai"
+                        },
+                        "id": 1,
+                        "type": "post",
+                        "content": [
+                            {
+                                "id": 2,
+                                "type": "paragraph",
+                                "content": [
+                                    {
+                                        "id": 3,
+                                        "type": "text",
+                                        "content": "Chuck Norris doesn't need a debugger, he just stares down the bug until the code confesses.\n at the moment he lives at Apt. 904 3923 Kuhn Spur, New Scottieside, KS 29157-5233     \n\n and YODA said: Good relations with the Wookiees, I have. \n\n witcher quote: Destiny has many faces. Mine is beautiful on the outside and hideous on the inside. She has stretched her bloody talons toward me— \n\n Rick and Morty quote: What about the reality where Hitler cured cancer, Morty? The answer is: Don't think about it. \n\n SuperHero Supah Bloodaxe has power to Chlorokinesis and Sonic Scream \n\n Harry Potter quote: Never trust anything that can think for itself if you can't see where it keeps its brain. \n\n and some Lorem to finish text: Nulla non omnis rerum facilis architecto corporis ea fugit quisquam maxime quae et blanditiis consectetur at magnam harum quo sunt debitis velit at repudiandae incidunt et rerum veniam est dicta earum repellat totam placeat odio id ea repudiandae ab accusantium pariatur ut vel nemo aut dolores dicta nemo est porro blanditiis recusandae culpa est expedita voluptas voluptas rerum corporis doloremque modi laudantium reiciendis excepturi odit unde eos voluptas et repellendus architecto nemo sit ut aperiam voluptas eum et natus reiciendis vel quaerat quisquam tempore nesciunt corporis est non fugiat impedit et sed non voluptatibus expedita sit ab fuga quasi et ab quis omnis odit dolorum dolorum odit aut molestiae assumenda reiciendis dolore soluta nobis aut tempora quibusdam quos optio hic eius veritatis sit aspernatur nisi consequatur qui perferendis enim aut aliquam delectus quam quia enim aperiam sed nemo quia quis illum quis quas earum ipsum et laboriosam veniam quos molestiae."
+                                    }
+                                ]
+                            },
+                            {
+                                "id": 13,
+                                "type": "attachments",
+                                "content": [
+                                    {
+                                        "id": 14,
+                                        "type": "website",
+                                        "content": "https://www.youtube.com/watch?v=KIJ8MrIR2Gw"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                },
+                "author": {
+                    "userId": "tst1xztkgyhq",
+                    "username": "kuphal-aldo-ii",
+                    "avatarUrl": "https://i.pravatar.cc/300?u=9f585464764e344c1dc6e87dbd5ff44cff8fda53"
+                },
+                "community": {
+                    "communityId": "WWAPUPO",
+                    "alias": "id1377443613",
+                    "name": "WWAPUPO comunity",
+                    "avatarUrl": "https://i.pravatar.cc/300?u=7a180c543a5ce7adb504de330105542daece71f"
+                }
+            }
+        ]
+    }
+}
+```
+
 Возможные переменные окружения `ENV`:
 
 -   `GLS_CONNECTOR_HOST` _(обязательно)_ - адрес, который будет использован для входящих подключений связи микросервисов.  
