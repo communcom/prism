@@ -1,6 +1,7 @@
 const crypto = require('crypto');
 
 const CommunityModel = require('../../models/Community');
+const ProfileModel = require('../../models/Profile');
 
 // Менять соль нельзя, это приведет к расхождению в alias между призмами.
 const SALT = 'AL1tsa3up0at';
@@ -59,6 +60,60 @@ class Community {
                         coverUrl: oldObject.coverUrl,
                         description: oldObject.description,
                         rules: oldObject.rules,
+                    },
+                },
+            });
+        }
+    }
+
+    async handleFollowUnfollow({ commun_code: communityId, follower: userId }, type) {
+        let changeMethod, forkMethod, inc;
+
+        if (type === 'follow') {
+            changeMethod = '$addToSet';
+            forkMethod = '$pull';
+            inc = 1;
+        } else {
+            changeMethod = '$pull';
+            forkMethod = '$addToSet';
+            inc = -1;
+        }
+
+        const oldCommunityObject = await CommunityModel.findOneAndUpdate(
+            { communityId },
+            { [changeMethod]: { subscribers: userId } }
+        );
+
+        if (oldCommunityObject) {
+            await this._forkService.registerChanges({
+                type: 'update',
+                Model: CommunityModel,
+                documentId: oldCommunityObject._id,
+                data: {
+                    [forkMethod]: {
+                        subscribers: userId,
+                    },
+                },
+            });
+        }
+
+        const oldProfileObject = await ProfileModel.findOneAndUpdate(
+            { userId },
+            {
+                [changeMethod]: { 'subscriptions.communityIds': communityId },
+                $inc: { 'subscriptions.communitiesCount': inc },
+            }
+        );
+
+        if (oldProfileObject) {
+            await this._forkService.registerChanges({
+                type: 'update',
+                Model: ProfileModel,
+                documentId: oldProfileObject._id,
+                data: {
+                    [changeMethod]: {
+                        'subscriptions.communityIds': communityId,
+                        $inc: { 'subscriptions.communitiesCount': -inc },
                     },
                 },
             });

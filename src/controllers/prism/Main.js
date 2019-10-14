@@ -91,6 +91,14 @@ class Main {
                 await this._community.handleAddInfo(actionArgs);
                 break;
 
+            case 'comn.list->follow':
+                await this._community.handleFollowUnfollow(actionArgs, 'follow');
+                break;
+
+            case 'comn.list->unfollow':
+                await this._community.handleFollowUnfollow(actionArgs, 'unfollow');
+                break;
+
             case `cyber.domain->newusername`:
                 await this._profile.handleUsername(actionArgs, meta);
                 break;
