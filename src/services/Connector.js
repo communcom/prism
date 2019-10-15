@@ -400,9 +400,11 @@ class Connector extends BasicConnector {
                     scope: this._community,
                     inherits: ['onlyWhenPublicApiEnabled'],
                     validation: {
-                        required: ['communityId'],
                         properties: {
                             communityId: {
+                                type: 'string',
+                            },
+                            communityAlias: {
                                 type: 'string',
                             },
                         },
