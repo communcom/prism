@@ -11,30 +11,36 @@ class Subscribe extends Abstract {
     }
 
     async block({ blocker, blocking }) {
-        const previousModel = await ProfileModel.findOne({ userId: blocker });
+        const previousModel = await ProfileModel.findOneAndUpdate(
+            { userId: blocker },
+            { $addToSet: { 'blacklist.userIds': blocking } }
+        );
 
         await this.registerForkChanges({
             type: 'update',
             Model: ProfileModel,
             documentId: previousModel,
             data: {
-                $set: {
-                    blacklist: [...previousModel.blacklist, blocking],
+                $pull: {
+                    'blacklist.userIds': blocking,
                 },
             },
         });
     }
 
     async unblock({ blocker, blocking }) {
-        const previousModel = await ProfileModel.findOne({ userId: blocker });
+        const previousModel = await ProfileModel.findOneAndUpdate(
+            { userId: blocker },
+            { $pull: { 'blacklist.userIds': blocking } }
+        );
 
         await this.registerForkChanges({
             type: 'update',
             Model: ProfileModel,
             documentId: previousModel,
             data: {
-                $set: {
-                    blacklist: previousModel.blacklist.filter(user => user !== blocking),
+                $addToSet: {
+                    'blacklist.userIds': blocking,
                 },
             },
         });

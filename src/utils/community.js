@@ -77,9 +77,32 @@ async function normalizeContentId(params) {
     };
 }
 
+async function fixCommunityId({ communityId, communityAlias }) {
+    if (!communityId && !communityAlias) {
+        throw {
+            code: 409,
+            message: 'Invalid params',
+        };
+    }
+
+    if (!communityId) {
+        communityId = await lookUpCommunityByAlias(communityAlias);
+    }
+
+    if (!communityId) {
+        throw {
+            code: 404,
+            message: 'Community not found',
+        };
+    }
+
+    return communityId;
+}
+
 module.exports = {
     isCommunityExists,
     lookUpCommunityByAlias,
     lookUpUserIdByUsername,
     normalizeContentId,
+    fixCommunityId,
 };

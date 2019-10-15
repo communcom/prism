@@ -1,7 +1,9 @@
 const core = require('cyberway-core-service');
 const BasicController = core.controllers.Basic;
 const PostModel = require('../../models/Post');
+const ProfileModel = require('../../models/Profile');
 const { normalizeContentId } = require('../../utils/community');
+const { fixCommunityId } = require('../../utils/community');
 const { isIncludes } = require('../../utils/mongodb');
 
 const lookups = [
@@ -79,7 +81,10 @@ const cleanUpProjection = {
 };
 
 class Posts extends BasicController {
-    async getPosts({ type, allowNsfw, userId, limit, offset = 0 }, { userId: authUserId }) {
+    async getPosts(
+        { type, allowNsfw, userId, limit, offset, communityId, communityAlias },
+        { userId: authUserId }
+    ) {
         if (offset < 0) {
             throw {
                 code: 500,
@@ -91,29 +96,17 @@ class Posts extends BasicController {
             return await this._getPostsByUser({ userId, limit, offset, allowNsfw }, authUserId);
         }
 
-        const aggregation = [
-            {
-                $sort: {
-                    _id: -1,
-                },
-            },
-            {
-                $skip: offset,
-            },
-            {
-                $limit: limit,
-            },
-            ...lookups,
-            baseProjection,
-            ...this._addCurrentUserFields(authUserId),
-            cleanUpProjection,
-        ];
-
-        const items = await this._aggregate(aggregation);
-
-        return {
-            items,
-        };
+        switch (type) {
+            case 'byUser':
+                return await this._getPostsByUser({ userId, limit, offset, allowNsfw }, authUserId);
+            case 'new':
+                return await this._getFeedNew({ limit, offset, allowNsfw }, authUserId);
+            case 'community':
+                return await this._getCommunityFeedNew(
+                    { limit, offset, allowNsfw, communityId, communityAlias },
+                    authUserId
+                );
+        }
     }
 
     async getPost(params, { userId: authUserId }) {
@@ -166,6 +159,76 @@ class Posts extends BasicController {
         ]);
 
         return { items };
+    }
+
+    async _getFeedNew({ allowNsfw, limit, offset }, authUserId) {
+        const filter = { $match: {} };
+
+        if (!allowNsfw) {
+            filter.$match['content.tags'] = { $ne: 'nsfw' };
+        }
+
+        if (authUserId) {
+            const blacklist = await this._getBlacklist(authUserId);
+            if (blacklist.userIds.length > 0) {
+                filter.$match['contentId.userId'] = { $nin: blacklist.userIds };
+            }
+            if (blacklist.communityIds.length > 0) {
+                filter.$match['contentId.communityId'] = { $nin: blacklist.communityIds };
+            }
+        }
+
+        const paging = [{ $skip: offset }, { $limit: limit }];
+        const sort = { $sort: { 'meta.creationTime': 1 } };
+
+        const items = await this._aggregate([
+            filter,
+            sort,
+            ...paging,
+            ...lookups,
+            baseProjection,
+            ...this._addCurrentUserFields(authUserId),
+            cleanUpProjection,
+        ]);
+
+        return { items };
+    }
+
+    async _getCommunityFeedNew(
+        { allowNsfw, limit, offset, communityId, communityAlias },
+        authUserId
+    ) {
+        communityId = await fixCommunityId({ communityId, communityAlias });
+        const filter = { $match: { 'contentId.communityId': communityId } };
+
+        if (!allowNsfw) {
+            filter.$match['content.tags'] = { $ne: 'nsfw' };
+        }
+
+        const paging = [{ $skip: offset }, { $limit: limit }];
+        const sort = { $sort: { 'meta.creationTime': 1 } };
+
+        const items = await this._aggregate([
+            filter,
+            sort,
+            ...paging,
+            ...lookups,
+            baseProjection,
+            ...this._addCurrentUserFields(authUserId),
+            cleanUpProjection,
+        ]);
+
+        return { items };
+    }
+
+    async _getBlacklist(userId) {
+        const { blacklist } = await ProfileModel.findOne(
+            { userId },
+            { blacklist: true },
+            { lean: true }
+        );
+
+        return blacklist;
     }
 
     _fixPost(post, isFullPostQuery) {

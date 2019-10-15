@@ -153,7 +153,7 @@ class Connector extends BasicConnector {
                         properties: {
                             type: {
                                 type: 'string',
-                                enum: ['community', 'subscriptions', 'byUser'],
+                                enum: ['community', 'subscriptions', 'byUser', 'new'],
                                 default: 'community',
                             },
                             sortBy: {
@@ -178,6 +178,9 @@ class Connector extends BasicConnector {
                                 type: 'string',
                             },
                             communityId: {
+                                type: 'string',
+                            },
+                            communityAlias: {
                                 type: 'string',
                             },
                             tags: {

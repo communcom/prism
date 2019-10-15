@@ -1,7 +1,7 @@
 const core = require('cyberway-core-service');
 const BasicController = core.controllers.Basic;
 const CommentModel = require('../../models/Comment');
-const { lookUpCommunityByAlias } = require('../../utils/community');
+const { fixCommunityId } = require('../../utils/community');
 const { isIncludes } = require('../../utils/mongodb');
 const env = require('../../data/env');
 
@@ -70,7 +70,7 @@ const communityLookup = {
 
 class Comment extends BasicController {
     async getComment({ userId, permlink, communityId, communityAlias }, { userId: authUserId }) {
-        communityId = await this._fixCommunityId({ communityId, communityAlias });
+        communityId = await fixCommunityId({ communityId, communityAlias });
 
         const filter = {
             'contentId.userId': userId,
@@ -196,7 +196,7 @@ class Comment extends BasicController {
             parentCommentUserId = parentComment.userId;
         }
 
-        communityId = await this._fixCommunityId({ communityId, communityAlias });
+        communityId = await fixCommunityId({ communityId, communityAlias });
 
         const filter = {
             'parents.post.userId': userId,
@@ -304,28 +304,6 @@ class Comment extends BasicController {
                 value: userId,
             }),
         ];
-    }
-
-    async _fixCommunityId({ communityId, communityAlias }) {
-        if (!communityId && !communityAlias) {
-            throw {
-                code: 409,
-                message: 'Invalid params',
-            };
-        }
-
-        if (!communityId) {
-            communityId = await lookUpCommunityByAlias(communityAlias);
-        }
-
-        if (!communityId) {
-            throw {
-                code: 404,
-                message: 'Community not found',
-            };
-        }
-
-        return communityId;
     }
 
     _fixComments(comments) {

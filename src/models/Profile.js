@@ -80,8 +80,14 @@ const ProfileModel = MongoDB.makeModel(
             },
         },
         blacklist: {
-            type: [String],
-            default: [],
+            userIds: {
+                type: [String],
+                default: [],
+            },
+            communityIds: {
+                type: [String],
+                default: [],
+            },
         },
         registration: {
             time: {
