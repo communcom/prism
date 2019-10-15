@@ -85,7 +85,9 @@ class Posts extends BasicController {
         { type, allowNsfw, userId, limit, offset, communityId, communityAlias, username },
         { userId: authUserId }
     ) {
-        userId = await lookUpUserIdByUsername(username);
+        if (!userId) {
+            userId = await lookUpUserIdByUsername(username);
+        }
 
         if (offset < 0) {
             throw {
