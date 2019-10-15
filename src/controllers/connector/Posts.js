@@ -2,7 +2,7 @@ const core = require('cyberway-core-service');
 const BasicController = core.controllers.Basic;
 const PostModel = require('../../models/Post');
 const ProfileModel = require('../../models/Profile');
-const { normalizeContentId } = require('../../utils/community');
+const { normalizeContentId, lookUpUserIdByUsername } = require('../../utils/community');
 const { fixCommunityId } = require('../../utils/community');
 const { isIncludes } = require('../../utils/mongodb');
 
@@ -82,9 +82,11 @@ const cleanUpProjection = {
 
 class Posts extends BasicController {
     async getPosts(
-        { type, allowNsfw, userId, limit, offset, communityId, communityAlias },
+        { type, allowNsfw, userId, limit, offset, communityId, communityAlias, username },
         { userId: authUserId }
     ) {
+        userId = await lookUpUserIdByUsername(username);
+
         if (offset < 0) {
             throw {
                 code: 500,
