@@ -48,27 +48,25 @@ async function lookUpUserIdByUsername(username) {
 async function normalizeContentId(params) {
     let { communityId, communityAlias, userId, username, permlink } = params;
 
-    if (!permlink || (!userId && !username) || (!communityId && !communityAlias)) {
+    if (!permlink || (!userId && !username)) {
         throw {
             code: 409,
             message: 'Invalid params',
         };
     }
 
-    if (!communityId) {
-        communityId = await lookUpCommunityByAlias(communityAlias);
-    }
-
     if (!userId) {
         userId = await lookUpUserIdByUsername(username);
     }
 
-    if (!communityId || !userId) {
+    if (!userId) {
         throw {
             code: 404,
             message: 'Content not found',
         };
     }
+
+    communityId = await resolveCommunityId({ communityId, communityAlias });
 
     return {
         communityId,
@@ -77,7 +75,7 @@ async function normalizeContentId(params) {
     };
 }
 
-async function fixCommunityId({ communityId, communityAlias }) {
+async function resolveCommunityId({ communityId, communityAlias }) {
     if (!communityId && !communityAlias) {
         throw {
             code: 409,
@@ -92,7 +90,7 @@ async function fixCommunityId({ communityId, communityAlias }) {
     if (!communityId) {
         throw {
             code: 404,
-            message: 'Community not found',
+            message: 'Community is not found',
         };
     }
 
@@ -101,8 +99,8 @@ async function fixCommunityId({ communityId, communityAlias }) {
 
 module.exports = {
     isCommunityExists,
+    resolveCommunityId,
     lookUpCommunityByAlias,
     lookUpUserIdByUsername,
     normalizeContentId,
-    fixCommunityId,
 };

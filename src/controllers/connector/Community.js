@@ -1,6 +1,7 @@
 const core = require('cyberway-core-service');
 const BasicController = core.controllers.Basic;
 
+const { isIncludes } = require('../../utils/mongodb');
 const CommunityModel = require('../../models/Community');
 
 const baseProjection = {
@@ -15,32 +16,34 @@ const baseProjection = {
 };
 
 class Community extends BasicController {
-    async getCommunity({ userId, communityId }, { userId: authUserId }) {
+    async getCommunity({ communityId, communityAlias }, { userId: authUserId }) {
+        const match = {};
+
+        if (communityId) {
+            match.communityId = communityId;
+        } else if (communityAlias) {
+            match.alias = communityAlias;
+        } else {
+            throw {
+                code: 500,
+                message: 'Invalid params',
+            };
+        }
+
         const aggregation = [
             {
-                $match: { communityId },
+                $match: match,
             },
         ];
 
         if (authUserId) {
-            aggregation.push({
-                $addFields: {
-                    isSubscribed: {
-                        $cond: {
-                            if: {
-                                $eq: [
-                                    -1,
-                                    {
-                                        $indexOfArray: ['$subscribers', authUserId],
-                                    },
-                                ],
-                            },
-                            then: false,
-                            else: true,
-                        },
-                    },
-                },
-            });
+            aggregation.push(
+                isIncludes({
+                    newField: 'isSubscribed',
+                    arrayPath: '$subscribers',
+                    value: authUserId,
+                })
+            );
         }
 
         aggregation.push({
@@ -58,7 +61,7 @@ class Community extends BasicController {
         if (!community) {
             throw {
                 code: 404,
-                message: 'Community not found',
+                message: 'Community is not found',
             };
         }
 

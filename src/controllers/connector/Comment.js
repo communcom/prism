@@ -1,7 +1,7 @@
 const core = require('cyberway-core-service');
 const BasicController = core.controllers.Basic;
 const CommentModel = require('../../models/Comment');
-const { fixCommunityId } = require('../../utils/community');
+const { resolveCommunityId } = require('../../utils/community');
 const { isIncludes } = require('../../utils/mongodb');
 const env = require('../../data/env');
 
@@ -70,7 +70,7 @@ const communityLookup = {
 
 class Comment extends BasicController {
     async getComment({ userId, permlink, communityId, communityAlias }, { userId: authUserId }) {
-        communityId = await fixCommunityId({ communityId, communityAlias });
+        communityId = await resolveCommunityId({ communityId, communityAlias });
 
         const filter = {
             'contentId.userId': userId,
@@ -196,7 +196,7 @@ class Comment extends BasicController {
             parentCommentUserId = parentComment.userId;
         }
 
-        communityId = await fixCommunityId({ communityId, communityAlias });
+        communityId = await resolveCommunityId({ communityId, communityAlias });
 
         const filter = {
             'parents.post.userId': userId,

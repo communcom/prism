@@ -3,7 +3,7 @@ const BasicController = core.controllers.Basic;
 const PostModel = require('../../models/Post');
 const ProfileModel = require('../../models/Profile');
 const { normalizeContentId, lookUpUserIdByUsername } = require('../../utils/community');
-const { fixCommunityId } = require('../../utils/community');
+const { resolveCommunityId } = require('../../utils/community');
 const { isIncludes } = require('../../utils/mongodb');
 
 const lookups = [
@@ -202,7 +202,7 @@ class Posts extends BasicController {
         { allowNsfw, limit, offset, communityId, communityAlias },
         authUserId
     ) {
-        communityId = await fixCommunityId({ communityId, communityAlias });
+        communityId = await resolveCommunityId({ communityId, communityAlias });
         const filter = { $match: { 'contentId.communityId': communityId } };
 
         if (!allowNsfw) {

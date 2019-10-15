@@ -402,9 +402,6 @@ class Connector extends BasicConnector {
                     validation: {
                         required: ['communityId'],
                         properties: {
-                            userId: {
-                                type: 'string',
-                            },
                             communityId: {
                                 type: 'string',
                             },
