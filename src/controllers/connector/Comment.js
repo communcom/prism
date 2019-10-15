@@ -5,6 +5,8 @@ const { lookUpCommunityByAlias } = require('../../utils/community');
 const { isIncludes } = require('../../utils/mongodb');
 const env = require('../../data/env');
 
+const CHILD_COMMENTS_INLINE_LIMIT = 5;
+
 // todo: fix projection
 const baseProjection = {
     _id: false,
@@ -130,20 +132,22 @@ class Comment extends BasicController {
             };
         }
 
+        this._fixComment(comment);
+
         return comment;
     }
 
-    async getComments({ type, ...params }, auth) {
+    async getComments({ type, ...params }, { userId: authUserId }) {
         switch (type) {
             case 'post':
-                return await this._getPostComments({ ...params }, auth);
+                return await this._getPostComments({ ...params }, authUserId);
             case 'user':
             case 'replies':
-                return await this._getProfileComments({ ...params, type }, auth);
+                return await this._getProfileComments({ ...params, type }, authUserId);
         }
     }
 
-    async _getProfileComments({ userId, limit, offset, sortBy, type }, { userId: authUserId }) {
+    async _getProfileComments({ userId, limit, offset, sortBy, type }, authUserId) {
         const filter = {};
 
         if (type === 'user') {
@@ -175,12 +179,14 @@ class Comment extends BasicController {
 
         const items = await CommentModel.aggregate(aggregation);
 
+        this._fixComments(items);
+
         return { items };
     }
 
     async _getPostComments(
         { userId, communityId, communityAlias, permlink, limit, offset, sortBy, parentComment },
-        { userId: authUserId }
+        authUserId
     ) {
         let parentCommentPermlink;
         let parentCommentUserId;
@@ -230,31 +236,45 @@ class Comment extends BasicController {
         const items = await CommentModel.aggregate(aggregation);
 
         if (nestedLevel === 1) {
-            const getCommentChildren = async comment => {
-                comment.children = (await this._getPostComments(
-                    {
-                        userId,
-                        communityId,
-                        permlink,
-                        limit: 5,
-                        offset: 0,
-                        sortBy,
-                        parentComment: comment.contentId,
-                    },
-                    { userId: authUserId }
-                )).items;
-            };
+            const promises = [];
 
-            const commentChildrenPopulation = [];
             for (const comment of items) {
-                if (comment.childCommentsCount <= 5) {
-                    commentChildrenPopulation.push(getCommentChildren(comment));
+                if (comment.childCommentsCount <= CHILD_COMMENTS_INLINE_LIMIT) {
+                    promises.push(
+                        this._fetchCommentChildren({
+                            userId,
+                            communityId,
+                            permlink,
+                            comment,
+                            authUserId,
+                        })
+                    );
                 }
             }
-            await Promise.all(commentChildrenPopulation);
+
+            await Promise.all(promises);
         }
 
+        this._fixComments(items);
+
         return { items };
+    }
+
+    async _fetchCommentChildren({ userId, communityId, permlink, comment, authUserId }) {
+        const results = await this._getPostComments(
+            {
+                userId,
+                communityId,
+                permlink,
+                limit: CHILD_COMMENTS_INLINE_LIMIT,
+                offset: 0,
+                sortBy: 'time',
+                parentComment: comment.contentId,
+            },
+            authUserId
+        );
+
+        comment.children = results.items;
     }
 
     _addCurrentUserFields(userId) {
@@ -306,6 +326,20 @@ class Comment extends BasicController {
         }
 
         return communityId;
+    }
+
+    _fixComments(comments) {
+        for (const comment of comments) {
+            this._fixComment(comment);
+        }
+    }
+
+    _fixComment(comment) {
+        comment.type = 'comment';
+
+        if (comment.content) {
+            comment.content = comment.content.body;
+        }
     }
 }
 
