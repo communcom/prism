@@ -216,7 +216,7 @@ class Comment extends BasicController {
 
         const sorting = {
             $sort: {
-                'meta.creationTime': sortBy === 'time' ? -1 : 1,
+                'meta.creationTime': sortBy === 'time' ? 1 : -1,
             },
         };
 

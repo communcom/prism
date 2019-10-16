@@ -200,12 +200,17 @@ class Comment extends Abstract {
             return true;
         }
 
-        const comment = await this._getComment(contentId);
+        let comment = await this._getComment(contentId);
 
         if (comment) {
+            while (comment.parents.comment) {
+                comment = await this._getComment(comment.parents.comment);
+            }
+
             model.parents.post = comment.parents.post;
-            model.parents.comment = contentId;
-            model.nestedLevel = comment.nestedLevel + 1;
+            model.parents.comment = comment.contentId;
+            // 2 is a fixed nesting depth
+            model.nestedLevel = 2;
             this._applyOrdering(model, comment);
             return true;
         }
