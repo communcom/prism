@@ -2,8 +2,120 @@ const core = require('cyberway-core-service');
 const BasicController = core.controllers.Basic;
 const ProfileModel = require('../../models/Profile');
 const CommunityModel = require('../../models/Community');
+const { isIncludes } = require('../../utils/mongodb');
 
 class Profile extends BasicController {
+    async getBlacklist({ userId, user, type }, { userId: authUserId }) {
+        let path;
+        const lookup = {};
+        const replaceRoot = {};
+        const addFields = [];
+        const finalProjection = {};
+
+        if (type === 'communities') {
+            path = 'communityIds';
+
+            lookup.$lookup = {
+                from: 'communities',
+                localField: 'blacklist',
+                foreignField: 'communityId',
+                as: 'blacklist',
+            };
+
+            replaceRoot.$replaceRoot = {
+                newRoot: {
+                    subscribers: '$blacklist.subscribers',
+                    communityId: '$blacklist.communityId',
+                    avatarUrl: '$blacklist.avatarUrl',
+                    alias: '$blacklist.alias',
+                    name: '$blacklist.name',
+                },
+            };
+
+            if (authUserId) {
+                addFields.push(
+                    isIncludes({
+                        newField: 'isSubscribed',
+                        arrayPath: '$subscribers',
+                        value: authUserId,
+                    })
+                );
+            }
+
+            finalProjection.$project = {
+                communityId: true,
+                avatarUrl: true,
+                alias: true,
+                name: true,
+                isSubscribed: true,
+            };
+        }
+
+        if (type === 'users') {
+            path = 'userIds';
+
+            lookup.$lookup = {
+                from: 'profiles',
+                localField: 'blacklist',
+                foreignField: 'userId',
+                as: 'blacklist',
+            };
+
+            replaceRoot.$replaceRoot = {
+                newRoot: {
+                    subscribers: '$blacklist.subscribers',
+                    userId: '$blacklist.userId',
+                    username: '$blacklist.username',
+                    avatarUrl: '$blacklist.personal.avatarUrl',
+                },
+            };
+
+            if (authUserId) {
+                addFields.push(
+                    isIncludes({
+                        newField: 'isSubscribed',
+                        arrayPath: '$subscribers.userIds',
+                        value: authUserId,
+                    })
+                );
+            }
+
+            finalProjection.$project = {
+                userId: true,
+                username: true,
+                avatarUrl: true,
+                isSubscribed: true,
+            };
+        }
+
+        const filter = { userId };
+
+        const projection = {
+            _id: false,
+            blacklist: `$blacklist.${path}`,
+        };
+
+        const unwind = {
+            $unwind: {
+                path: '$blacklist',
+            },
+        };
+
+        const aggregation = [
+            { $match: filter },
+            { $project: projection },
+            lookup,
+            unwind,
+            replaceRoot,
+            ...addFields,
+            finalProjection,
+        ];
+
+        const items = await ProfileModel.aggregate(aggregation);
+
+        return { items };
+    }
+
     async getProfile({ userId, username, user }, { userId: authUserId }) {
         const filter = {};
         if (username) {
@@ -23,43 +135,29 @@ class Profile extends BasicController {
             'subscribers.communityIds': false,
             'subscriptions.userIds': false,
             'subscriptions.communityIds': false,
+            blacklist: false,
         };
 
         const aggregation = [{ $match: filter }];
 
         if (authUserId) {
-            aggregation.push({
-                $addFields: {
-                    isSubscribed: {
-                        $cond: {
-                            if: {
-                                $eq: [
-                                    -1,
-                                    {
-                                        $indexOfArray: ['$subscribers.userIds', authUserId],
-                                    },
-                                ],
-                            },
-                            then: false,
-                            else: true,
-                        },
-                    },
-                    isSubscription: {
-                        $cond: {
-                            if: {
-                                $eq: [
-                                    -1,
-                                    {
-                                        $indexOfArray: ['$subscriptions.userIds', authUserId],
-                                    },
-                                ],
-                            },
-                            then: false,
-                            else: true,
-                        },
-                    },
-                },
-            });
+            aggregation.push(
+                isIncludes({
+                    newField: 'isSubscribed',
+                    arrayPath: '$subscribers.userIds',
+                    value: authUserId,
+                }),
+                isIncludes({
+                    newField: 'isSubscription',
+                    arrayPath: '$subscriptions.userIds',
+                    value: authUserId,
+                }),
+                isIncludes({
+                    newField: 'isBlocked',
+                    arrayPath: '$blacklist.userIds',
+                    value: authUserId,
+                })
+            );
         }
         aggregation.push({ $project: projection });
 

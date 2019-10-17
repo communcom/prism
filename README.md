@@ -146,6 +146,13 @@ getSubscribers:                  // Получить подписчиков по
     communityId <string>         // Идентификатор сообщества
     offset <number>(0)           // Кол-во записей, которые следует пропустить
     limit <number>(10)           // Количество элементов
+    
+getBlacklist:                    // Получить черный список профиля
+    userId <string>              // Идентификатор пользователя
+    type <string> [
+        users                    // Пользователи, внесенные в черный список
+    |   communities              // Сообщества, внесенные в черный список
+    ]              
 
 getHashTagTop:                   // Получение топа хеш-тегов
     communityId <string>         // Идентификатор комьюнити
@@ -187,8 +194,7 @@ waitForTransaction               // Дождаться и получить от�
     "method": "getProfile",
     "jsonrpc": "2.0",
     "params": {
-        "user": "username",
-        "userId": "lol"
+        "user": "tillman-luanna-dds"
     }
 }
 ```
@@ -200,13 +206,12 @@ waitForTransaction               // Дождаться и получить от�
     "jsonrpc": "2.0",
     "id": 1,
     "result": {
-        "username": "username",
         "subscriptions": {
-            "usersCount": 1,
+            "usersCount": 0,
             "communitiesCount": 0
         },
         "subscribers": {
-            "usersCount": 1,
+            "usersCount": 0,
             "communitiesCount": 0
         },
         "stats": {
@@ -215,12 +220,99 @@ waitForTransaction               // Дождаться и получить от�
             "commentsCount": 0
         },
         "leaderIn": [],
-        "userId": "tst3vypszqsu",
+        "userId": "tst2zjkdsujh",
+        "username": "tillman-luanna-dds",
         "registration": {
-            "time": "2019-09-27T11:33:33.000Z"
+            "time": "2019-10-09T11:49:54.000Z"
         },
-        "isSubscribed": true,
-        "isSubscription": false
+        "personal": {
+            "avatarUrl": "https://i.pravatar.cc/300?u=f7f401a1fd9bb6148ff9f64e79c64064f8bdeaa8",
+            "biography": "Chuck Norris doesn't use web standards as the web will conform to him.",
+            "contacts": {
+                "facebook": "Carthia van Canten",
+                "telegram": "Dandelion",
+                "weChat": "Dionysus",
+                "whatsApp": "Artemis"
+            },
+            "coverUrl": "https://elearning.unipd.it/cur/pluginfile.php/35531/course/overviewfiles/matrix_animated_60.gif"
+        },
+        "isSubscribed": false,
+        "isSubscription": false,
+        "isBlocked": false
+    }
+}
+```
+
+### getBlacklist
+
+=> Запрос пользователей в черном списке
+
+```json
+{
+    "id": 1,
+    "method": "getBlacklist",
+    "jsonrpc": "2.0",
+    "params": {
+        "type": "users",
+        "userId": "tst1nxmnwfsv"
+    }
+}
+```
+
+<= Ответ
+
+```json
+{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "result": {
+        "items": [
+            {
+                "userId": "tst1koocxwbz",
+                "username": "boehm-garland-md",
+                "avatarUrl": "https://i.pravatar.cc/300?u=86a9be2732fb54fccdb294e555cab54fc5f7c729",
+                "isSubscribed": false
+            },
+            {
+                "userId": "tst2elpyxqzd",
+                "username": "runolfsson-elliot-v",
+                "avatarUrl": "https://i.pravatar.cc/300?u=7c190ac6343a704377565d9a96300600f60f626b",
+                "isSubscribed": false
+            }
+        ]
+    }
+}
+```
+
+=> Запрос сообществ в черном списке
+
+```json
+{
+    "id": 1,
+    "method": "getBlacklist",
+    "jsonrpc": "2.0",
+    "params": {
+        "type": "communities",
+        "userId": "tst1nxmnwfsv"
+    }
+}
+```
+
+<= Ответ
+
+```json
+{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "result": {
+        "items": [
+            {
+                "communityId": "CATS",
+                "alias": "id2507527990",
+                "name": "cats",
+                "isSubscribed": false
+            }
+        ]
     }
 }
 ```

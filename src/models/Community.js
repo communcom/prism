@@ -39,6 +39,9 @@ module.exports = MongoDB.makeModel(
         language: {
             type: String,
         },
+        blacklist: {
+            type: [String],
+        },
     },
     {
         index: [

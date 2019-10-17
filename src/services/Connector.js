@@ -202,6 +202,23 @@ class Connector extends BasicConnector {
                         },
                     },
                 },
+
+                getBlacklist: {
+                    handler: this._profile.getBlacklist,
+                    scope: this._profile,
+                    inherits: ['onlyWhenPublicApiEnabled'],
+                    validation: {
+                        required: ['userId', 'type'],
+                        properties: {
+                            userId: {
+                                type: 'string',
+                            },
+                            type: {
+                                enum: ['communities', 'users'],
+                            },
+                        },
+                    },
+                },
                 suggestNames: {
                     handler: this._profile.suggestNames,
                     scope: this._profile,
