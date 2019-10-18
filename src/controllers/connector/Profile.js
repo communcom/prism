@@ -421,8 +421,8 @@ class Profile extends BasicController {
                             },
                             in: {
                                 communityId: '$$community.communityId',
+                                alias: '$$community.alias',
                                 name: '$$community.name',
-                                code: '$$community.code',
                                 avatarUrl: '$$community.avatarUrl',
                                 subscribers: '$$community.subscribers.userIds',
                             },
@@ -432,8 +432,8 @@ class Profile extends BasicController {
                 finalRoot.$replaceRoot = {
                     newRoot: {
                         communityId: '$community.communityId',
+                        alias: '$community.alias',
                         name: '$community.name',
-                        code: '$community.code',
                         avatarUrl: '$community.avatarUrl',
                         isSubscribed: '$isSubscribed',
                     },
