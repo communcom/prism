@@ -185,7 +185,17 @@ class Comment extends BasicController {
     }
 
     async _getPostComments(
-        { userId, communityId, communityAlias, permlink, limit, offset, sortBy, parentComment },
+        {
+            userId,
+            communityId,
+            communityAlias,
+            permlink,
+            limit,
+            offset,
+            sortBy,
+            parentComment,
+            resolveNestedComments,
+        },
         authUserId
     ) {
         let parentCommentPermlink;
@@ -214,11 +224,25 @@ class Comment extends BasicController {
 
         filter.nestedLevel = nestedLevel;
 
-        const sorting = {
-            $sort: {
-                'meta.creationTime': sortBy === 'time' ? 1 : -1,
-            },
-        };
+        const sorting = {};
+
+        switch (sortBy) {
+            case 'popularity':
+                sorting.$sort = {
+                    'votes.upCount': -1,
+                };
+                break;
+            case 'timeDesc':
+                sorting.$sort = {
+                    'meta.creationTime': -1,
+                };
+                break;
+            case 'time':
+            default:
+                sorting.$sort = {
+                    'meta.creationTime': 1,
+                };
+        }
 
         const projection = { ...baseProjection };
         const aggregation = [{ $match: filter }, sorting, { $skip: offset }, { $limit: limit }];
@@ -235,11 +259,11 @@ class Comment extends BasicController {
 
         const items = await CommentModel.aggregate(aggregation);
 
-        if (nestedLevel === 1) {
+        if (nestedLevel === 1 && resolveNestedComments === true) {
             const promises = [];
 
             for (const comment of items) {
-                if (comment.childCommentsCount <= CHILD_COMMENTS_INLINE_LIMIT) {
+                if (comment.childCommentsCount > 0) {
                     promises.push(
                         this._fetchCommentChildren({
                             userId,

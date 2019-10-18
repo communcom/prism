@@ -109,6 +109,11 @@ module.exports = MongoDB.makeModel(
                     'meta.creationTime': 1,
                 },
             },
+            {
+                fields: {
+                    'votes.upCount': -1,
+                },
+            },
         ],
     }
 );

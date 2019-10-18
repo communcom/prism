@@ -130,7 +130,7 @@ class Connector extends BasicConnector {
                             },
                             sortBy: {
                                 type: 'string',
-                                enum: ['time', 'timeDesc'],
+                                enum: ['time', 'timeDesc', 'popularity'],
                                 default: 'time',
                             },
                             parentComment: {
@@ -140,6 +140,10 @@ class Connector extends BasicConnector {
                                 userId: {
                                     type: 'string',
                                 },
+                            },
+                            resolveNestedComments: {
+                                type: 'boolean',
+                                default: false,
                             },
                         },
                     },

@@ -100,6 +100,11 @@ module.exports = MongoDB.makeModel(
                     'contentId.communityId': 1,
                 },
             },
+            {
+                fields: {
+                    'votes.upCount': -1,
+                },
+            },
         ],
     }
 );

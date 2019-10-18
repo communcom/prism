@@ -73,26 +73,28 @@ getComment:                        // Получение конкретного 
     communityId <string>           // Id сообщества
     permlink <string>              // Пермлинк комментария
 
-getComments:                       // Получение ленты комментариев
-    sortBy <string>('time')        // Способ сортировки
+getComments:                                // Получение ленты комментариев
+    sortBy <string>('time')                 // Способ сортировки
         [
-          time                     // Сначала старые, потом новые
-        | timeDesc                 // Сначала новые, потом старые
+          time                              // Сначала старые, потом новые
+        | timeDesc                          // Сначала новые, потом старые
+        | popularity                        // По популярности (сначала -- с наибольшим количеством upvote)
         ]
-    offset <number/null>           // Сдвиг
-    limit <number>(10)             // Количество элементов
-    type <string>('post')          // Тип ленты
+    offset <number/null>                    // Сдвиг
+    limit <number>(10)                      // Количество элементов
+    type <string>('post')                   // Тип ленты
         [
-          user                     // Получить комментарии пользователя, требует userId
-        | post                     // Получить комментарии для поста или родительского комментария. Если у комменария вложенности 1 менее 5 детей, они также участвуют в выдаче
-        | replies                  // Получить комментарии, которые были оставлены пользователю, требует userId
+          user                              // Получить комментарии пользователя, требует userId
+        | post                              // Получить комментарии для поста или родительского комментария. Если у комменария вложенности 1 менее 5 детей, они также участвуют в выдаче
+        | replies                           // Получить комментарии, которые были оставлены пользователю, требует userId
         ]
-    userId <string/null>           // Id пользователя
-    permlink <string/null>         // Пермлинк поста
-    communityId <string/null>      // Id сообщества
-    communityAlias <string/null>   // Alias сообщества (замена communityId при необходимости)
-    parentComment: <object/null>   // userId и permlink родительского комментария (при необходимости получить ответы на этот комментарий)
-
+    userId <string/null>                    // Id пользователя
+    permlink <string/null>                  // Пермлинк поста
+    communityId <string/null>               // Id сообщества
+    communityAlias <string/null>            // Alias сообщества (замена communityId при необходимости)
+    parentComment: <object/null>            // userId и permlink родительского комментария (при необходимости получить ответы на этот комментарий)
+    resolveNestedComments: <boolean>(false) // флаг, запрашивающий вложенные комментарии
+    
 getNotifyMeta:                // Получение мета-данных для отображения нотификации
     userId <string>           // Получить данные пользователя по id
     communityId <string>      // Получить данные комьюнити по идентификатору
@@ -1616,6 +1618,7 @@ waitForTransaction               // Дождаться и получить от�
 
 => Запрос комментариев к посту
 
+
 ```json
 {
     "id": 1,
@@ -1624,14 +1627,14 @@ waitForTransaction               // Дождаться и получить от�
     "params": {
         "communityId": "WWAPEPA",
         "userId": "tst1zfzkzodb",
-        "permlink": "hestia-fights-with-medea-against-helios-and-common-man-named-mr-august-leffler-iiii-on-yunkai-1570622466236"
+        "permlink": "hestia-fights-with-medea-against-helios-and-common-man-named-mr-august-leffler-iiii-on-yunkai-1570622466236",
+        "resolveNestedComments": false
     }
 }
 ```
 
 <= Ответ
 
-У комментариев к посту менее пяти вложенных комментариев, поэтому они включены в выдачу
 
 ```json
 {
@@ -1642,9 +1645,75 @@ waitForTransaction               // Дождаться и получить от�
             {
                 "votes": {
                     "upCount": 0,
-                    "downCount": 0,
-                    "hasUpVote": false,
-                    "hasDownVote": false
+                    "downCount": 0
+                },
+                "meta": {
+                    "creationTime": "2019-10-09T12:01:09.000Z"
+                },
+                "childCommentsCount": 0,
+                "contentId": {
+                    "communityId": "WWAPEPA",
+                    "userId": "tst2fdikvpfh",
+                    "permlink": "artemis-fights-with-dana-against-theia-and-common-man-named-misshunter-oberbrunneri-on-lannisport-1570622468592"
+                },
+                "parents": {
+                    "post": {
+                        "communityId": "WWAPEPA",
+                        "userId": "tst1zfzkzodb",
+                        "permlink": "hestia-fights-with-medea-against-helios-and-common-man-named-mr-august-leffler-iiii-on-yunkai-1570622466236"
+                    },
+                    "comment": null
+                },
+                "content": {
+                    "attributes": {
+                        "type": "comment",
+                        "version": "1.0",
+                        "title": "Artemis fights with Danaë against Theia and common man named MissHunter OberbrunnerI on Lannisport"
+                    },
+                    "id": 1,
+                    "type": "post",
+                    "content": [
+                        {
+                            "id": 2,
+                            "type": "paragraph",
+                            "content": [
+                                {
+                                    "id": 3,
+                                    "type": "text",
+                                    "content": "Chuck Norris doesn't pair program.\n at the moment he lives at 028 Kihn Oval, Evangelineburgh, NC 38472     \n\n and YODA said: Pain, suffering, death I feel. Something terrible has happened. Young Skywalker is in pain. Terrible pain \n\n witcher quote: No one wants to suffer. But that is the fate of each. And some suffer more. Not necessarily of their own volition. It's not about to enduring the suffering. It's about how you endure it. \n\n Rick and Morty quote: Existence is pain to a meeseeks Jerry, and we will do anything to alleviate that pain. \n\n SuperHero Lizard Ivy has power to Immortality and Elemental Transmogrification \n\n Harry Potter quote: Of course it is happening inside your head, Harry, but why on earth should that mean that it is not real? \n\n and some Lorem to finish text: Ab dolor laboriosam voluptas ad nam repellendus aliquam qui animi eaque adipisci id sequi quis dolorem occaecati aspernatur ducimus sunt voluptatum qui quasi excepturi ipsum culpa quo itaque sint nobis minus labore recusandae ea cumque unde quos quisquam totam porro commodi amet qui voluptatum quae suscipit qui doloribus omnis eum nihil aperiam iusto ut qui occaecati eligendi accusamus excepturi minima facilis eum quisquam molestiae et id officia magni fugiat qui dolorum quidem ducimus quisquam incidunt dolorum reiciendis reiciendis accusamus ipsa id itaque voluptatum neque sunt voluptas in sint dolorum eum modi ratione molestiae facilis sed accusantium assumenda ea hic ea ut porro modi dolor quia autem iure maxime atque omnis saepe itaque perferendis suscipit et cumque distinctio magni ut ea rerum architecto non voluptas amet nostrum aperiam qui eligendi doloribus incidunt fuga id fuga enim explicabo repellat aliquam nam voluptatibus cupiditate sed doloremque adipisci delectus saepe sapiente repudiandae temporibus molestiae consequatur quas."
+                                }
+                            ]
+                        },
+                        {
+                            "id": 13,
+                            "type": "attachments",
+                            "content": [
+                                {
+                                    "id": 14,
+                                    "type": "website",
+                                    "content": "https://bash.im/"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "author": {
+                    "userId": "tst2fdikvpfh",
+                    "username": "swift-donald-dds",
+                    "avatarUrl": "https://i.pravatar.cc/300?u=777533b3b7583a0e764ef4ed5266f0a3fd161b0e"
+                },
+                "community": {
+                    "communityId": "WWAPEPA",
+                    "alias": "id4197175299",
+                    "name": "WWAPEPA comunity",
+                    "avatarUrl": "https://i.pravatar.cc/300?u=4533b2fcfd06fdf86b990e9e99f3f6bfc67824b0"
+                },
+                "type": "comment"
+            },
+            {
+                "votes": {
+                    "upCount": 0,
+                    "downCount": 0
                 },
                 "meta": {
                     "creationTime": "2019-10-09T12:01:12.000Z"
@@ -1699,23 +1768,188 @@ waitForTransaction               // Дождаться и получить от�
                 "author": {
                     "userId": "tst3xtckjyrn",
                     "username": "von-chi-iv",
-                    "avatarUrl": "https://i.pravatar.cc/300?u=fa98c7309783247e76d30664dbb5441dddc7b006",
-                    "isSubscribed": false
+                    "avatarUrl": "https://i.pravatar.cc/300?u=fa98c7309783247e76d30664dbb5441dddc7b006"
                 },
                 "community": {
                     "communityId": "WWAPEPA",
                     "alias": "id4197175299",
                     "name": "WWAPEPA comunity",
-                    "avatarUrl": "https://i.pravatar.cc/300?u=4533b2fcfd06fdf86b990e9e99f3f6bfc67824b0",
-                    "isSubscribed": false
+                    "avatarUrl": "https://i.pravatar.cc/300?u=4533b2fcfd06fdf86b990e9e99f3f6bfc67824b0"
+                },
+                "type": "comment"
+            }
+        ]
+    }
+}
+```
+
+
+=> Запрос комментариев к посту, включая выдачу до 3 вложенных комментариев (children)
+
+
+```json
+{
+    "id": 1,
+    "method": "getComments",
+    "jsonrpc": "2.0",
+    "params": {
+        "communityId": "WWAPEPA",
+        "userId": "tst1zfzkzodb",
+        "permlink": "hestia-fights-with-medea-against-helios-and-common-man-named-mr-august-leffler-iiii-on-yunkai-1570622466236",
+        "sortBy": "popularity",
+        "resolveNestedComments": true
+    }
+}
+```
+
+<= Ответ
+
+
+```json
+{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "result": {
+        "items": [
+            {
+                "votes": {
+                    "upCount": 0,
+                    "downCount": 0
+                },
+                "meta": {
+                    "creationTime": "2019-10-09T12:01:09.000Z"
+                },
+                "childCommentsCount": 0,
+                "contentId": {
+                    "communityId": "WWAPEPA",
+                    "userId": "tst2fdikvpfh",
+                    "permlink": "artemis-fights-with-dana-against-theia-and-common-man-named-misshunter-oberbrunneri-on-lannisport-1570622468592"
+                },
+                "parents": {
+                    "post": {
+                        "communityId": "WWAPEPA",
+                        "userId": "tst1zfzkzodb",
+                        "permlink": "hestia-fights-with-medea-against-helios-and-common-man-named-mr-august-leffler-iiii-on-yunkai-1570622466236"
+                    },
+                    "comment": null
+                },
+                "content": {
+                    "attributes": {
+                        "type": "comment",
+                        "version": "1.0",
+                        "title": "Artemis fights with Danaë against Theia and common man named MissHunter OberbrunnerI on Lannisport"
+                    },
+                    "id": 1,
+                    "type": "post",
+                    "content": [
+                        {
+                            "id": 2,
+                            "type": "paragraph",
+                            "content": [
+                                {
+                                    "id": 3,
+                                    "type": "text",
+                                    "content": "Chuck Norris doesn't pair program.\n at the moment he lives at 028 Kihn Oval, Evangelineburgh, NC 38472     \n\n and YODA said: Pain, suffering, death I feel. Something terrible has happened. Young Skywalker is in pain. Terrible pain \n\n witcher quote: No one wants to suffer. But that is the fate of each. And some suffer more. Not necessarily of their own volition. It's not about to enduring the suffering. It's about how you endure it. \n\n Rick and Morty quote: Existence is pain to a meeseeks Jerry, and we will do anything to alleviate that pain. \n\n SuperHero Lizard Ivy has power to Immortality and Elemental Transmogrification \n\n Harry Potter quote: Of course it is happening inside your head, Harry, but why on earth should that mean that it is not real? \n\n and some Lorem to finish text: Ab dolor laboriosam voluptas ad nam repellendus aliquam qui animi eaque adipisci id sequi quis dolorem occaecati aspernatur ducimus sunt voluptatum qui quasi excepturi ipsum culpa quo itaque sint nobis minus labore recusandae ea cumque unde quos quisquam totam porro commodi amet qui voluptatum quae suscipit qui doloribus omnis eum nihil aperiam iusto ut qui occaecati eligendi accusamus excepturi minima facilis eum quisquam molestiae et id officia magni fugiat qui dolorum quidem ducimus quisquam incidunt dolorum reiciendis reiciendis accusamus ipsa id itaque voluptatum neque sunt voluptas in sint dolorum eum modi ratione molestiae facilis sed accusantium assumenda ea hic ea ut porro modi dolor quia autem iure maxime atque omnis saepe itaque perferendis suscipit et cumque distinctio magni ut ea rerum architecto non voluptas amet nostrum aperiam qui eligendi doloribus incidunt fuga id fuga enim explicabo repellat aliquam nam voluptatibus cupiditate sed doloremque adipisci delectus saepe sapiente repudiandae temporibus molestiae consequatur quas."
+                                }
+                            ]
+                        },
+                        {
+                            "id": 13,
+                            "type": "attachments",
+                            "content": [
+                                {
+                                    "id": 14,
+                                    "type": "website",
+                                    "content": "https://bash.im/"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "author": {
+                    "userId": "tst2fdikvpfh",
+                    "username": "swift-donald-dds",
+                    "avatarUrl": "https://i.pravatar.cc/300?u=777533b3b7583a0e764ef4ed5266f0a3fd161b0e"
+                },
+                "community": {
+                    "communityId": "WWAPEPA",
+                    "alias": "id4197175299",
+                    "name": "WWAPEPA comunity",
+                    "avatarUrl": "https://i.pravatar.cc/300?u=4533b2fcfd06fdf86b990e9e99f3f6bfc67824b0"
+                },
+                "type": "comment"
+            },
+            {
+                "votes": {
+                    "upCount": 0,
+                    "downCount": 0
+                },
+                "meta": {
+                    "creationTime": "2019-10-09T12:01:12.000Z"
+                },
+                "childCommentsCount": 1,
+                "contentId": {
+                    "communityId": "WWAPEPA",
+                    "userId": "tst3xtckjyrn",
+                    "permlink": "zeus-fights-with-icarus-against-eurynome-and-common-man-named-mr-kaylee-hudsoni-on-pentos-1570622469320"
+                },
+                "parents": {
+                    "post": {
+                        "communityId": "WWAPEPA",
+                        "userId": "tst1zfzkzodb",
+                        "permlink": "hestia-fights-with-medea-against-helios-and-common-man-named-mr-august-leffler-iiii-on-yunkai-1570622466236"
+                    },
+                    "comment": null
+                },
+                "content": {
+                    "attributes": {
+                        "type": "comment",
+                        "version": "1.0",
+                        "title": "Zeus fights with Icarus against Eurynome and common man named Mr.Kaylee HudsonI on Pentos"
+                    },
+                    "id": 1,
+                    "type": "post",
+                    "content": [
+                        {
+                            "id": 2,
+                            "type": "paragraph",
+                            "content": [
+                                {
+                                    "id": 3,
+                                    "type": "text",
+                                    "content": "Chuck Norris can write multi-threaded applications with a single thread.\n at the moment he lives at 4607 Lino Lights, Dillonberg, MT 46961     \n\n and YODA said: Do. Or do not. There is no try. \n\n witcher quote: When you know about something it stops being a nightmare. When you know how to fight something, it stops being so threatening. \n\n Rick and Morty quote: The first rule of space travel kids is always check out distress beacons. Nine out of ten times it's a ship full of dead aliens and a bunch of free shit! One out of ten times it's a deadly trap, but... I'm ready to roll those dice! \n\n SuperHero Agent Mimic XI has power to Intangibility and Magic \n\n Harry Potter quote: There are some things you can't share without ending up liking each other, and knocking out a twelve-foot mountain troll is one of them. \n\n and some Lorem to finish text: Iure et eligendi rerum minus quia cumque odit tenetur adipisci quibusdam sit quos nam sit nobis eos voluptatibus et neque molestias officia consequatur error deleniti officia quos molestias ut ut ut quo ut est alias temporibus quia ut nobis non placeat eius consectetur velit voluptatem accusantium velit quisquam inventore voluptas porro in nesciunt nisi officia sit est voluptatibus ut molestiae perferendis blanditiis odit molestiae a sunt alias aut adipisci et maxime et aut repellendus voluptatem voluptate molestiae optio voluptate non culpa velit alias aliquam ut enim qui doloribus quis ut iste iusto quia natus deleniti et quae ipsam maiores nisi quisquam id quasi beatae nisi enim qui quam minima voluptatum qui incidunt dicta rerum id ad et est vel in incidunt vero numquam modi ut doloremque eum nisi reprehenderit possimus ab sint nobis animi maiores labore adipisci accusamus soluta dolores atque deleniti quo dicta ea odit et facilis provident tenetur."
+                                }
+                            ]
+                        },
+                        {
+                            "id": 13,
+                            "type": "attachments",
+                            "content": [
+                                {
+                                    "id": 14,
+                                    "type": "image",
+                                    "content": "https://i.gifer.com/1HOf.gif"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "author": {
+                    "userId": "tst3xtckjyrn",
+                    "username": "von-chi-iv",
+                    "avatarUrl": "https://i.pravatar.cc/300?u=fa98c7309783247e76d30664dbb5441dddc7b006"
+                },
+                "community": {
+                    "communityId": "WWAPEPA",
+                    "alias": "id4197175299",
+                    "name": "WWAPEPA comunity",
+                    "avatarUrl": "https://i.pravatar.cc/300?u=4533b2fcfd06fdf86b990e9e99f3f6bfc67824b0"
                 },
                 "children": [
                     {
                         "votes": {
                             "upCount": 0,
-                            "downCount": 0,
-                            "hasUpVote": false,
-                            "hasDownVote": false
+                            "downCount": 0
                         },
                         "meta": {
                             "creationTime": "2019-10-09T12:01:12.000Z"
@@ -1774,97 +2008,25 @@ waitForTransaction               // Дождаться и получить от�
                         "author": {
                             "userId": "tst4zkborxrl",
                             "username": "bartoletti-cassi-jr",
-                            "avatarUrl": "https://i.pravatar.cc/300?u=e616310912d3222b9f50a2a1a5bbf87e8c07ae76",
-                            "isSubscribed": false
+                            "avatarUrl": "https://i.pravatar.cc/300?u=e616310912d3222b9f50a2a1a5bbf87e8c07ae76"
                         },
                         "community": {
                             "communityId": "WWAPEPA",
                             "alias": "id4197175299",
                             "name": "WWAPEPA comunity",
-                            "avatarUrl": "https://i.pravatar.cc/300?u=4533b2fcfd06fdf86b990e9e99f3f6bfc67824b0",
-                            "isSubscribed": false
-                        }
-                    }
-                ]
-            },
-            {
-                "votes": {
-                    "upCount": 0,
-                    "downCount": 0,
-                    "hasUpVote": false,
-                    "hasDownVote": false
-                },
-                "meta": {
-                    "creationTime": "2019-10-09T12:01:09.000Z"
-                },
-                "childCommentsCount": 0,
-                "contentId": {
-                    "communityId": "WWAPEPA",
-                    "userId": "tst2fdikvpfh",
-                    "permlink": "artemis-fights-with-dana-against-theia-and-common-man-named-misshunter-oberbrunneri-on-lannisport-1570622468592"
-                },
-                "parents": {
-                    "post": {
-                        "communityId": "WWAPEPA",
-                        "userId": "tst1zfzkzodb",
-                        "permlink": "hestia-fights-with-medea-against-helios-and-common-man-named-mr-august-leffler-iiii-on-yunkai-1570622466236"
-                    },
-                    "comment": null
-                },
-                "content": {
-                    "attributes": {
-                        "type": "comment",
-                        "version": "1.0",
-                        "title": "Artemis fights with Danaë against Theia and common man named MissHunter OberbrunnerI on Lannisport"
-                    },
-                    "id": 1,
-                    "type": "post",
-                    "content": [
-                        {
-                            "id": 2,
-                            "type": "paragraph",
-                            "content": [
-                                {
-                                    "id": 3,
-                                    "type": "text",
-                                    "content": "Chuck Norris doesn't pair program.\n at the moment he lives at 028 Kihn Oval, Evangelineburgh, NC 38472     \n\n and YODA said: Pain, suffering, death I feel. Something terrible has happened. Young Skywalker is in pain. Terrible pain \n\n witcher quote: No one wants to suffer. But that is the fate of each. And some suffer more. Not necessarily of their own volition. It's not about to enduring the suffering. It's about how you endure it. \n\n Rick and Morty quote: Existence is pain to a meeseeks Jerry, and we will do anything to alleviate that pain. \n\n SuperHero Lizard Ivy has power to Immortality and Elemental Transmogrification \n\n Harry Potter quote: Of course it is happening inside your head, Harry, but why on earth should that mean that it is not real? \n\n and some Lorem to finish text: Ab dolor laboriosam voluptas ad nam repellendus aliquam qui animi eaque adipisci id sequi quis dolorem occaecati aspernatur ducimus sunt voluptatum qui quasi excepturi ipsum culpa quo itaque sint nobis minus labore recusandae ea cumque unde quos quisquam totam porro commodi amet qui voluptatum quae suscipit qui doloribus omnis eum nihil aperiam iusto ut qui occaecati eligendi accusamus excepturi minima facilis eum quisquam molestiae et id officia magni fugiat qui dolorum quidem ducimus quisquam incidunt dolorum reiciendis reiciendis accusamus ipsa id itaque voluptatum neque sunt voluptas in sint dolorum eum modi ratione molestiae facilis sed accusantium assumenda ea hic ea ut porro modi dolor quia autem iure maxime atque omnis saepe itaque perferendis suscipit et cumque distinctio magni ut ea rerum architecto non voluptas amet nostrum aperiam qui eligendi doloribus incidunt fuga id fuga enim explicabo repellat aliquam nam voluptatibus cupiditate sed doloremque adipisci delectus saepe sapiente repudiandae temporibus molestiae consequatur quas."
-                                }
-                            ]
+                            "avatarUrl": "https://i.pravatar.cc/300?u=4533b2fcfd06fdf86b990e9e99f3f6bfc67824b0"
                         },
-                        {
-                            "id": 13,
-                            "type": "attachments",
-                            "content": [
-                                {
-                                    "id": 14,
-                                    "type": "website",
-                                    "content": "https://bash.im/"
-                                }
-                            ]
-                        }
-                    ]
-                },
-                "author": {
-                    "userId": "tst2fdikvpfh",
-                    "username": "swift-donald-dds",
-                    "avatarUrl": "https://i.pravatar.cc/300?u=777533b3b7583a0e764ef4ed5266f0a3fd161b0e",
-                    "isSubscribed": false
-                },
-                "community": {
-                    "communityId": "WWAPEPA",
-                    "alias": "id4197175299",
-                    "name": "WWAPEPA comunity",
-                    "avatarUrl": "https://i.pravatar.cc/300?u=4533b2fcfd06fdf86b990e9e99f3f6bfc67824b0",
-                    "isSubscribed": false
-                },
-                "children": []
+                        "type": "comment"
+                    }
+                ],
+                "type": "comment"
             }
         ]
     }
 }
 ```
 
-=> Запрос вложенных комментариев
+=> Запрос вложенных комментариев к конкретному комментарию
 
 ```json
 {
