@@ -82,7 +82,17 @@ const cleanUpProjection = {
 
 class Posts extends BasicController {
     async getPosts(
-        { type, allowNsfw, userId, limit, offset, communityId, communityAlias, username },
+        {
+            type,
+            timeframe,
+            allowNsfw,
+            userId,
+            limit,
+            offset,
+            communityId,
+            communityAlias,
+            username,
+        },
         { userId: authUserId }
     ) {
         if (!userId) {
@@ -96,10 +106,6 @@ class Posts extends BasicController {
             };
         }
 
-        if (type === 'byUser') {
-            return await this._getPostsByUser({ userId, limit, offset, allowNsfw }, authUserId);
-        }
-
         switch (type) {
             case 'byUser':
                 return await this._getPostsByUser({ userId, limit, offset, allowNsfw }, authUserId);
@@ -108,6 +114,13 @@ class Posts extends BasicController {
             case 'community':
                 return await this._getCommunityFeedNew(
                     { limit, offset, allowNsfw, communityId, communityAlias },
+                    authUserId
+                );
+            case 'topLikes':
+            case 'topComments':
+            case 'topRewards':
+                return await this._getTopFeed(
+                    { type, timeframe, allowNsfw, offset, limit },
                     authUserId
                 );
         }
@@ -221,6 +234,88 @@ class Posts extends BasicController {
             ...this._addCurrentUserFields(authUserId),
             cleanUpProjection,
         ]);
+
+        return { items };
+    }
+
+    async _getTopFeed(
+        { type, timeframe, allowNsfw, limit, offset, communityId, communityAlias },
+        authUserId
+    ) {
+        // make default sorting, so nothing breaks
+        const sortBy = { $sort: { _id: -1 } };
+        const filter = { $match: {} };
+        let addSortingField;
+
+        if (!allowNsfw) {
+            filter.$match['content.tags'] = { $ne: 'nsfw' };
+        }
+
+        if (communityAlias || communityId) {
+            filter.$match['contentId.communityId'] = await resolveCommunityId({
+                communityId,
+                communityAlias,
+            });
+        }
+
+        const now = Date.now();
+        const dayMillis = 1000 * 60 * 60 * 24;
+        const weekMillis = dayMillis * 7;
+        const monthMillis = weekMillis * 4;
+
+        const dayAgo = new Date(now - dayMillis);
+        const weekAgo = new Date(now - weekMillis);
+        const monthAgo = new Date(now - monthMillis);
+
+        switch (timeframe) {
+            case 'day':
+                filter.$match['meta.creationTime'] = { $gte: dayAgo };
+                break;
+            case 'week':
+                filter.$match['meta.creationTime'] = { $gte: weekAgo };
+                break;
+            case 'month':
+                filter.$match['meta.creationTime'] = { $gte: monthAgo };
+                break;
+        }
+
+        switch (type) {
+            case 'topLikes':
+                addSortingField = {
+                    $addFields: {
+                        votesSum: {
+                            $subtract: ['$votes.upCount', '$votes.downCount'],
+                        },
+                    },
+                };
+                sortBy.$sort = { votesSum: -1 };
+                break;
+            case 'topComments':
+                sortBy.$sort = { 'stats.commentsCount': -1 };
+                break;
+            case 'topRewards':
+                // todo: implement after rewards parse implementation
+                break;
+        }
+
+        const paging = [{ $skip: offset }, { $limit: limit }];
+
+        const aggregation = [filter];
+
+        if (addSortingField) {
+            aggregation.push(addSortingField);
+        }
+
+        aggregation.push(
+            sortBy,
+            ...paging,
+            ...lookups,
+            baseProjection,
+            ...this._addCurrentUserFields(authUserId),
+            cleanUpProjection
+        );
+
+        const items = await this._aggregate(aggregation);
 
         return { items };
     }

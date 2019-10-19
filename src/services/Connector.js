@@ -157,25 +157,25 @@ class Connector extends BasicConnector {
                         properties: {
                             type: {
                                 type: 'string',
-                                enum: ['community', 'subscriptions', 'byUser', 'new'],
+                                enum: [
+                                    'community',
+                                    'subscriptions',
+                                    'byUser',
+                                    'new',
+                                    'topLikes',
+                                    'topComments',
+                                    'topRewards',
+                                ],
                                 default: 'community',
                             },
                             sortBy: {
                                 type: 'string',
-                                enum: ['time', 'timeDesc', 'popular'],
+                                enum: ['time', 'timeDesc'],
                                 default: 'time',
                             },
                             timeframe: {
                                 type: 'string',
-                                enum: [
-                                    'day',
-                                    'week',
-                                    'month',
-                                    'year',
-                                    'all',
-                                    'WilsonHot',
-                                    'WilsonTrending',
-                                ],
+                                enum: ['day', 'week', 'month', 'all'],
                                 default: 'day',
                             },
                             userId: {
