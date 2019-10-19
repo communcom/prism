@@ -16,6 +16,80 @@ const baseProjection = {
 };
 
 class Community extends BasicController {
+    async getCommunityBlacklist({ communityId, communityAlias, offset, limit }) {
+        const match = { $match: {} };
+
+        if (communityId) {
+            match.$match.communityId = communityId;
+        } else if (communityAlias) {
+            match.$match.alias = communityAlias;
+        } else {
+            throw {
+                code: 500,
+                message: 'Invalid params',
+            };
+        }
+
+        const communityProjection = {
+            $project: {
+                _id: false,
+                userId: '$blacklist',
+            },
+        };
+
+        const unwindUserIds = {
+            $unwind: {
+                path: '$userId',
+            },
+        };
+
+        const paging = [
+            {
+                $skip: offset,
+            },
+            {
+                $limit: limit,
+            },
+        ];
+
+        const profileLookup = {
+            $lookup: {
+                from: 'profiles',
+                localField: 'userId',
+                foreignField: 'userId',
+                as: 'profile',
+            },
+        };
+
+        const unwindProfiles = {
+            $unwind: {
+                path: '$profile',
+            },
+        };
+
+        const profileProjection = {
+            $project: {
+                userId: true,
+                username: '$profile.username',
+                avatarUrl: '$profile.personal.avatarUrl',
+            },
+        };
+
+        const aggregation = [
+            match,
+            communityProjection,
+            unwindUserIds,
+            ...paging,
+            profileLookup,
+            unwindProfiles,
+            profileProjection,
+        ];
+
+        const items = await CommunityModel.aggregate(aggregation);
+
+        return { items };
+    }
+
     async getCommunity({ communityId, communityAlias }, { userId: authUserId }) {
         const match = {};
 

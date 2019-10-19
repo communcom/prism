@@ -175,6 +175,16 @@ getProposals:                    // Получить список предлаг
 getCommunities:
     offset <number>              // Сдвиг пагинации
     limit <number>               // Количество элементов
+    
+getCommunity:                    // Получить сообщество
+    communityId <string>         // Id сообщества
+    communityAlias <string>      // Алиас сообщества
+    
+getCommunityBlacklist:           // Получить список пользователей, заблокированных в сообществе
+    communityId <string>         // Id сообщества
+    communityAlias <string>      // Алиас сообщества   
+    offset <number>              // Сдвиг пагинации
+    limit <number>               // Количество элементов 
 
 waitForBlock                     // Дождаться и получить ответ когда призма обработает указанный блок
     blockNum <number>            // Номер блока
@@ -344,6 +354,44 @@ waitForTransaction               // Дождаться и получить от�
         "subscribersCount": 0,
         "communityId": "TWO comunity",
         "isSubscribed": false
+    }
+}
+```
+
+### getCommunityBlacklist
+
+=> Запрос
+
+```json
+{
+    "id": 1,
+    "method": "getCommunityBlacklist",
+    "jsonrpc": "2.0",
+    "params": {
+        "communityId": "CATS"
+    }
+}
+```
+
+<= Ответ
+
+```json
+{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "result": {
+        "items": [
+            {
+                "userId": "tst5fsodxphz",
+                "username": "metz-milford-jr",
+                "avatarUrl": "https://i.pravatar.cc/300?u=57f742f942c3330c8c4395bbdc57dacebdcb5721"
+            },
+            {
+                "userId": "tst1gdguzrce",
+                "username": "hilpert-enriqueta-jr",
+                "avatarUrl": "https://i.pravatar.cc/300?u=27c3e21a819805554b49819ac6e4e5ddc1b83f1e"
+            }
+        ]
     }
 }
 ```

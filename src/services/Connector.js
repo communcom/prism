@@ -431,6 +431,21 @@ class Connector extends BasicConnector {
                         },
                     },
                 },
+                getCommunityBlacklist: {
+                    handler: this._community.getCommunityBlacklist,
+                    scope: this._community,
+                    inherits: ['onlyWhenPublicApiEnabled', 'pagination'],
+                    validation: {
+                        properties: {
+                            communityId: {
+                                type: 'string',
+                            },
+                            communityAlias: {
+                                type: 'string',
+                            },
+                        },
+                    },
+                },
                 getCommunities: {
                     handler: this._community.getCommunities,
                     scope: this._community,
