@@ -339,7 +339,7 @@ waitForTransaction               // Дождаться и получить от�
     "method": "getCommunity",
     "jsonrpc": "2.0",
     "params": {
-        "communityId": "TWO comunity"
+        "communityId": "WREK"
     }
 }
 ```
@@ -352,8 +352,24 @@ waitForTransaction               // Дождаться и получить от�
     "id": 1,
     "result": {
         "subscribersCount": 0,
-        "communityId": "TWO comunity",
-        "isSubscribed": false
+        "communityId": "WREK",
+        "alias": "id2599799600",
+        "name": "WREK comunity",
+        "avatarUrl": "https://i.pravatar.cc/300?u=20528f91b85f0d42ca3c95019bcb2f70b0071c8a",
+        "coverUrl": "https://elearning.unipd.it/cur/pluginfile.php/35531/course/overviewfiles/matrix_animated_60.gif",
+        "description": "WREK comunity description",
+        "language": "eng",
+        "rules": "WREK comunity rules ",
+        "isSubscribed": true,
+        "isBlocked": false,
+        "friendsCount": 1,
+        "friends": [
+            {
+                "userId": "tst3evxcjgjn",
+                "username": "bayer-van-dds",
+                "avatarUrl": "https://img.golos.io/images/12DcKUF5SFgXyt9dazqn7ibu5Pn.jpg"
+            }
+        ]
     }
 }
 ```

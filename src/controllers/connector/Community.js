@@ -3,6 +3,7 @@ const BasicController = core.controllers.Basic;
 
 const { isIncludes } = require('../../utils/mongodb');
 const CommunityModel = require('../../models/Community');
+const ProfileModel = require('../../models/Profile');
 
 const baseProjection = {
     _id: false,
@@ -13,7 +14,10 @@ const baseProjection = {
     subscribersCount: true,
     language: true,
     isSubscribed: true,
+    isBlocked: true,
 };
+
+const FRIEND_SUBSCRIBERS_LIMIT = 5;
 
 class Community extends BasicController {
     async getCommunityBlacklist({ communityId, communityAlias, offset, limit }) {
@@ -91,6 +95,8 @@ class Community extends BasicController {
     }
 
     async getCommunity({ communityId, communityAlias }, { userId: authUserId }) {
+        let authUser;
+
         const match = {};
 
         if (communityId) {
@@ -116,7 +122,17 @@ class Community extends BasicController {
                     newField: 'isSubscribed',
                     arrayPath: '$subscribers',
                     value: authUserId,
+                }),
+                isIncludes({
+                    newField: 'isBlocked',
+                    arrayPath: '$blacklist',
+                    value: authUserId,
                 })
+            );
+
+            authUser = await ProfileModel.findOne(
+                { userId: authUserId },
+                { _id: false, subscriptions: true }
             );
         }
 
@@ -127,10 +143,12 @@ class Community extends BasicController {
                 description: true,
                 rules: true,
                 isSubscribed: true,
+                isBlocked: true,
+                subscribers: true,
             },
         });
 
-        const community = (await CommunityModel.aggregate(aggregation))[0];
+        const [community] = await CommunityModel.aggregate(aggregation);
 
         if (!community) {
             throw {
@@ -138,6 +156,39 @@ class Community extends BasicController {
                 message: 'Community is not found',
             };
         }
+
+        if (authUser) {
+            const friendsSubscribers = authUser.subscriptions.userIds.filter(friend =>
+                community.subscribers.includes(friend)
+            );
+
+            community.friendsCount = friendsSubscribers.length;
+
+            const resolveSubscribersPromises = [];
+
+            for (let i = 0; i < FRIEND_SUBSCRIBERS_LIMIT && i < friendsSubscribers.length; i++) {
+                resolveSubscribersPromises.push(
+                    ProfileModel.findOne(
+                        { userId: friendsSubscribers[i] },
+                        {
+                            userId: true,
+                            username: true,
+                            'personal.avatarUrl': true,
+                            _id: false,
+                        },
+                        { lean: true }
+                    )
+                );
+            }
+
+            community.friends = (await Promise.all(resolveSubscribersPromises)).map(user => ({
+                ...user,
+                avatarUrl: user.personal.avatarUrl,
+                personal: undefined,
+            }));
+        }
+
+        delete community.subscribers;
 
         return community;
     }
@@ -167,24 +218,23 @@ class Community extends BasicController {
         ];
 
         if (authUserId && !isQuerySubscriptions) {
-            aggregation.push({
-                $addFields: {
-                    isSubscribed: {
-                        $cond: {
-                            if: {
-                                $eq: [
-                                    -1,
-                                    {
-                                        $indexOfArray: ['$subscribers', authUserId],
-                                    },
-                                ],
-                            },
-                            then: false,
-                            else: true,
-                        },
-                    },
-                },
-            });
+            if (!isQuerySubscriptions) {
+                aggregation.push(
+                    isIncludes({
+                        newField: 'isSubscribed',
+                        arrayPath: '$subscribers',
+                        value: authUserId,
+                    })
+                );
+            }
+
+            aggregation.push(
+                isIncludes({
+                    newField: 'isBlocked',
+                    arrayPath: '$blacklist',
+                    value: authUserId,
+                })
+            );
         }
 
         aggregation.push({
