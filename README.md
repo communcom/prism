@@ -206,7 +206,7 @@ waitForTransaction               // Дождаться и получить от�
     "method": "getProfile",
     "jsonrpc": "2.0",
     "params": {
-        "user": "tillman-luanna-dds"
+        "user": "bayer-van-dds"
     }
 }
 ```
@@ -218,39 +218,39 @@ waitForTransaction               // Дождаться и получить от�
     "jsonrpc": "2.0",
     "id": 1,
     "result": {
-        "subscriptions": {
-            "usersCount": 0,
-            "communitiesCount": 0
-        },
-        "subscribers": {
-            "usersCount": 0,
-            "communitiesCount": 0
-        },
         "stats": {
             "reputation": 0,
-            "postsCount": 0,
-            "commentsCount": 0
+            "postsCount": 7,
+            "commentsCount": 2
         },
         "leaderIn": [],
-        "userId": "tst2zjkdsujh",
-        "username": "tillman-luanna-dds",
+        "userId": "tst3evxcjgjn",
+        "username": "bayer-van-dds",
         "registration": {
-            "time": "2019-10-09T11:49:54.000Z"
+            "time": "2019-10-08T14:03:30.000Z"
         },
         "personal": {
-            "avatarUrl": "https://i.pravatar.cc/300?u=f7f401a1fd9bb6148ff9f64e79c64064f8bdeaa8",
-            "biography": "Chuck Norris doesn't use web standards as the web will conform to him.",
+            "avatarUrl": "https://img.golos.io/images/12DcKUF5SFgXyt9dazqn7ibu5Pn.jpg",
+            "biography": "Chuck Norris burst the dot com bubble.2",
             "contacts": {
-                "facebook": "Carthia van Canten",
-                "telegram": "Dandelion",
-                "weChat": "Dionysus",
-                "whatsApp": "Artemis"
+                "facebook": "Jan Natalis1",
+                "telegram": "Zyvik",
+                "weChat": "Hephaestus",
+                "whatsApp": "Hera"
             },
-            "coverUrl": "https://elearning.unipd.it/cur/pluginfile.php/35531/course/overviewfiles/matrix_animated_60.gif"
+            "coverUrl": "https://img.golos.io/images/3fEfyKMfsbWRCteFj13TWwQitxRE.jpg"
         },
         "isSubscribed": false,
         "isSubscription": false,
-        "isBlocked": false
+        "isBlocked": false,
+        "commonCommunitiesCount": 1,
+        "commonCommunities": [
+            {
+                "communityId": "CATS",
+                "alias": "id2507527990",
+                "name": "cats"
+            }
+        ]
     }
 }
 ```

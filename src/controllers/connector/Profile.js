@@ -4,6 +4,8 @@ const ProfileModel = require('../../models/Profile');
 const CommunityModel = require('../../models/Community');
 const { isIncludes } = require('../../utils/mongodb');
 
+const COMMON_COMMUNITIES_COUNT = 5;
+
 class Profile extends BasicController {
     async getBlacklist({ userId, user, type }, { userId: authUserId }) {
         let path;
@@ -117,6 +119,8 @@ class Profile extends BasicController {
     }
 
     async getProfile({ userId, username, user }, { userId: authUserId }) {
+        let authUser;
+
         const filter = {};
         if (username) {
             filter.username = username;
@@ -128,14 +132,16 @@ class Profile extends BasicController {
 
         const projection = {
             _id: false,
-            createdAt: false,
-            updatedAt: false,
-            __v: false,
-            'subscribers.userIds': false,
-            'subscribers.communityIds': false,
-            'subscriptions.userIds': false,
-            'subscriptions.communityIds': false,
-            blacklist: false,
+            stats: true,
+            leaderIn: true,
+            userId: true,
+            username: true,
+            registration: true,
+            personal: true,
+            communities: '$subscriptions.communityIds',
+            isSubscribed: true,
+            isSubscription: true,
+            isBlocked: true,
         };
 
         const aggregation = [{ $match: filter }];
@@ -158,9 +164,16 @@ class Profile extends BasicController {
                     value: authUserId,
                 })
             );
+
+            authUser = await ProfileModel.findOne(
+                { userId: authUserId },
+                { subscriptions: true },
+                { lean: true }
+            );
         }
         aggregation.push({ $project: projection });
 
+        let resultUser;
         const result = await ProfileModel.aggregate(aggregation);
 
         if (result.length === 0) {
@@ -171,10 +184,45 @@ class Profile extends BasicController {
         }
 
         if (result.length > 1) {
-            return result.find(resultUser => resultUser.username === user);
+            resultUser = result.find(resultUser => resultUser.username === user);
+        } else {
+            resultUser = result[0];
         }
 
-        return result[0];
+        if (authUser) {
+            const authUserCommunities = authUser.subscriptions.communityIds;
+
+            const commonCommunities = authUserCommunities.filter(community =>
+                resultUser.communities.includes(community)
+            );
+
+            resultUser.commonCommunitiesCount = commonCommunities.length;
+            resultUser.commonCommunities = await CommunityModel.aggregate([
+                {
+                    $match: {
+                        $or: commonCommunities.map(communityId => {
+                            return { communityId };
+                        }),
+                    },
+                },
+                {
+                    $limit: COMMON_COMMUNITIES_COUNT,
+                },
+                {
+                    $project: {
+                        communityId: true,
+                        alias: true,
+                        name: true,
+                        avatarUrl: true,
+                        _id: false,
+                    },
+                },
+            ]);
+        }
+
+        delete resultUser.communities;
+
+        return resultUser;
     }
 
     suggestNames() {
