@@ -39,6 +39,7 @@ class Post extends Abstract {
             },
             payout: {
                 meta: {
+                    // todo: take this from community settings
                     curatorsPercent: Number(content.curators_prcnt),
                 },
             },

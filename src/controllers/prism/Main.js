@@ -99,6 +99,44 @@ class Main {
                 await this._community.handleFollowUnfollow(actionArgs, 'unfollow');
                 break;
 
+            case 'comn.list->hide':
+                // add community into user's blacklist
+                // todo: handle this
+                break;
+
+            case 'comn.list->unhide':
+                // remove community from user's blacklist
+                // todo: handle this
+                break;
+
+            case 'comn.list->setappparams':
+                // community settings
+                // leaders of commun can change them
+                // todo: handle this
+                break;
+
+            case 'comn.list->setsysparams':
+                // community settings
+                // can be changed by commun.com
+                // todo: handle this
+                break;
+
+            case 'comn.list->setparams':
+                // community settings
+                // leaders can change these
+                // todo: handle this
+                break;
+
+            case 'comn.list->ban':
+                // ban user in community
+                // todo: handle this
+                break;
+
+            case 'comn.list->unban':
+                // unban user in community
+                // todo: handle this
+                break;
+
             case `cyber.domain->newusername`:
                 await this._profile.handleUsername(actionArgs, meta);
                 break;
@@ -108,7 +146,7 @@ class Main {
             //     await this._post.handlePayout(actionArgs, meta);
             //     break;
 
-            case 'comn.gallery->createmssg':
+            case 'comn.gallery->create':
                 if (actionArgs.parent_id && actionArgs.parent_id.permlink) {
                     await this._comment.handleCreate(actionArgs, meta);
                 } else {
@@ -118,7 +156,7 @@ class Main {
                 }
                 break;
 
-            case 'comn.gallery->updatemssg':
+            case 'comn.gallery->update':
                 if (await isPost(actionArgs)) {
                     await this._post.handleUpdate(actionArgs, meta);
                     // Временно не обрабатываем
@@ -128,11 +166,15 @@ class Main {
                 }
                 break;
 
-            case 'comn.gallery->deletemssg':
+            case 'comn.gallery->remove':
                 // Warning - do not change ordering
                 // await this._hashTag.handleDelete(actionArgs, meta);
                 await this._post.handleDelete(actionArgs, meta);
                 await this._comment.handleDelete(actionArgs, meta);
+                break;
+
+            case 'comn.gallery->report':
+                // TODO: add message report support
                 break;
 
             case `${communityId}.social->updatemeta`:
@@ -149,6 +191,41 @@ class Main {
 
             case 'comn.gallery->unvote':
                 await this._vote.handleUnVote(actionArgs, meta);
+                break;
+
+            case 'comn.gallery->ban':
+                // message payout ban
+                // todo: handle this
+                break;
+
+            case 'comn.gallery->mosaicerase':
+                // when post is closed
+                // todo: handle this
+                break;
+
+            case 'comn.gallery->mosaicstate':
+                // info about all rewards for post in sum
+                // todo: handle this
+                break;
+
+            case 'comn.gallery->gemstate':
+                // when vote state changed; info about users' rewards
+                // todo: handle this
+                break;
+
+            case 'comn.gallery->chopevent':
+                // when vote erased
+                // todo: handle this
+                break;
+
+            case 'comn.gallery->lock':
+                // locking post
+                // todo: handle this
+                break;
+
+            case 'comn.gallery->unlock':
+                // unlocking post
+                // todo: handle this
                 break;
 
             case 'comn.social->pin':
