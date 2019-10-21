@@ -101,40 +101,42 @@ class Main {
 
             case 'comn.list->hide':
                 // add community into user's blacklist
-                // todo: handle this
+                await this._community.handleHideUnhide(actionArgs, 'hide');
                 break;
 
             case 'comn.list->unhide':
                 // remove community from user's blacklist
-                // todo: handle this
+                await this._community.handleHideUnhide(actionArgs, 'hide');
                 break;
 
             case 'comn.list->setappparams':
                 // community settings
                 // leaders of commun can change them
-                // todo: handle this
+                await this._community.handleSettings(actionArgs);
                 break;
 
             case 'comn.list->setsysparams':
                 // community settings
                 // can be changed by commun.com
-                // todo: handle this
+                await this._community.handleSettings(actionArgs);
+
                 break;
 
             case 'comn.list->setparams':
                 // community settings
                 // leaders can change these
-                // todo: handle this
+                await this._community.handleSettings(actionArgs);
+
                 break;
 
             case 'comn.list->ban':
                 // ban user in community
-                // todo: handle this
+                await this._community.handleBanUnban(actionArgs, 'ban');
                 break;
 
             case 'comn.list->unban':
                 // unban user in community
-                // todo: handle this
+                await this._community.handleBanUnban(actionArgs, 'unban');
                 break;
 
             case `cyber.domain->newusername`:

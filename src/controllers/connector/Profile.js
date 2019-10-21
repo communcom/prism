@@ -7,6 +7,28 @@ const { isIncludes } = require('../../utils/mongodb');
 const COMMON_COMMUNITIES_COUNT = 5;
 
 class Profile extends BasicController {
+    async getProfileBanHistory({ userId, limit, offset }) {
+        const filter = { userId };
+
+        const items = await BanModel.find(
+            filter,
+            {
+                _id: false,
+                type: true,
+                userId: true,
+                leaderUserId: true,
+                communityId: true,
+                reason: true,
+            },
+            { lean: true }
+        )
+            .sort({ createdAt: -1 })
+            .skip(offset)
+            .limit(limit);
+
+        return { items };
+    }
+
     async getBlacklist({ userId, user, type }, { userId: authUserId }) {
         let path;
         const lookup = {};

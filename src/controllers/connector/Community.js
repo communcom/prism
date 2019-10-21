@@ -2,8 +2,10 @@ const core = require('cyberway-core-service');
 const BasicController = core.controllers.Basic;
 
 const { isIncludes } = require('../../utils/mongodb');
+const { resolveCommunityId } = require('../../utils/lookup');
 const CommunityModel = require('../../models/Community');
 const ProfileModel = require('../../models/Profile');
+const BanModel = require('../../models/Ban');
 
 const baseProjection = {
     _id: false,
@@ -20,19 +22,55 @@ const baseProjection = {
 const FRIEND_SUBSCRIBERS_LIMIT = 5;
 
 class Community extends BasicController {
-    async getCommunityBlacklist({ communityId, communityAlias, offset, limit }) {
-        const match = { $match: {} };
+    async getCommunityBanHistory({ communityId, communityAlias, userId, limit, offset }) {
+        communityId = await resolveCommunityId({ communityId, communityAlias });
 
-        if (communityId) {
-            match.$match.communityId = communityId;
-        } else if (communityAlias) {
-            match.$match.alias = communityAlias;
-        } else {
+        const filter = { communityId };
+        if (userId) {
+            filter.userId = userId;
+        }
+
+        const items = await BanModel.find(
+            filter,
+            {
+                _id: false,
+                type: true,
+                userId: true,
+                leaderUserId: true,
+                communityId: true,
+                reason: true,
+            },
+            { lean: true }
+        )
+            .sort({ createdAt: -1 })
+            .skip(offset)
+            .limit(limit);
+
+        return { items };
+    }
+
+    async getSettings({ communityId, communityAlias }) {
+        communityId = await resolveCommunityId({ communityId, communityAlias });
+        const { settings } = await CommunityModel.findOne(
+            { communityId },
+            { settings: true, _id: false },
+            { lean: true }
+        );
+
+        if (!settings) {
             throw {
-                code: 500,
-                message: 'Invalid params',
+                code: 404,
+                message: 'Community is not found',
             };
         }
+
+        return { settings };
+    }
+
+    async getCommunityBlacklist({ communityId, communityAlias, offset, limit }) {
+        communityId = await resolveCommunityId({ communityId, communityAlias });
+
+        const match = { $match: { communityId } };
 
         const communityProjection = {
             $project: {
@@ -97,18 +135,8 @@ class Community extends BasicController {
     async getCommunity({ communityId, communityAlias }, { userId: authUserId }) {
         let authUser;
 
-        const match = {};
-
-        if (communityId) {
-            match.communityId = communityId;
-        } else if (communityAlias) {
-            match.alias = communityAlias;
-        } else {
-            throw {
-                code: 500,
-                message: 'Invalid params',
-            };
-        }
+        communityId = await resolveCommunityId({ communityId, communityAlias });
+        const match = { communityId };
 
         const aggregation = [
             {

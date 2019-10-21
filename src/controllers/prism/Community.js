@@ -2,6 +2,7 @@ const crypto = require('crypto');
 
 const CommunityModel = require('../../models/Community');
 const ProfileModel = require('../../models/Profile');
+const BanModel = require('../../models/Ban');
 
 // Менять соль нельзя, это приведет к расхождению в alias между призмами.
 const SALT = 'AL1tsa3up0at';
@@ -9,6 +10,137 @@ const SALT = 'AL1tsa3up0at';
 class Community {
     constructor({ forkService }) {
         this._forkService = forkService;
+    }
+
+    async handleSettings({
+        leaders_num: leadersNum,
+        max_votes: maxVotes,
+        // todo: after MVP
+        // permission,
+        // required_threshold,
+        commun_code: communityId,
+        collection_period: collectionPeriod,
+        moderation_period: moderationPeriod,
+        lock_period: lockPeriod,
+        gems_per_day: gemsPerDay,
+        rewarded_mosaic_num: rewardedMosaicNum,
+        // todo: after MVP
+        // opuses,
+        // remove_opuses,
+        min_lead_rating: minLeaderRating,
+        emission_rate: emissionRate,
+        leaders_percent: leadersPercent,
+        author_percent: authorPercent,
+    }) {
+        const newSettings = {
+            leadersNum,
+            maxVotes,
+            communityId,
+            collectionPeriod,
+            moderationPeriod,
+            lockPeriod,
+            gemsPerDay,
+            rewardedMosaicNum,
+            minLeaderRating,
+            emissionRate,
+            leadersPercent,
+            authorPercent,
+        };
+
+        const oldCommunityObject = await CommunityModel.findOneAndUpdate(
+            { communityId },
+            { $set: { settings: newSettings } }
+        );
+
+        if (oldCommunityObject) {
+            await this._forkService.registerChanges({
+                type: 'update',
+                Model: CommunityModel,
+                documentId: oldCommunityObject._id,
+                data: {
+                    $set: {
+                        settings: oldCommunityObject.settings,
+                    },
+                },
+            });
+        }
+    }
+
+    async handleBanUnban(
+        { commun_code: communityId, account: userId, leader: leaderUserId, reason },
+        type
+    ) {
+        let changeMethod, revertMethod;
+
+        if (type === 'ban') {
+            changeMethod = '$addToSet';
+            revertMethod = '$pull';
+        } else {
+            changeMethod = '$pull';
+            revertMethod = '$addToSet';
+        }
+
+        const oldCommunityObject = await CommunityModel.findOneAndUpdate(
+            { communityId },
+            { [changeMethod]: { blacklist: userId } }
+        );
+
+        if (oldCommunityObject) {
+            await this._forkService.registerChanges({
+                type: 'update',
+                Model: CommunityModel,
+                documentId: oldCommunityObject._id,
+                data: {
+                    [revertMethod]: {
+                        blacklist: userId,
+                    },
+                },
+            });
+        }
+
+        const newBanObject = await BanModel.create({
+            userId,
+            communityId,
+            leaderUserId,
+            reason,
+            type,
+        });
+
+        await this._forkService.registerChanges({
+            type: 'create',
+            Model: BanModel,
+            documentId: newBanObject._id,
+        });
+    }
+
+    async handleHideUnhide({ commun_code: communityId, follower: userId }, type) {
+        let changeMethod, revertMethod;
+
+        if (type === 'hide') {
+            changeMethod = '$addToSet';
+            revertMethod = '$pull';
+        } else {
+            changeMethod = '$pull';
+            revertMethod = '$addToSet';
+        }
+
+        const oldUserObject = await ProfileModel.findOneAndUpdate(
+            { userId },
+            { [changeMethod]: { 'blacklist.communityIds': communityId } }
+        );
+
+        if (oldUserObject) {
+            await this._forkService.registerChanges({
+                type: 'update',
+                Model: ProfileModel,
+                documentId: oldUserObject._id,
+                data: {
+                    [revertMethod]: {
+                        'blacklist.communityIds': userId,
+                    },
+                },
+            });
+        }
     }
 
     async handleCreate({ community_name: name, commun_code: communityId }) {
@@ -67,15 +199,15 @@ class Community {
     }
 
     async handleFollowUnfollow({ commun_code: communityId, follower: userId }, type) {
-        let changeMethod, forkMethod, inc;
+        let changeMethod, revertMethod, inc;
 
         if (type === 'follow') {
             changeMethod = '$addToSet';
-            forkMethod = '$pull';
+            revertMethod = '$pull';
             inc = 1;
         } else {
             changeMethod = '$pull';
-            forkMethod = '$addToSet';
+            revertMethod = '$addToSet';
             inc = -1;
         }
 
@@ -90,7 +222,7 @@ class Community {
                 Model: CommunityModel,
                 documentId: oldCommunityObject._id,
                 data: {
-                    [forkMethod]: {
+                    [revertMethod]: {
                         subscribers: userId,
                     },
                 },
