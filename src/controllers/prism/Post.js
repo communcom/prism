@@ -4,7 +4,7 @@ const Abstract = require('./Abstract');
 const PostModel = require('../../models/Post');
 const ProfileModel = require('../../models/Profile');
 const { processContent, extractContentId } = require('../../utils/content');
-const { isCommunityExists } = require('../../utils/community');
+const { isCommunityExists } = require('../../utils/lookup');
 
 const ALLOWED_POST_TYPES = ['basic', 'article'];
 

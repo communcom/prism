@@ -6,7 +6,7 @@ const PostModel = require('../../models/Post');
 const CommentModel = require('../../models/Comment');
 const ProfileModel = require('../../models/Profile');
 const { processContent, extractContentId, extractParentContentId } = require('../../utils/content');
-const { isCommunityExists } = require('../../utils/community');
+const { isCommunityExists } = require('../../utils/lookup');
 
 class Comment extends Abstract {
     async handleCreate(content, { blockNum, blockTime }) {

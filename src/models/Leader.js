@@ -12,6 +12,10 @@ module.exports = MongoDB.makeModel(
             type: String,
             required: true,
         },
+        username: {
+            type: String,
+            required: true,
+        },
         url: {
             type: String,
             default: '',
@@ -55,10 +59,11 @@ module.exports = MongoDB.makeModel(
                 },
             },
             {
-                // Top
+                // Leaders top
                 fields: {
                     communityId: 1,
                     position: 1,
+                    username: 1,
                 },
             },
             {

@@ -5,7 +5,7 @@ async function isCommunityExists(communityId) {
     return Boolean(await CommunityModel.findOne({ communityId }, { _id: true }));
 }
 
-async function lookUpCommunityByAlias(alias) {
+async function lookupCommunityByAlias(alias) {
     const community = await CommunityModel.findOne(
         {
             alias,
@@ -25,7 +25,7 @@ async function lookUpCommunityByAlias(alias) {
     return community.communityId;
 }
 
-async function lookUpUserIdByUsername(username) {
+async function lookupUserIdByUsername(username) {
     const profile = await ProfileModel.findOne(
         {
             username,
@@ -45,6 +45,26 @@ async function lookUpUserIdByUsername(username) {
     return profile.userId;
 }
 
+async function lookupUsernameByUserId(userId) {
+    const profile = await ProfileModel.findOne(
+        {
+            userId,
+        },
+        {
+            username: true,
+        },
+        {
+            lean: true,
+        }
+    );
+
+    if (!profile) {
+        return null;
+    }
+
+    return profile.username;
+}
+
 async function normalizeContentId(params) {
     let { communityId, communityAlias, userId, username, permlink } = params;
 
@@ -56,7 +76,7 @@ async function normalizeContentId(params) {
     }
 
     if (!userId) {
-        userId = await lookUpUserIdByUsername(username);
+        userId = await lookupUserIdByUsername(username);
     }
 
     if (!userId) {
@@ -84,7 +104,7 @@ async function resolveCommunityId({ communityId, communityAlias }) {
     }
 
     if (!communityId) {
-        communityId = await lookUpCommunityByAlias(communityAlias);
+        communityId = await lookupCommunityByAlias(communityAlias);
     }
 
     if (!communityId) {
@@ -100,7 +120,8 @@ async function resolveCommunityId({ communityId, communityAlias }) {
 module.exports = {
     isCommunityExists,
     resolveCommunityId,
-    lookUpCommunityByAlias,
-    lookUpUserIdByUsername,
+    lookupCommunityByAlias,
+    lookupUserIdByUsername,
+    lookupUsernameByUserId,
     normalizeContentId,
 };

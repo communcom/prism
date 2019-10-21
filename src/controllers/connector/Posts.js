@@ -2,8 +2,11 @@ const core = require('cyberway-core-service');
 const BasicController = core.controllers.Basic;
 const PostModel = require('../../models/Post');
 const ProfileModel = require('../../models/Profile');
-const { normalizeContentId, lookUpUserIdByUsername } = require('../../utils/community');
-const { resolveCommunityId } = require('../../utils/community');
+const {
+    normalizeContentId,
+    lookupUserIdByUsername,
+    resolveCommunityId,
+} = require('../../utils/lookup');
 const { isIncludes } = require('../../utils/mongodb');
 
 const lookups = [
@@ -96,7 +99,7 @@ class Posts extends BasicController {
         { userId: authUserId }
     ) {
         if (!userId) {
-            userId = await lookUpUserIdByUsername(username);
+            userId = await lookupUserIdByUsername(username);
         }
 
         if (offset < 0) {

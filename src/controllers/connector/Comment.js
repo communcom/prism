@@ -1,7 +1,7 @@
 const core = require('cyberway-core-service');
 const BasicController = core.controllers.Basic;
 const CommentModel = require('../../models/Comment');
-const { resolveCommunityId } = require('../../utils/community');
+const { resolveCommunityId } = require('../../utils/lookup');
 const { isIncludes } = require('../../utils/mongodb');
 const env = require('../../data/env');
 

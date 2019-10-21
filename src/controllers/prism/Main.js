@@ -244,45 +244,21 @@ class Main {
                 await this._subscribe.unblock(actionArgs);
                 break;
 
-            case `${communityId}.ctrl->regwitness`:
-                await this._leader.register(actionArgs, meta);
-                break;
-
-            case `${communityId}.ctrl->unregwitness`:
-                await this._leader.unregister(actionArgs, meta);
-                break;
-
-            case `${communityId}.ctrl->startwitness`:
-                await this._leader.activate(actionArgs, meta);
-                break;
-
-            case `${communityId}.ctrl->stopwitness`:
-                await this._leader.deactivate(actionArgs, meta);
-                break;
-
-            case `${communityId}.ctrl->votewitness`:
-                await this._leader.vote(actionArgs, meta);
-                break;
-
-            case `${communityId}.ctrl->unvotewitn`:
-                await this._leader.unvote(actionArgs, meta);
-                break;
-
             // case `${communityId}.publish->erasereblog`:
             //     await this._post.handleRemoveRepost(actionArgs, meta);
             //     break;
 
-            case 'cyber.msig->propose':
-                await this._leader.handleNewProposal(actionArgs, meta);
-                break;
-
-            case 'cyber.msig->approve':
-                await this._leader.handleProposalApprove(actionArgs);
-                break;
-
-            case 'cyber.msig->exec':
-                await this._leader.handleProposalExec(actionArgs, meta);
-                break;
+            // case 'cyber.msig->propose':
+            //     await this._leader.handleNewProposal(actionArgs, meta);
+            //     break;
+            //
+            // case 'cyber.msig->approve':
+            //     await this._leader.handleProposalApprove(actionArgs);
+            //     break;
+            //
+            // case 'cyber.msig->exec':
+            //     await this._leader.handleProposalExec(actionArgs, meta);
+            //     break;
 
             case `${communityId}.charge->setrestorer`:
                 try {
@@ -314,6 +290,10 @@ class Main {
             // unknown action, do nothing
         }
 
+        if (action.code === 'comn.ctrl') {
+            await this._processCtrl(action.action, actionArgs, meta);
+        }
+
         if (action.action === 'setparams') {
             const [communityId, contractName] = action.code.split('.');
 
@@ -325,6 +305,37 @@ class Main {
                     actionArgs.params
                 );
             }
+        }
+    }
+
+    async _processCtrl(pathName, actionArgs, meta) {
+        switch (pathName) {
+            case 'regleader':
+                await this._leader.register(actionArgs, meta);
+                break;
+
+            case 'unregleader':
+                await this._leader.unregister(actionArgs, meta);
+                break;
+
+            case 'startleader':
+                await this._leader.activate(actionArgs, meta);
+                break;
+
+            case 'stopleader':
+                await this._leader.deactivate(actionArgs, meta);
+                break;
+
+            case 'voteleader':
+                await this._leader.vote(actionArgs, meta);
+                break;
+
+            case 'unvotelead':
+                await this._leader.unvote(actionArgs, meta);
+                break;
+
+            default:
+            // Do nothing
         }
     }
 

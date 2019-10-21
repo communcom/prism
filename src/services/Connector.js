@@ -115,7 +115,7 @@ class Connector extends BasicConnector {
                     inherits: [
                         'feedPagination',
                         'username',
-                        'pagination',
+                        'paging',
                         'communityId',
                         'contentId',
                         'onlyWhenPublicApiEnabled',
@@ -151,7 +151,7 @@ class Connector extends BasicConnector {
                 getPosts: {
                     handler: this._posts.getPosts,
                     scope: this._posts,
-                    inherits: ['pagination', 'nsfwFilter', 'username', 'onlyWhenPublicApiEnabled'],
+                    inherits: ['paging', 'nsfwFilter', 'username', 'onlyWhenPublicApiEnabled'],
                     validation: {
                         required: [],
                         properties: {
@@ -276,14 +276,14 @@ class Connector extends BasicConnector {
                 getLeadersTop: {
                     handler: this._leaders.getTop,
                     scope: this._leaders,
-                    inherits: ['feedPagination', 'onlyWhenPublicApiEnabled'],
+                    inherits: ['paging', 'onlyWhenPublicApiEnabled'],
                     validation: {
                         required: ['communityId'],
                         properties: {
                             communityId: {
                                 type: 'string',
                             },
-                            query: {
+                            prefix: {
                                 type: 'string',
                             },
                         },
@@ -369,7 +369,7 @@ class Connector extends BasicConnector {
                 getSubscriptions: {
                     handler: this._profile.getSubscriptions,
                     scope: this._profile,
-                    inherits: ['pagination', 'onlyWhenPublicApiEnabled'],
+                    inherits: ['paging', 'onlyWhenPublicApiEnabled'],
                     validation: {
                         required: ['userId', 'type'],
                         properties: {
@@ -386,7 +386,7 @@ class Connector extends BasicConnector {
                 getSubscribers: {
                     handler: this._profile.getSubscribers,
                     scope: this._profile,
-                    inherits: ['pagination', 'onlyWhenPublicApiEnabled'],
+                    inherits: ['paging', 'onlyWhenPublicApiEnabled'],
                     validation: {
                         properties: {
                             userId: {
@@ -434,7 +434,7 @@ class Connector extends BasicConnector {
                 getCommunityBlacklist: {
                     handler: this._community.getCommunityBlacklist,
                     scope: this._community,
-                    inherits: ['onlyWhenPublicApiEnabled', 'pagination'],
+                    inherits: ['onlyWhenPublicApiEnabled', 'paging'],
                     validation: {
                         properties: {
                             communityId: {
@@ -474,27 +474,12 @@ class Connector extends BasicConnector {
                                     type: 'number',
                                     default: 10,
                                     minValue: 1,
-                                    maxValue: 30,
-                                },
-                                offset: {
-                                    type: 'number',
-                                    default: 0,
-                                },
-                            },
-                        },
-                    },
-                    pagination: {
-                        validation: {
-                            properties: {
-                                limit: {
-                                    type: 'number',
-                                    default: 20,
-                                    minValue: 1,
                                     maxValue: env.GLS_MAX_FEED_LIMIT,
                                 },
                                 offset: {
-                                    type: ['number', 'null'],
+                                    type: 'number',
                                     default: 0,
+                                    minValue: 0,
                                 },
                             },
                         },
