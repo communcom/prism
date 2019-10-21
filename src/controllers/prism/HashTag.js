@@ -83,7 +83,7 @@ class HashTag extends Abstract {
         );
 
         if (!model) {
-            Logger.warn(`Unknown post - ${JSON.stringify(contentId)}`);
+            Logger.warn('Unknown post', contentId);
         }
 
         return model;

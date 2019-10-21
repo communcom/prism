@@ -197,27 +197,29 @@ class Profile extends BasicController {
             );
 
             resultUser.commonCommunitiesCount = commonCommunities.length;
-            resultUser.commonCommunities = await CommunityModel.aggregate([
-                {
-                    $match: {
-                        $or: commonCommunities.map(communityId => {
-                            return { communityId };
-                        }),
+            resultUser.commonCommunities = [];
+
+            if (commonCommunities.length) {
+                resultUser.commonCommunities = await CommunityModel.aggregate([
+                    {
+                        $match: {
+                            $or: commonCommunities.map(communityId => ({ communityId })),
+                        },
                     },
-                },
-                {
-                    $limit: COMMON_COMMUNITIES_COUNT,
-                },
-                {
-                    $project: {
-                        communityId: true,
-                        alias: true,
-                        name: true,
-                        avatarUrl: true,
-                        _id: false,
+                    {
+                        $limit: COMMON_COMMUNITIES_COUNT,
                     },
-                },
-            ]);
+                    {
+                        $project: {
+                            communityId: true,
+                            alias: true,
+                            name: true,
+                            avatarUrl: true,
+                            _id: false,
+                        },
+                    },
+                ]);
+            }
         }
 
         delete resultUser.communities;

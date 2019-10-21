@@ -324,13 +324,21 @@ class Posts extends BasicController {
     }
 
     async _getBlacklist(userId) {
-        const { blacklist } = await ProfileModel.findOne(
+        const profile = await ProfileModel.findOne(
             { userId },
-            { blacklist: true },
+            { _id: false, blacklist: true },
             { lean: true }
         );
 
-        return blacklist;
+        if (!profile) {
+            Logger.warn(`Profile (${userId}) is not found`);
+            return {
+                userIds: [],
+                communityIds: [],
+            };
+        }
+
+        return profile.blacklist;
     }
 
     _fixPost(post, isFullPostQuery) {
