@@ -480,7 +480,7 @@ waitForTransaction               // Дождаться и получить от�
     "jsonrpc": "2.0",
     "id": 1,
     "result": {
-        "content": {
+        "document": {
             "attributes": {
                 "type": "article",
                 "version": "1.0",
@@ -559,7 +559,7 @@ waitForTransaction               // Дождаться и получить от�
     "result": {
         "items": [
             {
-                "content": {
+                "document": {
                     "attributes": {
                         "type": "basic",
                         "version": "1.0",
@@ -621,7 +621,7 @@ waitForTransaction               // Дождаться и получить от�
                 "type": "basic"
             },
             {
-                "content": {
+                "document": {
                     "attributes": {
                         "type": "basic",
                         "version": "1.0",
@@ -683,7 +683,7 @@ waitForTransaction               // Дождаться и получить от�
                 "type": "basic"
             },
             {
-                "content": {
+                "document": {
                     "attributes": {
                         "type": "basic",
                         "version": "1.0",
@@ -745,7 +745,7 @@ waitForTransaction               // Дождаться и получить от�
                 "type": "basic"
             },
             {
-                "content": {
+                "document": {
                     "attributes": {
                         "type": "basic",
                         "version": "1.0",
@@ -807,7 +807,7 @@ waitForTransaction               // Дождаться и получить от�
                 "type": "basic"
             },
             {
-                "content": {
+                "document": {
                     "attributes": {
                         "type": "basic",
                         "version": "1.0",
@@ -869,7 +869,7 @@ waitForTransaction               // Дождаться и получить от�
                 "type": "basic"
             },
             {
-                "content": {
+                "document": {
                     "id": 1,
                     "type": "post",
                     "attributes": {
@@ -929,7 +929,7 @@ waitForTransaction               // Дождаться и получить от�
                 "type": "basic"
             },
             {
-                "content": {
+                "document": {
                     "id": 1,
                     "type": "post",
                     "attributes": {
@@ -989,7 +989,7 @@ waitForTransaction               // Дождаться и получить от�
                 "type": "basic"
             },
             {
-                "content": {
+                "document": {
                     "id": 1,
                     "type": "post",
                     "attributes": {
@@ -1038,7 +1038,7 @@ waitForTransaction               // Дождаться и получить от�
                 "type": "basic"
             },
             {
-                "content": {
+                "document": {
                     "attributes": {
                         "type": "basic",
                         "version": "1.0",
@@ -1100,7 +1100,7 @@ waitForTransaction               // Дождаться и получить от�
                 "type": "basic"
             },
             {
-                "content": {
+                "document": {
                     "id": 1,
                     "type": "post",
                     "attributes": {
@@ -1149,7 +1149,7 @@ waitForTransaction               // Дождаться и получить от�
                 "type": "basic"
             },
             {
-                "content": {
+                "document": {
                     "id": 1,
                     "type": "post",
                     "attributes": {
@@ -1203,7 +1203,7 @@ waitForTransaction               // Дождаться и получить от�
                 "type": "basic"
             },
             {
-                "content": {
+                "document": {
                     "id": 1,
                     "type": "post",
                     "attributes": {
@@ -1263,7 +1263,7 @@ waitForTransaction               // Дождаться и получить от�
                 "type": "basic"
             },
             {
-                "content": {
+                "document": {
                     "id": 1,
                     "type": "post",
                     "attributes": {
@@ -1323,7 +1323,7 @@ waitForTransaction               // Дождаться и получить от�
                 "type": "basic"
             },
             {
-                "content": {
+                "document": {
                     "id": 1,
                     "type": "post",
                     "attributes": {
@@ -1372,7 +1372,7 @@ waitForTransaction               // Дождаться и получить от�
                 "type": "basic"
             },
             {
-                "content": {
+                "document": {
                     "id": 1,
                     "type": "post",
                     "attributes": {
@@ -1432,7 +1432,7 @@ waitForTransaction               // Дождаться и получить от�
                 "type": "basic"
             },
             {
-                "content": {
+                "document": {
                     "attributes": {
                         "type": "basic",
                         "version": "1.0",
@@ -1494,7 +1494,7 @@ waitForTransaction               // Дождаться и получить от�
                 "type": "basic"
             },
             {
-                "content": {
+                "document": {
                     "id": 1,
                     "type": "post",
                     "attributes": {
@@ -1574,7 +1574,7 @@ waitForTransaction               // Дождаться и получить от�
     "result": {
         "items": [
             {
-                "content": {
+                "document": {
                     "attributes": {
                         "type": "basic",
                         "version": "1.0",
@@ -1636,7 +1636,7 @@ waitForTransaction               // Дождаться и получить от�
                 "type": "basic"
             },
             {
-                "content": {
+                "document": {
                     "attributes": {
                         "type": "basic",
                         "version": "1.0",
@@ -1698,7 +1698,7 @@ waitForTransaction               // Дождаться и получить от�
                 "type": "basic"
             },
             {
-                "content": {
+                "document": {
                     "attributes": {
                         "type": "basic",
                         "version": "1.0",
@@ -1760,7 +1760,7 @@ waitForTransaction               // Дождаться и получить от�
                 "type": "basic"
             },
             {
-                "content": {
+                "document": {
                     "attributes": {
                         "type": "basic",
                         "version": "1.0",
@@ -1822,7 +1822,7 @@ waitForTransaction               // Дождаться и получить от�
                 "type": "basic"
             },
             {
-                "content": {
+                "document": {
                     "attributes": {
                         "type": "basic",
                         "version": "1.0",
@@ -1884,7 +1884,7 @@ waitForTransaction               // Дождаться и получить от�
                 "type": "basic"
             },
             {
-                "content": {
+                "document": {
                     "id": 1,
                     "type": "post",
                     "attributes": {
@@ -1933,7 +1933,7 @@ waitForTransaction               // Дождаться и получить от�
                 "type": "basic"
             },
             {
-                "content": {
+                "document": {
                     "attributes": {
                         "type": "basic",
                         "version": "1.0",
@@ -1995,7 +1995,7 @@ waitForTransaction               // Дождаться и получить от�
                 "type": "basic"
             },
             {
-                "content": {
+                "document": {
                     "id": 1,
                     "type": "post",
                     "attributes": {
@@ -2044,7 +2044,7 @@ waitForTransaction               // Дождаться и получить от�
                 "type": "basic"
             },
             {
-                "content": {
+                "document": {
                     "attributes": {
                         "type": "basic",
                         "version": "1.0",
@@ -2106,7 +2106,7 @@ waitForTransaction               // Дождаться и получить от�
                 "type": "basic"
             },
             {
-                "content": {
+                "document": {
                     "attributes": {
                         "type": "basic",
                         "version": "1.0",
@@ -2168,7 +2168,7 @@ waitForTransaction               // Дождаться и получить от�
                 "type": "basic"
             },
             {
-                "content": {
+                "document": {
                     "attributes": {
                         "type": "basic",
                         "version": "1.0",
@@ -2230,7 +2230,7 @@ waitForTransaction               // Дождаться и получить от�
                 "type": "basic"
             },
             {
-                "content": {
+                "document": {
                     "attributes": {
                         "type": "basic",
                         "version": "1.0",
@@ -2292,7 +2292,7 @@ waitForTransaction               // Дождаться и получить от�
                 "type": "basic"
             },
             {
-                "content": {
+                "document": {
                     "attributes": {
                         "type": "basic",
                         "version": "1.0",
@@ -2354,7 +2354,7 @@ waitForTransaction               // Дождаться и получить от�
                 "type": "basic"
             },
             {
-                "content": {
+                "document": {
                     "id": 1,
                     "type": "post",
                     "attributes": {
@@ -2403,7 +2403,7 @@ waitForTransaction               // Дождаться и получить от�
                 "type": "basic"
             },
             {
-                "content": {
+                "document": {
                     "id": 1,
                     "type": "post",
                     "attributes": {
@@ -2452,7 +2452,7 @@ waitForTransaction               // Дождаться и получить от�
                 "type": "basic"
             },
             {
-                "content": {
+                "document": {
                     "id": 1,
                     "type": "post",
                     "attributes": {
@@ -2501,7 +2501,7 @@ waitForTransaction               // Дождаться и получить от�
                 "type": "basic"
             },
             {
-                "content": {
+                "document": {
                     "attributes": {
                         "type": "basic",
                         "version": "1.0",
@@ -2563,7 +2563,7 @@ waitForTransaction               // Дождаться и получить от�
                 "type": "basic"
             },
             {
-                "content": {
+                "document": {
                     "id": 1,
                     "type": "post",
                     "attributes": {
@@ -2612,7 +2612,7 @@ waitForTransaction               // Дождаться и получить от�
                 "type": "basic"
             },
             {
-                "content": {
+                "document": {
                     "attributes": {
                         "type": "basic",
                         "version": "1.0",
@@ -2674,7 +2674,7 @@ waitForTransaction               // Дождаться и получить от�
                 "type": "basic"
             },
             {
-                "content": {
+                "document": {
                     "attributes": {
                         "type": "basic",
                         "version": "1.0",
@@ -2765,7 +2765,7 @@ waitForTransaction               // Дождаться и получить от�
         "items": [
             {
                 "type": "basic",
-                "content": {
+                "document": {
                     "attributes": {
                         "type": "basic",
                         "version": "1.0",
@@ -2833,7 +2833,7 @@ waitForTransaction               // Дождаться и получить от�
             },
             {
                 "type": "comment",
-                "content": {
+                "document": {
                     "attributes": {
                         "type": "basic",
                         "version": "1.0"
@@ -2898,7 +2898,7 @@ waitForTransaction               // Дождаться и получить от�
                 "type": "basic"
             },
             {
-                "content": {
+                "document": {
                     "type": "basic",
                     "attributes": {
                         "type": "basic",
@@ -2964,7 +2964,7 @@ waitForTransaction               // Дождаться и получить от�
                 "type": "basic"
             },
             {
-                "content": {
+                "document": {
                     "attributes": {
                         "type": "basic",
                         "version": "1.0",
@@ -3030,7 +3030,7 @@ waitForTransaction               // Дождаться и получить от�
                 "type": "basic"
             },
             {
-                "content": {
+                "document": {
                     "attributes": {
                         "type": "basic",
                         "version": "1.0",
@@ -3096,7 +3096,7 @@ waitForTransaction               // Дождаться и получить от�
                 "type": "basic"
             },
             {
-                "content": {
+                "document": {
                     "id": 1,
                     "type": "post",
                     "attributes": {
@@ -3149,7 +3149,7 @@ waitForTransaction               // Дождаться и получить от�
                 "type": "basic"
             },
             {
-                "content": {
+                "document": {
                     "attributes": {
                         "type": "basic",
                         "version": "1.0",
@@ -3215,7 +3215,7 @@ waitForTransaction               // Дождаться и получить от�
                 "type": "basic"
             },
             {
-                "content": {
+                "document": {
                     "id": 1,
                     "type": "post",
                     "attributes": {
@@ -3268,7 +3268,7 @@ waitForTransaction               // Дождаться и получить от�
                 "type": "basic"
             },
             {
-                "content": {
+                "document": {
                     "id": 1,
                     "type": "post",
                     "attributes": {
@@ -3321,7 +3321,7 @@ waitForTransaction               // Дождаться и получить от�
                 "type": "basic"
             },
             {
-                "content": {
+                "document": {
                     "id": 1,
                     "type": "post",
                     "attributes": {
@@ -3403,7 +3403,7 @@ waitForTransaction               // Дождаться и получить от�
     "result": {
         "items": [
             {
-                "content": {
+                "document": {
                     "attributes": {
                         "type": "basic",
                         "version": "1.0",
@@ -3512,7 +3512,7 @@ waitForTransaction               // Дождаться и получить от�
             "userId": "tst2fxgvjzkf",
             "permlink": "hermes-fights-with-ajax-against-rhea-and-common-man-named-ms-david-hoppe-ivmd-on-asshai-1570275616566"
         },
-        "content": {
+        "document": {
             "attributes": {
                 "type": "comment",
                 "version": "1.0",
@@ -3588,7 +3588,7 @@ waitForTransaction               // Дождаться и получить от�
     "result": {
         "items": [
             {
-                "content": {
+                "document": {
                     "type": "basic",
                     "attributes": {
                         "type": "basic",
@@ -3700,7 +3700,7 @@ waitForTransaction               // Дождаться и получить от�
             "userId": "tst2fxgvjzkf",
             "permlink": "hermes-fights-with-ajax-against-rhea-and-common-man-named-ms-david-hoppe-ivmd-on-asshai-1570275616566"
         },
-        "content": {
+        "document": {
             "attributes": {
                 "type": "comment",
                 "version": "1.0",
@@ -3945,7 +3945,7 @@ waitForTransaction               // Дождаться и получить от�
                     },
                     "comment": null
                 },
-                "content": {
+                "document": {
                     "attributes": {
                         "type": "comment",
                         "version": "1.0",
@@ -4013,7 +4013,7 @@ waitForTransaction               // Дождаться и получить от�
                     },
                     "comment": null
                 },
-                "content": {
+                "document": {
                     "attributes": {
                         "type": "comment",
                         "version": "1.0",
@@ -4114,7 +4114,7 @@ waitForTransaction               // Дождаться и получить от�
                     },
                     "comment": null
                 },
-                "content": {
+                "document": {
                     "attributes": {
                         "type": "comment",
                         "version": "1.0",
@@ -4182,7 +4182,7 @@ waitForTransaction               // Дождаться и получить от�
                     },
                     "comment": null
                 },
-                "content": {
+                "document": {
                     "attributes": {
                         "type": "comment",
                         "version": "1.0",
@@ -4253,7 +4253,7 @@ waitForTransaction               // Дождаться и получить от�
                                 "permlink": "zeus-fights-with-icarus-against-eurynome-and-common-man-named-mr-kaylee-hudsoni-on-pentos-1570622469320"
                             }
                         },
-                        "content": {
+                        "document": {
                             "attributes": {
                                 "type": "comment",
                                 "version": "1.0",
@@ -4362,7 +4362,7 @@ waitForTransaction               // Дождаться и получить от�
                         "permlink": "zeus-fights-with-icarus-against-eurynome-and-common-man-named-mr-kaylee-hudsoni-on-pentos-1570622469320"
                     }
                 },
-                "content": {
+                "document": {
                     "attributes": {
                         "type": "comment",
                         "version": "1.0",
@@ -4459,7 +4459,7 @@ waitForTransaction               // Дождаться и получить от�
                     },
                     "comment": null
                 },
-                "content": {
+                "document": {
                     "attributes": {
                         "type": "comment",
                         "version": "1.0",
@@ -4530,7 +4530,7 @@ waitForTransaction               // Дождаться и получить от�
                         "permlink": "apollo-fights-with-abderus-against-tethys-and-common-man-named-missemery-considinedds-on-new-ghis-1570622768902"
                     }
                 },
-                "content": {
+                "document": {
                     "attributes": {
                         "type": "comment",
                         "version": "1.0",
@@ -4625,7 +4625,7 @@ waitForTransaction               // Дождаться и получить от�
                     },
                     "comment": null
                 },
-                "content": {
+                "document": {
                     "attributes": {
                         "type": "comment",
                         "version": "1.0",
@@ -4692,7 +4692,7 @@ waitForTransaction               // Дождаться и получить от�
                     },
                     "comment": null
                 },
-                "content": {
+                "document": {
                     "attributes": {
                         "type": "comment",
                         "version": "1.0",
@@ -4763,7 +4763,7 @@ waitForTransaction               // Дождаться и получить от�
                         "permlink": "apollo-fights-with-chrysippus-against-eurynome-and-common-man-named-mr-albertha-shieldssr-on-volantis-1570622768771"
                     }
                 },
-                "content": {
+                "document": {
                     "attributes": {
                         "type": "comment",
                         "version": "1.0",
@@ -4834,7 +4834,7 @@ waitForTransaction               // Дождаться и получить от�
                         "permlink": "apollo-fights-with-ariadne-against-helios-and-common-man-named-missdr-misha-priceii-on-norvos-1570622769603"
                     }
                 },
-                "content": {
+                "document": {
                     "attributes": {
                         "type": "comment",
                         "version": "1.0",

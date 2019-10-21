@@ -29,7 +29,7 @@ module.exports = MongoDB.makeModel(
                 type: contentIdType,
             },
         },
-        content: {
+        document: {
             title: {
                 type: String,
             },

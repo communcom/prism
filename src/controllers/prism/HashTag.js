@@ -15,7 +15,7 @@ class HashTag extends Abstract {
 
         const newTags = await this._extractTags(content);
 
-        model.content.tags = newTags;
+        model.document.tags = newTags;
 
         await model.save();
         await this.registerForkChanges({
@@ -36,9 +36,9 @@ class HashTag extends Abstract {
         }
 
         const newTags = await this._extractTags(content);
-        const recentTags = model.content.tags;
+        const recentTags = model.document.tags;
 
-        model.content.tags = newTags;
+        model.document.tags = newTags;
 
         await model.save();
         await this.registerForkChanges({
@@ -63,7 +63,7 @@ class HashTag extends Abstract {
             return;
         }
 
-        const recentTags = model.content.tags;
+        const recentTags = model.document.tags;
 
         await this._decrementTagsScore(recentTags, communityId);
     }

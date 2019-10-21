@@ -11,7 +11,7 @@ const ALLOWED_POST_TYPES = ['basic', 'article'];
 class Post extends Abstract {
     async handleCreate(content, { blockNum, blockTime }) {
         const contentId = extractContentId(content);
-        const communityId = content.commun_code;
+        const { communityId } = contentId;
 
         if (!(await isCommunityExists(communityId))) {
             Logger.warn(`New post into unknown community: ${communityId},`, contentId);
@@ -33,7 +33,7 @@ class Post extends Abstract {
         const model = await PostModel.create({
             communityId,
             contentId,
-            content: processedContent,
+            document: processedContent,
             meta: {
                 creationTime: blockTime,
             },
@@ -68,7 +68,7 @@ class Post extends Abstract {
             },
             {
                 $set: {
-                    content: updatedContent,
+                    document: updatedContent,
                 },
             }
         );
@@ -80,7 +80,7 @@ class Post extends Abstract {
                 documentId: previousModel._id,
                 data: {
                     $set: {
-                        content: previousModel.content.toObject(),
+                        document: previousModel.document.toObject(),
                     },
                 },
             });

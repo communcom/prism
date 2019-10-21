@@ -69,16 +69,16 @@ class SearchSync extends BasicService {
         return {
             Post: data => {
                 return {
-                    title: data.content.title,
-                    body: data.content.body,
+                    title: data.document.title,
+                    body: data.document.body,
                     permlink: data.contentId.permlink,
                     contentId: data.contentId,
                 };
             },
             Comment: data => {
                 return {
-                    title: data.content.title,
-                    body: data.content.body,
+                    title: data.document.title,
+                    body: data.document.body,
                     permlink: data.contentId.permlink,
                     contentId: data.contentId,
                 };

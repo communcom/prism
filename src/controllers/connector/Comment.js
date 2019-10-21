@@ -339,8 +339,8 @@ class Comment extends BasicController {
     _fixComment(comment) {
         comment.type = 'comment';
 
-        if (comment.content) {
-            comment.content = comment.content.body;
+        if (comment.document) {
+            comment.document = comment.document.body;
         }
     }
 }

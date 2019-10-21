@@ -18,7 +18,7 @@ module.exports = MongoDB.makeModel(
                 required: true,
             },
         },
-        content: {
+        document: {
             type: {
                 type: String,
                 enum: ['basic', 'article'],
@@ -85,7 +85,7 @@ module.exports = MongoDB.makeModel(
             {
                 fields: {
                     'contentId.userId': 1,
-                    'content.tags': 1,
+                    'document.tags': 1,
                     'meta.creationTime': 1,
                 },
             },

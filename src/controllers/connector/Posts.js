@@ -32,8 +32,8 @@ const baseProjection = {
     $project: {
         _id: false,
         contentId: true,
-        'content.type': true,
-        'content.body': true,
+        'document.type': true,
+        'document.body': true,
         votes: true,
         stats: true,
         meta: true,
@@ -70,7 +70,7 @@ const baseProjection = {
 const fullPostProjection = {
     $project: {
         ...baseProjection.$project,
-        'content.article': true,
+        'document.article': true,
     },
 };
 
@@ -162,7 +162,7 @@ class Posts extends BasicController {
         const filter = { $match: { 'contentId.userId': userId } };
 
         if (!allowNsfw) {
-            filter.$match['content.tags'] = { $ne: 'nsfw' };
+            filter.$match['document.tags'] = { $ne: 'nsfw' };
         }
 
         const paging = [{ $skip: offset }, { $limit: limit }];
@@ -185,7 +185,7 @@ class Posts extends BasicController {
         const filter = { $match: {} };
 
         if (!allowNsfw) {
-            filter.$match['content.tags'] = { $ne: 'nsfw' };
+            filter.$match['document.tags'] = { $ne: 'nsfw' };
         }
 
         if (authUserId) {
@@ -222,7 +222,7 @@ class Posts extends BasicController {
         const filter = { $match: { 'contentId.communityId': communityId } };
 
         if (!allowNsfw) {
-            filter.$match['content.tags'] = { $ne: 'nsfw' };
+            filter.$match['document.tags'] = { $ne: 'nsfw' };
         }
 
         const paging = [{ $skip: offset }, { $limit: limit }];
@@ -251,7 +251,7 @@ class Posts extends BasicController {
         let addSortingField;
 
         if (!allowNsfw) {
-            filter.$match['content.tags'] = { $ne: 'nsfw' };
+            filter.$match['document.tags'] = { $ne: 'nsfw' };
         }
 
         if (communityAlias || communityId) {
@@ -350,13 +350,13 @@ class Posts extends BasicController {
             };
         }
 
-        if (post.content) {
-            post.type = post.content.type;
+        if (post.document) {
+            post.type = post.document.type;
 
             if (isFullPostQuery) {
-                post.content = post.content.article || post.content.body;
+                post.document = post.document.article || post.document.body;
             } else {
-                post.content = post.content.body;
+                post.document = post.document.body;
             }
         } else {
             post.type = 'basic';
