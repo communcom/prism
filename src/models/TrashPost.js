@@ -18,6 +18,7 @@ module.exports = MongoDB.makeModel(
             {
                 fields: {
                     userId: 1,
+                    permlink: 1,
                 },
             },
         ],

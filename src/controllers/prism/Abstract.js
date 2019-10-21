@@ -11,8 +11,14 @@ class Abstract extends BasicController {
         this._forkService = forkService;
     }
 
-    async _isTrash({ userId, permlink }) {
-        if (!(await ProfileModel.findOne({ userId }))) {
+    async _isTrash({ userId, permlink, parentUserId, parentPermlink }) {
+        if (
+            !(await ProfileModel.findOne({ userId })) ||
+            (await TrashModel.findOne({
+                userId: parentUserId,
+                permlink: parentPermlink,
+            }))
+        ) {
             await TrashModel.create({ userId, permlink });
             return true;
         }

@@ -18,7 +18,14 @@ class Comment extends Abstract {
             return;
         }
 
-        if (await this._isTrash(contentId)) {
+        if (
+            await this._isTrash({
+                permlink: contentId.permlink,
+                userId: contentId.userId,
+                parentUserId: content.parent_id.author,
+                parentPermlink: content.parent_id.permlink,
+            })
+        ) {
             return;
         }
 
