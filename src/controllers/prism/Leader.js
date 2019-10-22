@@ -10,6 +10,8 @@ const LeaderModel = require('../../models/Leader');
 const ProfileModel = require('../../models/Profile');
 const ProposalModel = require('../../models/Proposal');
 
+const LAST_LEADER_POSITION = 9999999;
+
 const SET_PARAMS = 'setparams';
 
 const ALLOWED_CONTRACTS = {
@@ -36,7 +38,14 @@ class Leader extends Abstract {
     }
 
     async register({ commun_code: communityId, leader: userId, url }) {
-        const action = { communityId, userId, active: true, rating: '0', ratingNum: 0 };
+        const action = {
+            communityId,
+            userId,
+            active: true,
+            rating: '0',
+            ratingNum: 0,
+            position: LAST_LEADER_POSITION,
+        };
 
         if (typeof url === 'string') {
             action.url = url;
@@ -68,6 +77,7 @@ class Leader extends Abstract {
             });
         }
 
+        await this._reorderLeaders(communityId);
         await this._updateProfileLeaderIn(userId);
     }
 
@@ -157,7 +167,7 @@ class Leader extends Abstract {
             },
         });
 
-        await this._reorderLeaders({ communityId });
+        await this._reorderLeaders(communityId);
     }
 
     async _setActiveState({ userId, communityId, active }) {
@@ -376,24 +386,19 @@ class Leader extends Abstract {
         };
     }
 
-    async _reorderLeaders({ communityId }) {
+    async _reorderLeaders(communityId) {
         try {
             const leaders = await LeaderModel.find(
                 { communityId },
-                { _id: false, userId: true, position: true, ratingNum: true },
+                { _id: false, userId: true, position: true },
                 { sort: { ratingNum: -1, userId: 1 }, lean: true }
             );
 
             for (let i = 0; i < leaders.length; i++) {
-                const { userId, position, ratingNum } = leaders[i];
+                const { userId, position } = leaders[i];
 
-                let updatedPosition;
-
-                if (!ratingNum) {
-                    updatedPosition = null;
-                } else {
-                    updatedPosition = i;
-                }
+                // Позиции начинаем с 1
+                const updatedPosition = i + 1;
 
                 if (position !== updatedPosition) {
                     await LeaderModel.updateOne({ userId }, { position: updatedPosition });

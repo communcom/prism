@@ -33,7 +33,7 @@ module.exports = MongoDB.makeModel(
         },
         position: {
             type: Number,
-            default: null,
+            required: true,
         },
     },
     {
@@ -59,6 +59,7 @@ module.exports = MongoDB.makeModel(
                 fields: {
                     communityId: 1,
                     position: 1,
+                    userId: 1,
                 },
             },
             {

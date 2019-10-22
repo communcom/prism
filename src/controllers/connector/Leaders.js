@@ -28,6 +28,7 @@ class Leaders extends BasicController {
             {
                 $sort: {
                     position: 1,
+                    userId: 1,
                 },
             }
         );
