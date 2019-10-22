@@ -39,9 +39,6 @@ module.exports = MongoDB.makeModel(
                 fields: {
                     userId: 1,
                 },
-                options: {
-                    unique: true,
-                },
             },
             {
                 // Search for change
