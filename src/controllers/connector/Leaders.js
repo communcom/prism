@@ -9,11 +9,9 @@ class Leaders extends BasicController {
         const isSearching = Boolean(queryText);
 
         const offsetLimit = [
-            offset
-                ? {
-                      $skip: offset,
-                  }
-                : null,
+            {
+                $skip: offset,
+            },
             {
                 $limit: limit,
             },
