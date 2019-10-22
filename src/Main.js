@@ -1,6 +1,6 @@
 const core = require('cyberway-core-service');
 const BasicMain = core.services.BasicMain;
-const Logger = core.utils.Logger;
+const { Logger } = core.utils;
 const env = require('./data/env');
 const Prism = require('./services/Prism');
 const Connector = require('./services/Connector');

@@ -1,6 +1,6 @@
 const core = require('cyberway-core-service');
-const MongoDB = core.services.MongoDB;
-const Logger = core.utils.Logger;
+const { MongoDB } = core.services;
+const { Logger } = core.utils;
 
 const ProfileModel = MongoDB.makeModel(
     'Profile',

@@ -1,6 +1,6 @@
 const core = require('cyberway-core-service');
 const BasicService = core.services.Basic;
-const Logger = core.utils.Logger;
+const { Logger } = core.utils;
 const ForkModel = require('../models/Fork');
 
 class Fork extends BasicService {

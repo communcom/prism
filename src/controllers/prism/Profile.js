@@ -1,6 +1,7 @@
 const lodash = require('lodash');
 const core = require('cyberway-core-service');
-const Logger = core.utils.Logger;
+const { Logger } = core.utils;
+
 const Abstract = require('./Abstract');
 const ProfileModel = require('../../models/Profile');
 

@@ -1,5 +1,7 @@
 const core = require('cyberway-core-service');
 const BasicController = core.controllers.Basic;
+const { Logger } = core.utils;
+
 const PostModel = require('../../models/Post');
 const ProfileModel = require('../../models/Profile');
 const {

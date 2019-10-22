@@ -2,7 +2,7 @@ const elasticsearch = require('elasticsearch');
 const bodybuilder = require('bodybuilder');
 const pluralize = require('pluralize');
 const core = require('cyberway-core-service');
-const Logger = core.utils.Logger;
+const { Logger } = core.utils;
 const BasicController = core.controllers.Basic;
 const env = require('../../data/env');
 
