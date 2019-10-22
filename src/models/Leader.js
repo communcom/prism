@@ -19,6 +19,10 @@ module.exports = MongoDB.makeModel(
             type: String,
             default: '0',
         },
+        ratingNum: {
+            type: Number,
+            default: 0,
+        },
         votes: {
             type: [String],
             default: [],
@@ -67,9 +71,13 @@ module.exports = MongoDB.makeModel(
                     unique: true,
                 },
             },
+            {
+                fields: {
+                    communityId: 1,
+                    ratingNum: -1,
+                    userId: 1,
+                },
+            },
         ],
-        schema: {
-            collation: { locale: 'en_US', numericOrdering: true },
-        },
     }
 );

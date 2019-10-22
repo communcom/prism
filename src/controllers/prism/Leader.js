@@ -36,7 +36,7 @@ class Leader extends Abstract {
     }
 
     async register({ commun_code: communityId, leader: userId, url }) {
-        const action = { communityId, userId, active: true };
+        const action = { communityId, userId, active: true, rating: '0', ratingNum: 0 };
 
         if (typeof url === 'string') {
             action.url = url;
@@ -126,8 +126,11 @@ class Leader extends Abstract {
         };
 
         if (meta.events.length) {
+            const rating = this._extractLeaderRating(meta.events);
+
             update.$set = {
-                rating: this._extractLeaderRating(meta.events),
+                rating,
+                ratingNum: Number(rating) || 0,
             };
         }
 
@@ -147,7 +150,10 @@ class Leader extends Abstract {
             documentId: previousModel._id,
             data: {
                 [revert]: { votes: userId },
-                $set: { rating: previousModel.rating },
+                $set: {
+                    rating: previousModel.rating,
+                    ratingNum: previousModel.ratingNum,
+                },
             },
         });
 
@@ -374,16 +380,16 @@ class Leader extends Abstract {
         try {
             const leaders = await LeaderModel.find(
                 { communityId },
-                { _id: false, userId: true, position: true, rating: true },
-                { sort: { rating: -1, userId: 1 }, lean: true }
+                { _id: false, userId: true, position: true, ratingNum: true },
+                { sort: { ratingNum: -1, userId: 1 }, lean: true }
             );
 
             for (let i = 0; i < leaders.length; i++) {
-                const { userId, position, rating } = leaders[i];
+                const { userId, position, ratingNum } = leaders[i];
 
                 let updatedPosition;
 
-                if (!rating || rating === '0') {
+                if (!ratingNum) {
                     updatedPosition = null;
                 } else {
                     updatedPosition = i;
