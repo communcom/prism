@@ -22,6 +22,7 @@ const communityRegistry = [
     'comn.list',
     'comn.gallery',
     'comn.social',
+    'comn.ctrl',
 ];
 class Main {
     constructor({ connector, forkService }) {
@@ -310,8 +311,14 @@ class Main {
         }
     }
 
-    async _processCtrl(pathName, actionArgs, meta) {
-        switch (pathName) {
+    async _processCtrl(action, actionArgs, meta) {
+        // Игнорируем все события без commun_code, потому что функционал внутри контракта ctrl
+        // работает не только для сообществ.
+        if (!actionArgs.commun_code) {
+            return;
+        }
+
+        switch (action) {
             case 'regleader':
                 await this._leader.register(actionArgs, meta);
                 break;

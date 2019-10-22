@@ -10,11 +10,6 @@ module.exports = MongoDB.makeModel(
         },
         userId: {
             type: String,
-            required: true,
-        },
-        username: {
-            type: String,
-            required: true,
         },
         url: {
             type: String,
@@ -63,7 +58,6 @@ module.exports = MongoDB.makeModel(
                 fields: {
                     communityId: 1,
                     position: 1,
-                    username: 1,
                 },
             },
             {

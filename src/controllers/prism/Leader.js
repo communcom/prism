@@ -9,7 +9,6 @@ const env = require('../../data/env');
 const LeaderModel = require('../../models/Leader');
 const ProfileModel = require('../../models/Profile');
 const ProposalModel = require('../../models/Proposal');
-const { lookupUsernameByUserId } = require('../../utils/lookup');
 
 const SET_PARAMS = 'setparams';
 
@@ -59,7 +58,6 @@ class Leader extends Abstract {
             const newModel = await LeaderModel.create({
                 communityId,
                 userId,
-                username: await lookupUsernameByUserId(userId),
                 ...action,
             });
 

@@ -5,34 +5,33 @@ const LeaderModel = require('../../models/Leader');
 
 class Leaders extends BasicController {
     async getTop({ communityId, limit, offset, prefix }, { userId }) {
-        const query = {
-            communityId,
-        };
+        const queryText = prefix ? prefix.trim() : null;
+        const isSearching = Boolean(queryText);
 
-        if (prefix && prefix.trim()) {
-            query.username = {
-                $regex: `^${prefix.trim()}`,
-            };
-        }
+        const offsetLimit = [
+            offset
+                ? {
+                      $skip: offset,
+                  }
+                : null,
+            {
+                $limit: limit,
+            },
+        ];
 
         const leaders = await LeaderModel.aggregate(
             [
                 {
-                    $match: query,
+                    $match: {
+                        communityId,
+                    },
                 },
                 {
                     $sort: {
                         position: 1,
                     },
                 },
-                offset
-                    ? {
-                          $skip: offset,
-                      }
-                    : null,
-                {
-                    $limit: limit,
-                },
+                ...(isSearching ? [] : offsetLimit),
                 userId
                     ? isIncludes({
                           newField: 'isVoted',
@@ -59,6 +58,18 @@ class Leaders extends BasicController {
                         isVoted: true,
                     },
                 },
+                ...(isSearching
+                    ? [
+                          {
+                              $match: {
+                                  username: {
+                                      $regex: `^${queryText}`,
+                                  },
+                              },
+                          },
+                          ...offsetLimit,
+                      ]
+                    : []),
             ].filter(part => part)
         );
 
