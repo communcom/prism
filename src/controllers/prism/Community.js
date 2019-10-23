@@ -213,7 +213,7 @@ class Community {
 
         const oldCommunityObject = await CommunityModel.findOneAndUpdate(
             { communityId },
-            { [changeMethod]: { subscribers: userId } }
+            { [changeMethod]: { subscribers: userId, $inc: { subscribersCount: inc } } }
         );
 
         if (oldCommunityObject) {
