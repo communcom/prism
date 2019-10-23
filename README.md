@@ -239,6 +239,13 @@ waitForTransaction               // Дождаться и получить от�
         "registration": {
             "time": "2019-10-08T14:03:30.000Z"
         },
+        "subscribers": {
+            "usersCount": 0
+        },
+        "subscriptions": {
+            "usersCount": 0,
+            "communitiesCount": 0
+        },
         "personal": {
             "avatarUrl": "https://img.golos.io/images/12DcKUF5SFgXyt9dazqn7ibu5Pn.jpg",
             "biography": "Chuck Norris burst the dot com bubble.2",
