@@ -41,7 +41,7 @@ class Leader extends Abstract {
         const action = {
             communityId,
             userId,
-            active: true,
+            isActive: true,
             rating: '0',
             ratingNum: 0,
             position: LAST_LEADER_POSITION,
@@ -99,12 +99,12 @@ class Leader extends Abstract {
     }
 
     async activate({ commun_code: communityId, leader: userId }) {
-        await this._setActiveState({ communityId, userId, active: true });
+        await this._setActiveState({ communityId, userId, isActive: true });
         await this._updateProfileLeaderIn(userId);
     }
 
     async deactivate({ commun_code: communityId, leader: userId }) {
-        await this._setActiveState({ communityId, userId, active: false });
+        await this._setActiveState({ communityId, userId, isActive: false });
         await this._updateProfileLeaderIn(userId);
     }
 
@@ -170,10 +170,10 @@ class Leader extends Abstract {
         await this._reorderLeaders(communityId);
     }
 
-    async _setActiveState({ userId, communityId, active }) {
+    async _setActiveState({ userId, communityId, isActive }) {
         const previousModel = await LeaderModel.findOneAndUpdate(
             { communityId, userId },
-            { $set: { active } }
+            { $set: { isActive } }
         );
 
         if (previousModel) {
@@ -183,7 +183,7 @@ class Leader extends Abstract {
                 documentId: previousModel._id,
                 data: {
                     $set: {
-                        active: !active,
+                        isActive: !isActive,
                     },
                 },
             });
@@ -192,7 +192,7 @@ class Leader extends Abstract {
 
     async _updateProfileLeaderIn(userId) {
         const communities = await LeaderModel.find(
-            { userId, active: true },
+            { userId, isActive: true },
             { communityId: true },
             { lean: true }
         );
@@ -391,7 +391,7 @@ class Leader extends Abstract {
             const leaders = await LeaderModel.find(
                 { communityId },
                 { _id: false, userId: true, position: true },
-                { sort: { ratingNum: -1, userId: 1 }, lean: true }
+                { sort: { isActive: -1, ratingNum: -1, userId: 1 }, lean: true }
             );
 
             for (let i = 0; i < leaders.length; i++) {

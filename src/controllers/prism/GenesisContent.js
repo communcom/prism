@@ -110,7 +110,7 @@ class GenesisContent {
             url,
             rating,
             votes,
-            active,
+            isActive: active,
         });
 
         await ProfileModel.updateOne(

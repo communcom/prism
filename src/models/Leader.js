@@ -27,7 +27,7 @@ module.exports = MongoDB.makeModel(
             type: [String],
             default: [],
         },
-        active: {
+        isActive: {
             type: Boolean,
             default: true,
         },
@@ -75,6 +75,7 @@ module.exports = MongoDB.makeModel(
             {
                 fields: {
                     communityId: 1,
+                    isActive: -1,
                     ratingNum: -1,
                     userId: 1,
                 },

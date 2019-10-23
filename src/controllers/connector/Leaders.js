@@ -96,6 +96,7 @@ class Leaders extends BasicController {
                 userId: true,
                 position: true,
                 rating: true,
+                isActive: true,
                 isVoted: true,
                 isSubscribed: true,
                 username: '$profile.username',
