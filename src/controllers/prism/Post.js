@@ -3,6 +3,7 @@ const { Logger } = core.utils;
 const Abstract = require('./Abstract');
 const PostModel = require('../../models/Post');
 const ProfileModel = require('../../models/Profile');
+const CommunityModel = require('../../models/Community');
 const { processContent, extractContentId } = require('../../utils/content');
 const { isCommunityExists } = require('../../utils/lookup');
 
@@ -47,6 +48,7 @@ class Post extends Abstract {
 
         await this.registerForkChanges({ type: 'create', Model: PostModel, documentId: model._id });
         await this.updateUserPostsCount(contentId.userId, 1);
+        await this.updateCommunityPostsCount(contentId.communityId, 1);
     }
 
     async handleUpdate(content, { blockNum }) {
@@ -103,6 +105,23 @@ class Post extends Abstract {
                 data: previousModel.toObject(),
             });
             await this.updateUserPostsCount(contentId.userId, -1);
+            await this.updateCommunityPostsCount(contentId.communityId, -1);
+        }
+    }
+
+    async updateCommunityPostsCount(communityId, increment) {
+        const previousModel = await CommunityModel.findOneAndUpdate(
+            { communityId },
+            { $inc: { postsCount: increment } }
+        );
+
+        if (previousModel) {
+            await this.registerForkChanges({
+                type: 'update',
+                Model: CommunityModel,
+                documentId: previousModel._id,
+                data: { $inc: { postsCount: -increment } },
+            });
         }
     }
 

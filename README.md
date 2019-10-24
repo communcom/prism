@@ -379,6 +379,7 @@ waitForTransaction               // Дождаться и получить от�
         "rules": "WREK comunity rules ",
         "isSubscribed": true,
         "isBlocked": false,
+        "postsCount": 1,
         "friendsCount": 1,
         "friends": [
             {
@@ -455,6 +456,7 @@ waitForTransaction               // Дождаться и получить от�
         "communities": [
             {
                 "subscribersCount": 0,
+                "postsCount": 0,
                 "communityId": "TWO comunity",
                 "isSubscribed": false
             }

@@ -17,6 +17,7 @@ const baseProjection = {
     language: true,
     isSubscribed: true,
     isBlocked: true,
+    postsCount: true,
 };
 
 const FRIEND_SUBSCRIBERS_LIMIT = 5;

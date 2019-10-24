@@ -45,6 +45,10 @@ module.exports = MongoDB.makeModel(
         settings: {
             type: Object,
         },
+        postsCount: {
+            type: Number,
+            default: 0,
+        },
     },
     {
         index: [
