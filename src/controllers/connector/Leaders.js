@@ -66,6 +66,7 @@ class Leaders extends BasicController {
                     position: true,
                     rating: true,
                     isVoted: true,
+                    isActive: true,
                     ratingPercent:
                         totalRating === null
                             ? { $literal: 0 }
