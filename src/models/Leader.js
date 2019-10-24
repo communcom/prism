@@ -80,6 +80,12 @@ module.exports = MongoDB.makeModel(
                     userId: 1,
                 },
             },
+            {
+                fields: {
+                    communityId: 1,
+                    ratingNum: 1,
+                },
+            },
         ],
     }
 );

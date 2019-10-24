@@ -17,6 +17,8 @@ class Leaders extends BasicController {
             },
         ];
 
+        const totalRating = await this.getCommunityTotalRating(communityId);
+
         const aggregation = [];
 
         aggregation.push(
@@ -60,9 +62,16 @@ class Leaders extends BasicController {
                 $project: {
                     userId: true,
                     profile: { $arrayElemAt: ['$profiles', 0] },
+                    url: true,
                     position: true,
                     rating: true,
                     isVoted: true,
+                    ratingPercent:
+                        totalRating === null
+                            ? { $literal: 0 }
+                            : {
+                                  $divide: ['$ratingNum', totalRating],
+                              },
                 },
             }
         );
@@ -94,8 +103,10 @@ class Leaders extends BasicController {
             $project: {
                 _id: false,
                 userId: true,
+                url: true,
                 position: true,
                 rating: true,
+                ratingPercent: true,
                 isActive: true,
                 isVoted: true,
                 isSubscribed: true,
@@ -126,6 +137,28 @@ class Leaders extends BasicController {
             code: -100,
             message: 'Method not ready yet',
         };
+    }
+
+    async getCommunityTotalRating(communityId) {
+        const [result] = await LeaderModel.aggregate([
+            {
+                $match: {
+                    communityId,
+                },
+            },
+            {
+                $group: {
+                    _id: 1,
+                    totalRating: { $sum: '$ratingNum' },
+                },
+            },
+        ]);
+
+        if (!result) {
+            return null;
+        }
+
+        return result.totalRating;
     }
 }
 
