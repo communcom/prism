@@ -67,12 +67,11 @@ class Leaders extends BasicController {
                     rating: true,
                     isVoted: true,
                     isActive: true,
-                    ratingPercent:
-                        totalRating === null
-                            ? { $literal: 0 }
-                            : {
-                                  $divide: ['$ratingNum', totalRating],
-                              },
+                    ratingPercent: !totalRating
+                        ? {
+                              $divide: ['$ratingNum', totalRating],
+                          }
+                        : { $literal: 0 },
                 },
             }
         );
