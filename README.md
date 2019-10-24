@@ -3783,12 +3783,16 @@ waitForTransaction               // Дождаться и получить от�
             {
                 "userId": "tst2hjvcmdnt",
                 "username": "daniel-dwight-dvm",
-                "avatarUrl": "https://i.pravatar.cc/300?u=fa7b2527200945ab3b8598162adf72a643869b52"
+                "avatarUrl": "https://i.pravatar.cc/300?u=fa7b2527200945ab3b8598162adf72a643869b52",
+                "subscribersCount": 1,
+                "postsCount": 3
             },
             {
                 "userId": "tst1vowhrctw",
                 "username": "leannon-hollis-dvm",
-                "avatarUrl": "https://i.pravatar.cc/300?u=2e80800aa10707cd140cd2b6e1c64b1c34b9b2f9"
+                "avatarUrl": "https://i.pravatar.cc/300?u=2e80800aa10707cd140cd2b6e1c64b1c34b9b2f9",
+                "subscribersCount": 3,
+                "postsCount": 1
             }
         ]
     }
@@ -3857,7 +3861,9 @@ waitForTransaction               // Дождаться и получить от�
             {
                 "userId": "tst3fwejlkvx",
                 "username": "heidenreich-odessa-v",
-                "avatarUrl": "https://i.pravatar.cc/300?u=e8f13335de09997afb44b808a2fdada046016d92"
+                "avatarUrl": "https://i.pravatar.cc/300?u=e8f13335de09997afb44b808a2fdada046016d92",
+                "subscribersCount": 1,
+                "postsCount": 3
             }
         ]
     }
@@ -3890,12 +3896,16 @@ waitForTransaction               // Дождаться и получить от�
             {
                 "userId": "tst3fwejlkvx",
                 "username": "heidenreich-odessa-v",
-                "avatarUrl": "https://i.pravatar.cc/300?u=e8f13335de09997afb44b808a2fdada046016d92"
+                "avatarUrl": "https://i.pravatar.cc/300?u=e8f13335de09997afb44b808a2fdada046016d92",
+                "subscribersCount": 1,
+                "postsCount": 3
             },
             {
                 "userId": "tst2hjvcmdnt",
                 "username": "daniel-dwight-dvm",
-                "avatarUrl": "https://i.pravatar.cc/300?u=fa7b2527200945ab3b8598162adf72a643869b52"
+                "avatarUrl": "https://i.pravatar.cc/300?u=fa7b2527200945ab3b8598162adf72a643869b52",
+                "subscribersCount": 1,
+                "postsCount": 3
             }
         ]
     }

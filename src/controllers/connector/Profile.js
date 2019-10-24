@@ -288,6 +288,8 @@ class Profile extends BasicController {
                         username: '$$subscriber.username',
                         avatarUrl: '$$subscriber.personal.avatarUrl',
                         subscribers: '$$subscriber.subscribers.userIds',
+                        subscribersCount: '$$subscriber.subscribers.usersCount',
+                        postsCount: '$$subscriber.stats.postsCount',
                     },
                 },
             },
@@ -322,6 +324,8 @@ class Profile extends BasicController {
                     username: '$subscriber.username',
                     avatarUrl: '$subscriber.avatarUrl',
                     isSubscribed: '$isSubscribed',
+                    subscribersCount: '$subscriber.subscribersCount',
+                    postsCount: '$subscriber.postsCount',
                 },
             },
         });
@@ -463,6 +467,8 @@ class Profile extends BasicController {
                                 username: '$$profile.username',
                                 avatarUrl: '$$profile.personal.avatarUrl',
                                 subscribers: '$$profile.subscribers.userIds',
+                                subscribersCount: '$$profile.subscribers.usersCount',
+                                postsCount: '$$profile.stats.postsCount',
                             },
                         },
                     },
@@ -473,6 +479,8 @@ class Profile extends BasicController {
                         username: '$profile.username',
                         avatarUrl: '$profile.avatarUrl',
                         isSubscribed: '$isSubscribed',
+                        subscribersCount: '$profile.subscribersCount',
+                        postsCount: '$profile.postsCount',
                     },
                 };
                 break;
