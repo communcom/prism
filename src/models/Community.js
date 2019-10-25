@@ -8,6 +8,10 @@ module.exports = MongoDB.makeModel(
             type: String,
             required: true,
         },
+        issuer: {
+            type: String,
+            required: true,
+        },
         alias: {
             type: String,
             required: true,

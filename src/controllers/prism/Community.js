@@ -1,6 +1,7 @@
 const crypto = require('crypto');
 
 const CommunityModel = require('../../models/Community');
+const CommunityPointModel = require('../../models/CommunityPoint');
 const ProfileModel = require('../../models/Profile');
 const BanModel = require('../../models/Ban');
 
@@ -146,8 +147,26 @@ class Community {
     async handleCreate({ community_name: name, commun_code: communityId }) {
         const alias = `id${this._extractAlias(communityId)}`;
 
+        const point = await CommunityPointModel.findOne(
+            {
+                communityId: communityId,
+            },
+            {
+                issuer: true,
+            },
+            {
+                lean: true,
+            }
+        );
+
+        if (!point) {
+            Logger.error(`Community creation without created point: (${communityId}). Skipping`);
+            return;
+        }
+
         const newObject = await CommunityModel.create({
             communityId,
+            issuer: point.issuer,
             alias,
             name,
         });

@@ -168,6 +168,7 @@ class Community extends BasicController {
         aggregation.push({
             $project: {
                 ...baseProjection,
+                issuer: true,
                 coverUrl: true,
                 description: true,
                 rules: true,

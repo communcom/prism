@@ -9,13 +9,13 @@ const HashTag = require('./HashTag');
 const Leader = require('./Leader');
 const Community = require('./Community');
 const CommunitySettings = require('./CommunitySettings');
+const CommunityPoints = require('./CommunityPoints');
 const Gallery = require('./Gallery');
 const { isPost } = require('../../utils/content');
 
 const ACTION_PROCESSING_WARNING_LIMIT = 1000;
 
-// TODO Change after MVP
-const communityRegistry = [
+const ALLOWED_CONTRACTS = [
     'cyber',
     'cyber.domain',
     'cyber.token',
@@ -24,6 +24,7 @@ const communityRegistry = [
     'comn.gallery',
     'comn.social',
     'comn.ctrl',
+    'comn.point',
 ];
 class Main {
     constructor({ connector, forkService }) {
@@ -35,6 +36,7 @@ class Main {
         // this._hashTag = new HashTag({ connector, forkService });
         this._leader = new Leader({ connector, forkService });
         this._communitySettings = new CommunitySettings({ connector, forkService });
+        this._communityPoints = new CommunityPoints({ connector, forkService });
         this._community = new Community({ connector, forkService });
         this._gallery = new Gallery({ connector, forkService });
     }
@@ -69,7 +71,10 @@ class Main {
     }
 
     async _disperseAction(action, previous = { args: {} }, { blockNum, blockTime }) {
-        if (!communityRegistry.includes(action.receiver)) {
+        if (
+            !ALLOWED_CONTRACTS.includes(action.code) ||
+            !ALLOWED_CONTRACTS.includes(action.receiver)
+        ) {
             return;
         }
 
@@ -289,8 +294,14 @@ class Main {
             // unknown action, do nothing
         }
 
-        if (action.code === 'comn.ctrl') {
-            await this._processCtrl(action.action, actionArgs, meta);
+        switch (action.code) {
+            case 'comn.point':
+                await this._processPoint(action.action, actionArgs, meta);
+                break;
+
+            case 'comn.ctrl':
+                await this._processCtrl(action.action, actionArgs, meta);
+                break;
         }
 
         if (action.action === 'setparams') {
@@ -319,36 +330,44 @@ class Main {
         }
     }
 
-    async _processCtrl(action, actionArgs, meta) {
+    async _processPoint(action, params, meta) {
+        switch (action) {
+            case 'create':
+                await this._communityPoints.createPoint(params);
+                break;
+        }
+    }
+
+    async _processCtrl(action, params, meta) {
         // Игнорируем все события без commun_code, потому что функционал внутри контракта ctrl
         // работает не только для сообществ.
-        if (!actionArgs.commun_code) {
+        if (!params.commun_code) {
             return;
         }
 
         switch (action) {
             case 'regleader':
-                await this._leader.register(actionArgs, meta);
+                await this._leader.register(params, meta);
                 break;
 
             case 'unregleader':
-                await this._leader.unregister(actionArgs, meta);
+                await this._leader.unregister(params, meta);
                 break;
 
             case 'startleader':
-                await this._leader.activate(actionArgs, meta);
+                await this._leader.activate(params, meta);
                 break;
 
             case 'stopleader':
-                await this._leader.deactivate(actionArgs, meta);
+                await this._leader.deactivate(params, meta);
                 break;
 
             case 'voteleader':
-                await this._leader.vote(actionArgs, meta);
+                await this._leader.vote(params, meta);
                 break;
 
             case 'unvotelead':
-                await this._leader.unvote(actionArgs, meta);
+                await this._leader.unvote(params, meta);
                 break;
 
             default:
