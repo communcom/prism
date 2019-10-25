@@ -281,7 +281,7 @@ class Connector extends BasicConnector {
                         },
                     },
                 },
-                getLeadersTop: {
+                getLeaders: {
                     handler: this._leaders.getTop,
                     scope: this._leaders,
                     inherits: ['paging', 'onlyWhenPublicApiEnabled'],
