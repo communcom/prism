@@ -9,6 +9,7 @@ const HashTag = require('./HashTag');
 const Leader = require('./Leader');
 const Community = require('./Community');
 const CommunitySettings = require('./CommunitySettings');
+const Gallery = require('./Gallery');
 const { isPost } = require('../../utils/content');
 
 const ACTION_PROCESSING_WARNING_LIMIT = 1000;
@@ -35,6 +36,7 @@ class Main {
         this._leader = new Leader({ connector, forkService });
         this._communitySettings = new CommunitySettings({ connector, forkService });
         this._community = new Community({ connector, forkService });
+        this._gallery = new Gallery({ connector, forkService });
     }
 
     async disperse({ transactions, blockNum, blockTime }) {
@@ -205,12 +207,6 @@ class Main {
                 // when post is closed
                 // todo: handle this
                 break;
-
-            case 'comn.gallery->mosaicstate':
-                // info about all rewards for post in sum
-                // todo: handle this
-                break;
-
             case 'comn.gallery->gemstate':
                 // when vote state changed; info about users' rewards
                 // todo: handle this
@@ -307,6 +303,18 @@ class Main {
                     'setparams',
                     actionArgs.params
                 );
+            }
+        }
+
+        for (const event of events) {
+            const path = [event.code, event.event].join('->');
+            const eventArgs = event.args;
+
+            switch (path) {
+                case 'comn.gallery->mosaicstate':
+                    // info about all rewards for post in sum
+                    await this._gallery.handleMosaicState(eventArgs);
+                    break;
             }
         }
     }

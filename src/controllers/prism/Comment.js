@@ -7,11 +7,12 @@ const CommentModel = require('../../models/Comment');
 const ProfileModel = require('../../models/Profile');
 const { processContent, extractContentId, extractParentContentId } = require('../../utils/content');
 const { isCommunityExists } = require('../../utils/lookup');
+const { calculateTracery } = require('../../utils/mosaic');
 
 class Comment extends Abstract {
     async handleCreate(content, { blockNum, blockTime }) {
         const contentId = extractContentId(content);
-        const { communityId } = contentId;
+        const { communityId, userId, permlink } = contentId;
 
         if (!(await isCommunityExists(communityId))) {
             Logger.warn(`New comment into unknown community: ${communityId},`, contentId);
@@ -29,6 +30,8 @@ class Comment extends Abstract {
             return;
         }
 
+        const tracery = calculateTracery(userId, permlink);
+
         const modelData = {
             contentId,
             parents: {},
@@ -41,6 +44,9 @@ class Comment extends Abstract {
                 },
             },
             ordering: {},
+            mosaicState: {
+                tracery,
+            },
         };
 
         if (!(await this.applyParentById(modelData, content))) {

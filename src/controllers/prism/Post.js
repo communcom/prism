@@ -6,13 +6,14 @@ const ProfileModel = require('../../models/Profile');
 const CommunityModel = require('../../models/Community');
 const { processContent, extractContentId } = require('../../utils/content');
 const { isCommunityExists } = require('../../utils/lookup');
+const { calculateTracery } = require('../../utils/mosaic');
 
 const ALLOWED_POST_TYPES = ['basic', 'article'];
 
 class Post extends Abstract {
     async handleCreate(content, { blockNum, blockTime }) {
         const contentId = extractContentId(content);
-        const { communityId } = contentId;
+        const { communityId, userId, permlink } = contentId;
 
         if (!(await isCommunityExists(communityId))) {
             Logger.warn(`New post into unknown community: ${communityId},`, contentId);
@@ -31,6 +32,8 @@ class Post extends Abstract {
             Logger.warn(`Invalid post content, block num: ${blockNum}`, contentId, err);
         }
 
+        const tracery = calculateTracery(userId, permlink);
+
         const model = await PostModel.create({
             communityId,
             contentId,
@@ -43,6 +46,9 @@ class Post extends Abstract {
                     // todo: take this from community settings
                     curatorsPercent: Number(content.curators_prcnt),
                 },
+            },
+            mosaicState: {
+                tracery,
             },
         });
 

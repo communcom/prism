@@ -69,6 +69,27 @@ module.exports = MongoDB.makeModel(
                 default: null,
             },
         },
+        mosaicState: {
+            tracery: {
+                type: String,
+                required: true,
+            },
+            gemCount: {
+                type: Number,
+            },
+            shares: {
+                type: Number,
+            },
+            damnShares: {
+                type: Number,
+            },
+            reward: {
+                type: String,
+            },
+            banned: {
+                type: Boolean,
+            },
+        },
     },
     {
         index: [
@@ -98,6 +119,11 @@ module.exports = MongoDB.makeModel(
             {
                 fields: {
                     'contentId.communityId': 1,
+                },
+            },
+            {
+                fields: {
+                    'mosaicState.tracery': 1,
                 },
             },
             {
