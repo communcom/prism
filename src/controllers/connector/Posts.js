@@ -201,7 +201,7 @@ class Posts extends BasicController {
         }
 
         const paging = [{ $skip: offset }, { $limit: limit }];
-        const sort = { $sort: { 'meta.creationTime': 1 } };
+        const sort = { $sort: { 'meta.creationTime': -1 } };
 
         const items = await this._aggregate([
             filter,
@@ -228,7 +228,7 @@ class Posts extends BasicController {
         }
 
         const paging = [{ $skip: offset }, { $limit: limit }];
-        const sort = { $sort: { 'meta.creationTime': 1 } };
+        const sort = { $sort: { 'meta.creationTime': -1 } };
 
         const items = await this._aggregate([
             filter,
