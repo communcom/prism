@@ -299,7 +299,7 @@ class Posts extends BasicController {
                 sortBy.$sort = { 'stats.commentsCount': -1 };
                 break;
             case 'topRewards':
-                // todo: implement after rewards parse implementation
+                sortBy.$sort = { 'mosaicState.shares': -1 };
                 break;
         }
 
