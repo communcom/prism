@@ -3862,6 +3862,535 @@ waitForTransaction               // Дождаться и получить от�
 }
 ```
 
+#### Subscriptions (my feed)
+
+Персональная лента пользователя
+
+
+=> Запрос
+
+```json
+{
+    "id": 1,
+    "method": "getPosts",
+    "jsonrpc": "2.0",
+    "params": {
+        "userId": "tst1bvcvnjwn",
+        "type": "subscriptions"
+    }
+}
+```
+
+<= Ответ
+
+```json
+{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "result": {
+        "items": [
+            {
+                "document": {
+                    "id": 1,
+                    "type": "post",
+                    "attributes": {
+                        "version": "1.0",
+                        "type": "basic"
+                    },
+                    "content": [
+                        {
+                            "id": 3,
+                            "type": "attachments",
+                            "content": [
+                                {
+                                    "type": "image",
+                                    "content": "https://img.golos.io/images/9mPCeXRV4HwkafPzo2ocd8JCvx2.jpg",
+                                    "id": 4
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "votes": {
+                    "upCount": 0,
+                    "downCount": 0
+                },
+                "stats": {
+                    "commentsCount": 6
+                },
+                "meta": {
+                    "creationTime": "2019-10-24T01:02:18.000Z"
+                },
+                "contentId": {
+                    "communityId": "DUZKBN",
+                    "userId": "tst4npimiead",
+                    "permlink": "1571878935"
+                },
+                "author": {
+                    "userId": "tst4npimiead",
+                    "username": "rutherford-meaghan-v",
+                    "avatarUrl": "https://img.golos.io/images/3VvdYvp8nZ8qptoqXje6jQ9pw65g.gif"
+                },
+                "community": {
+                    "communityId": "DUZKBN",
+                    "alias": "id1876992342",
+                    "name": "DUZKBN",
+                    "avatarUrl": "http://community/avatar.img"
+                },
+                "type": "basic"
+            },
+            {
+                "document": {
+                    "id": 1,
+                    "type": "post",
+                    "attributes": {
+                        "version": "1.0",
+                        "type": "basic"
+                    },
+                    "content": [
+                        {
+                            "id": 3,
+                            "type": "attachments",
+                            "content": [
+                                {
+                                    "type": "image",
+                                    "content": "https://img.golos.io/images/3TvGCsBkZUVMZrfQq3ApjccuDnrk.jpg",
+                                    "id": 4
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "votes": {
+                    "upCount": 0,
+                    "downCount": 0
+                },
+                "stats": {
+                    "commentsCount": 0
+                },
+                "meta": {
+                    "creationTime": "2019-10-24T01:01:03.000Z"
+                },
+                "contentId": {
+                    "communityId": "DUZKBN",
+                    "userId": "tst4npimiead",
+                    "permlink": "1571878862"
+                },
+                "author": {
+                    "userId": "tst4npimiead",
+                    "username": "rutherford-meaghan-v",
+                    "avatarUrl": "https://img.golos.io/images/3VvdYvp8nZ8qptoqXje6jQ9pw65g.gif"
+                },
+                "community": {
+                    "communityId": "DUZKBN",
+                    "alias": "id1876992342",
+                    "name": "DUZKBN",
+                    "avatarUrl": "http://community/avatar.img"
+                },
+                "type": "basic"
+            },
+            {
+                "document": {
+                    "id": 1,
+                    "type": "post",
+                    "attributes": {
+                        "version": "1.0",
+                        "type": "basic"
+                    },
+                    "content": [
+                        {
+                            "id": 2,
+                            "type": "paragraph",
+                            "content": [
+                                {
+                                    "id": 3,
+                                    "type": "text",
+                                    "content": "Проверим а шо"
+                                }
+                            ]
+                        },
+                        {
+                            "id": 4,
+                            "type": "paragraph",
+                            "content": []
+                        },
+                        {
+                            "id": 5,
+                            "type": "paragraph",
+                            "content": [
+                                {
+                                    "id": 6,
+                                    "type": "text",
+                                    "content": "Что м. Потому что эта эпоха"
+                                }
+                            ]
+                        },
+                        {
+                            "id": 7,
+                            "type": "paragraph",
+                            "content": [
+                                {
+                                    "id": 8,
+                                    "type": "text",
+                                    "content": ", она обречена на огонь, новый"
+                                }
+                            ]
+                        },
+                        {
+                            "id": 9,
+                            "type": "paragraph",
+                            "content": []
+                        },
+                        {
+                            "id": 10,
+                            "type": "paragraph",
+                            "content": []
+                        },
+                        {
+                            "id": 11,
+                            "type": "paragraph",
+                            "content": [
+                                {
+                                    "id": 12,
+                                    "type": "link",
+                                    "content": "https://github.com/Dec01",
+                                    "attributes": {
+                                        "url": "https://github.com/Dec01"
+                                    }
+                                },
+                                {
+                                    "id": 13,
+                                    "type": "text",
+                                    "content": " "
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "votes": {
+                    "upCount": 0,
+                    "downCount": 0
+                },
+                "stats": {
+                    "commentsCount": 0
+                },
+                "meta": {
+                    "creationTime": "2019-10-24T00:48:03.000Z"
+                },
+                "contentId": {
+                    "communityId": "DUZKBN",
+                    "userId": "tst4npimiead",
+                    "permlink": "1571878080"
+                },
+                "author": {
+                    "userId": "tst4npimiead",
+                    "username": "rutherford-meaghan-v",
+                    "avatarUrl": "https://img.golos.io/images/3VvdYvp8nZ8qptoqXje6jQ9pw65g.gif"
+                },
+                "community": {
+                    "communityId": "DUZKBN",
+                    "alias": "id1876992342",
+                    "name": "DUZKBN",
+                    "avatarUrl": "http://community/avatar.img"
+                },
+                "type": "basic"
+            },
+            {
+                "document": {
+                    "id": 1,
+                    "type": "post",
+                    "attributes": {
+                        "version": "1.0",
+                        "type": "basic"
+                    },
+                    "content": [
+                        {
+                            "id": 2,
+                            "type": "paragraph",
+                            "content": [
+                                {
+                                    "id": 3,
+                                    "type": "link",
+                                    "content": "https://www.youtube.com/watch?v=AcWj9AkIx8Q",
+                                    "attributes": {
+                                        "url": "https://www.youtube.com/watch?v=AcWj9AkIx8Q"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "votes": {
+                    "upCount": 0,
+                    "downCount": 0
+                },
+                "stats": {
+                    "commentsCount": 0
+                },
+                "meta": {
+                    "creationTime": "2019-10-24T00:43:03.000Z"
+                },
+                "contentId": {
+                    "communityId": "DUZKBN",
+                    "userId": "tst4npimiead",
+                    "permlink": "1571877782"
+                },
+                "author": {
+                    "userId": "tst4npimiead",
+                    "username": "rutherford-meaghan-v",
+                    "avatarUrl": "https://img.golos.io/images/3VvdYvp8nZ8qptoqXje6jQ9pw65g.gif"
+                },
+                "community": {
+                    "communityId": "DUZKBN",
+                    "alias": "id1876992342",
+                    "name": "DUZKBN",
+                    "avatarUrl": "http://community/avatar.img"
+                },
+                "type": "basic"
+            },
+            {
+                "document": {
+                    "id": 1,
+                    "type": "post",
+                    "attributes": {
+                        "version": "1.0",
+                        "type": "basic"
+                    },
+                    "content": [
+                        {
+                            "id": 3,
+                            "type": "attachments",
+                            "content": [
+                                {
+                                    "type": "image",
+                                    "content": "https://img.golos.io/images/41mx6nSxhhc9A5ej4transeMqs1x.png",
+                                    "id": 4
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "votes": {
+                    "upCount": 0,
+                    "downCount": 0
+                },
+                "stats": {
+                    "commentsCount": 0
+                },
+                "meta": {
+                    "creationTime": "2019-10-24T00:39:57.000Z"
+                },
+                "contentId": {
+                    "communityId": "DUZKBN",
+                    "userId": "tst4npimiead",
+                    "permlink": "1571877596"
+                },
+                "author": {
+                    "userId": "tst4npimiead",
+                    "username": "rutherford-meaghan-v",
+                    "avatarUrl": "https://img.golos.io/images/3VvdYvp8nZ8qptoqXje6jQ9pw65g.gif"
+                },
+                "community": {
+                    "communityId": "DUZKBN",
+                    "alias": "id1876992342",
+                    "name": "DUZKBN",
+                    "avatarUrl": "http://community/avatar.img"
+                },
+                "type": "basic"
+            },
+            {
+                "document": {
+                    "id": 1,
+                    "type": "post",
+                    "attributes": {
+                        "version": "1.0",
+                        "type": "basic"
+                    },
+                    "content": [
+                        {
+                            "id": 2,
+                            "type": "paragraph",
+                            "content": [
+                                {
+                                    "id": 3,
+                                    "type": "text",
+                                    "content": "1212312в221 аваываываfdsfsfdmskfm авлыавьды вьавыа выавыавыаывавыавыа ывавыа ывавы аыва выа выавыав ыаыв авыа ыва ыва ыва ыва ыва выа ывавыа ыа ываы ваыв авыа ыва ыва ыва ывавыавыаываываыва ыа ыаы ваы ваыв аыв аыв аыв аыва ыва"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "votes": {
+                    "upCount": 0,
+                    "downCount": 0
+                },
+                "stats": {
+                    "commentsCount": 0
+                },
+                "meta": {
+                    "creationTime": "2019-10-24T00:39:21.000Z"
+                },
+                "contentId": {
+                    "communityId": "DUZKBN",
+                    "userId": "tst4npimiead",
+                    "permlink": "1571877560"
+                },
+                "author": {
+                    "userId": "tst4npimiead",
+                    "username": "rutherford-meaghan-v",
+                    "avatarUrl": "https://img.golos.io/images/3VvdYvp8nZ8qptoqXje6jQ9pw65g.gif"
+                },
+                "community": {
+                    "communityId": "DUZKBN",
+                    "alias": "id1876992342",
+                    "name": "DUZKBN",
+                    "avatarUrl": "http://community/avatar.img"
+                },
+                "type": "basic"
+            },
+            {
+                "document": {
+                    "id": 1,
+                    "type": "post",
+                    "attributes": {
+                        "version": "1.0",
+                        "type": "basic"
+                    },
+                    "content": []
+                },
+                "votes": {
+                    "upCount": 0,
+                    "downCount": 0
+                },
+                "stats": {
+                    "commentsCount": 0
+                },
+                "meta": {
+                    "creationTime": "2019-10-24T00:35:51.000Z"
+                },
+                "contentId": {
+                    "communityId": "DUZKBN",
+                    "userId": "tst4npimiead",
+                    "permlink": "1571877351"
+                },
+                "author": {
+                    "userId": "tst4npimiead",
+                    "username": "rutherford-meaghan-v",
+                    "avatarUrl": "https://img.golos.io/images/3VvdYvp8nZ8qptoqXje6jQ9pw65g.gif"
+                },
+                "community": {
+                    "communityId": "DUZKBN",
+                    "alias": "id1876992342",
+                    "name": "DUZKBN",
+                    "avatarUrl": "http://community/avatar.img"
+                },
+                "type": "basic"
+            },
+            {
+                "document": {
+                    "id": 1,
+                    "type": "post",
+                    "attributes": {
+                        "version": "1.0",
+                        "type": "basic"
+                    },
+                    "content": [
+                        {
+                            "id": 2,
+                            "type": "paragraph",
+                            "content": [
+                                {
+                                    "id": 3,
+                                    "type": "text",
+                                    "content": "Testf"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "votes": {
+                    "upCount": 0,
+                    "downCount": 0
+                },
+                "stats": {
+                    "commentsCount": 0
+                },
+                "meta": {
+                    "creationTime": "2019-10-24T00:35:00.000Z"
+                },
+                "contentId": {
+                    "communityId": "DUZKBN",
+                    "userId": "tst4npimiead",
+                    "permlink": "1571877297"
+                },
+                "author": {
+                    "userId": "tst4npimiead",
+                    "username": "rutherford-meaghan-v",
+                    "avatarUrl": "https://img.golos.io/images/3VvdYvp8nZ8qptoqXje6jQ9pw65g.gif"
+                },
+                "community": {
+                    "communityId": "DUZKBN",
+                    "alias": "id1876992342",
+                    "name": "DUZKBN",
+                    "avatarUrl": "http://community/avatar.img"
+                },
+                "type": "basic"
+            },
+            {
+                "document": {
+                    "id": 1,
+                    "type": "post",
+                    "attributes": {
+                        "version": "1.0",
+                        "type": "basic"
+                    },
+                    "content": [
+                        {
+                            "id": 2,
+                            "type": "paragraph",
+                            "content": [
+                                {
+                                    "id": 3,
+                                    "type": "text",
+                                    "content": "тест"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "votes": {
+                    "upCount": 1,
+                    "downCount": 0
+                },
+                "stats": {
+                    "commentsCount": 1
+                },
+                "meta": {
+                    "creationTime": "2019-10-23T12:34:09.000Z"
+                },
+                "contentId": {
+                    "communityId": "DUZKBN",
+                    "userId": "tst1bvcvnjwn",
+                    "permlink": "1571834042"
+                },
+                "author": {
+                    "userId": "tst1bvcvnjwn",
+                    "username": "ritchie-robby-iii",
+                    "avatarUrl": "https://i.pravatar.cc/300?u=3ce9fcfa4ad8543958ac61fe80f4fea78ba2dd31"
+                },
+                "community": {
+                    "communityId": "DUZKBN",
+                    "alias": "id1876992342",
+                    "name": "DUZKBN",
+                    "avatarUrl": "http://community/avatar.img"
+                },
+                "type": "basic"
+            }
+        ]
+    }
+}
+```
+
 ### getComment
 
 => Запрос

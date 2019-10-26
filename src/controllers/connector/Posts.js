@@ -112,6 +112,11 @@ class Posts extends BasicController {
         }
 
         switch (type) {
+            case 'subscriptions':
+                return await this._getPostsBySubscriptions(
+                    { userId, limit, offset, allowNsfw },
+                    authUserId
+                );
             case 'byUser':
                 return await this._getPostsByUser({ userId, limit, offset, allowNsfw }, authUserId);
             case 'new':
@@ -158,6 +163,46 @@ class Posts extends BasicController {
         }
 
         return post;
+    }
+
+    async _getPostsBySubscriptions({ userId, allowNsfw, limit, offset }, authUserId) {
+        const profile = await ProfileModel.findOne(
+            { userId },
+            { _id: false, subscriptions: true, blacklist: true },
+            { lean: true }
+        );
+
+        const filter = {
+            $match: {
+                $or: [
+                    { 'contentId.userId': { $in: profile.subscriptions.userIds } },
+                    { 'contentId.communityId': { $in: profile.subscriptions.communityIds } },
+                ],
+                $nor: [
+                    { 'contentId.userId': { $in: profile.blacklist.userIds } },
+                    { 'contentId.communityId': { $in: profile.blacklist.communityIds } },
+                ],
+            },
+        };
+
+        if (!allowNsfw) {
+            filter.$match['document.tags'] = { $ne: 'nsfw' };
+        }
+
+        const paging = [{ $skip: offset }, { $limit: limit }];
+        const sort = { $sort: { 'meta.creationTime': -1 } };
+
+        const items = await this._aggregate([
+            filter,
+            ...paging,
+            sort,
+            ...lookups,
+            baseProjection,
+            ...this._addCurrentUserFields(authUserId),
+            cleanUpProjection,
+        ]);
+
+        return { items };
     }
 
     async _getPostsByUser({ userId, allowNsfw, limit, offset }, authUserId) {
