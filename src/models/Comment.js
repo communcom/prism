@@ -62,6 +62,16 @@ module.exports = MongoDB.makeModel(
                 default: 0,
             },
         },
+        reports: {
+            userIds: {
+                type: [String],
+                default: [],
+            },
+            reportsCount: {
+                type: Number,
+                default: 0,
+            },
+        },
         meta: {
             creationTime: {
                 type: Date,
@@ -76,6 +86,11 @@ module.exports = MongoDB.makeModel(
             byTime: {
                 type: String,
             },
+        },
+        status: {
+            type: String,
+            enum: ['clean', 'locked', 'banned'],
+            default: 'clean',
         },
         mosaicState: {
             tracery: {

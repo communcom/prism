@@ -41,7 +41,35 @@ getProfile:                        // Получение профиля поль
     userId <string/null>           // Id пользователя
     username <string/null>         // Имя пользователя
     user <string/null>             // userId либо username
-
+    
+getReportsList:                    // Списка контента, на который есть репорты
+    communityIds <[string]>        // Массив communityId сообществ
+    status <string>('open')        // Фильтр по статусу рассмотрения
+        [
+          open
+        | closed
+        ]
+    contentType <string>           // Тип контента
+        [
+          post                     
+        | comment
+        ]
+    sortBy <string>('time')        // Сортировка
+        [
+          time                     // Сортировка по времени (от новых к старым)
+        | timeDesc                 // Обратная сортировка по времени (от старых к новым)
+        | reportsCount             // Сортировка по количеству репортов (от бОльшего к меньшему)
+        ]
+    limit <number>(10)             // Ограничение на размер найденных результатов
+    offset <number>(0)             // Количество результатов, которое надо "пропустить"
+    
+    
+getEntityReports:                  // Получение списка репортов конкретного контента
+    userId <string>                // Id пользователя
+    permlink <string>              // Пермлинк контента
+    communityId <string>           // Идетификатор сообщества, в котором опубликован контент    
+    limit <number>(10)             // Ограничение на размер найденных результатов
+    offset <number>(0)             // Количество результатов, которое надо "пропустить"
 
 getPost:                           // Получение конкретного поста
     userId <string>                // Id пользователя
@@ -205,6 +233,175 @@ waitForTransaction               // Дождаться и получить от�
 ```
 
 ## Описание API
+
+### getReportsList
+
+=> Запрос
+
+```json
+{
+    "id": 1,
+    "method": "getReportsList",
+    "jsonrpc": "2.0",
+    "params": {
+        "contentType": "post",
+        "communityIds": [
+            "IDDQD"
+        ]
+    }
+}
+```
+
+<= Ответ
+
+```json
+{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "result": {
+        "items": [
+            {
+                "document": {
+                    "type": "basic",
+                    "body": {
+                        "attributes": {
+                            "type": "basic",
+                            "version": "1.0",
+                            "title": "Hermes fights with Bellerophon against Pallas and common man named MissKalyn LegrosDVM on Tyria"
+                        },
+                        "id": 1,
+                        "type": "post",
+                        "content": [
+                            {
+                                "id": 2,
+                                "type": "paragraph",
+                                "content": [
+                                    {
+                                        "id": 3,
+                                        "type": "text",
+                                        "content": "Some post text here :)"
+                                        }
+                                ]
+                            },
+                            {
+                                "id": 13,
+                                "type": "attachments",
+                                "content": [
+                                    {
+                                        "id": 14,
+                                        "type": "image",
+                                        "content": "https://i.gifer.com/1HOf.gif"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                },
+                "votes": {
+                    "upVotes": [],
+                    "upCount": 0,
+                    "downVotes": [],
+                    "downCount": 0
+                },
+                "reports": {
+                    "reportsCount": 1
+                },
+                "stats": {
+                    "commentsCount": 0
+                },
+                "meta": {
+                    "creationTime": "2019-10-25T15:52:09.000Z"
+                },
+                "contentId": {
+                    "communityId": "IDDQD",
+                    "userId": "tst2yvekgmue",
+                    "permlink": "hermes-fights-with-bellerophon-against-pallas-and-common-man-named-misskalyn-legrosdvm-on-tyria-1572018725764"
+                },
+                "author": {
+                    "userId": "tst2yvekgmue",
+                    "username": "pagac-machelle-md",
+                    "avatarUrl": "https://i.pravatar.cc/300?u=a4aa5ae2d7516f4760a65785b946ade409a6b22a"
+                },
+                "community": {
+                    "communityId": "IDDQD",
+                    "alias": "id3777677651",
+                    "name": "IDDQD comunity",
+                    "avatarUrl": "https://i.pravatar.cc/300?u=93941d6ccc669d148c16e3e1383460aafcbf08d5"
+                }
+            },
+            {
+                "document": {
+                    "type": "basic",
+                    "body": {
+                        "attributes": {
+                            "type": "basic",
+                            "version": "1.0",
+                            "title": "Hephaestus fights with Niobe against Menoetius and common man named Dr.Brook EmmerichV on King's Landing"
+                        },
+                        "id": 1,
+                        "type": "post",
+                        "content": [
+                            {
+                                "id": 2,
+                                "type": "paragraph",
+                                "content": [
+                                    {
+                                        "id": 3,
+                                        "type": "text",
+                                        "content": "Whiteboards are white because Chuck Norris scared them that way.\n at the moment he lives at 01583 Jacobs Streets, New Ruben, AR 26855-5829     \n\n and YODA said: Feel the force! \n\n witcher quote: I thought I was choosing the lesser evil. I chose the lesser evil. Lesser evil! I’m Geralt! Witcher…I’m the Butcher of Blaviken— \n\n Rick and Morty quote: The first rule of space travel kids is always check out distress beacons. Nine out of ten times it's a ship full of dead aliens and a bunch of free shit! One out of ten times it's a deadly trap, but... I'm ready to roll those dice! \n\n SuperHero Ultra Absorbing Boy has power to Enhanced Memory and Elasticity \n\n Harry Potter quote: You sort of start thinking anything’s possible if you’ve got enough nerve. \n\n and some Lorem to finish text: Iusto placeat voluptatem reiciendis minima sunt et quos dolores reprehenderit illo aut sit facilis doloribus consectetur nostrum non adipisci dicta doloribus commodi qui nisi doloribus facere quibusdam nihil qui tempora et quae esse incidunt velit unde reiciendis alias dolorem quas illo expedita laudantium et maiores ipsum in velit quos quia vitae ut molestiae asperiores quas eveniet voluptas cumque rem porro iste quia sit iste autem totam ea in ab doloremque accusamus voluptatem qui impedit saepe quia ut eligendi et a corporis laborum excepturi quos ipsa velit quia repellat quis excepturi est tempora voluptas voluptatem quia numquam eum earum ad ut possimus quis adipisci sit sint quisquam est explicabo molestias veritatis necessitatibus veniam id veritatis nam sint aut in quod quia et delectus architecto veritatis nulla ut voluptatem consequatur ut maxime architecto quisquam est eos atque aut beatae reprehenderit qui facere explicabo tenetur ea sit repellendus quae ad numquam et culpa nulla sed possimus soluta sint."
+                                    }
+                                ]
+                            },
+                            {
+                                "id": 13,
+                                "type": "attachments",
+                                "content": [
+                                    {
+                                        "id": 14,
+                                        "type": "image",
+                                        "content": "https://i.gifer.com/1HOf.gif"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                },
+                "votes": {
+                    "upVotes": [],
+                    "upCount": 0,
+                    "downVotes": [],
+                    "downCount": 0
+                },
+                "reports": {
+                    "reportsCount": 1
+                },
+                "stats": {
+                    "commentsCount": 0
+                },
+                "meta": {
+                    "creationTime": "2019-10-25T14:36:21.000Z"
+                },
+                "contentId": {
+                    "communityId": "IDDQD",
+                    "userId": "tst1lfgvbfpt",
+                    "permlink": "hephaestus-fights-with-niobe-against-menoetius-and-common-man-named-dr-brook-emmerichv-on-king-s-landing-1572014179604"
+                },
+                "author": {
+                    "userId": "tst1lfgvbfpt",
+                    "username": "kuhn-bart-v",
+                    "avatarUrl": "https://i.pravatar.cc/300?u=639fbce80ae2613c25a5eee459474086ea6cb337"
+                },
+                "community": {
+                    "communityId": "IDDQD",
+                    "alias": "id3777677651",
+                    "name": "IDDQD comunity",
+                    "avatarUrl": "https://i.pravatar.cc/300?u=93941d6ccc669d148c16e3e1383460aafcbf08d5"
+                }
+            }
+        ]
+    }
+}
+```
 
 ### getProfile
 

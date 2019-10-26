@@ -161,7 +161,7 @@ class Posts extends BasicController {
     }
 
     async _getPostsByUser({ userId, allowNsfw, limit, offset }, authUserId) {
-        const filter = { $match: { 'contentId.userId': userId } };
+        const filter = { $match: { 'contentId.userId': userId, status: 'clean' } };
 
         if (!allowNsfw) {
             filter.$match['document.tags'] = { $ne: 'nsfw' };
@@ -184,7 +184,7 @@ class Posts extends BasicController {
     }
 
     async _getFeedNew({ allowNsfw, limit, offset }, authUserId) {
-        const filter = { $match: {} };
+        const filter = { $match: { status: 'clean' } };
 
         if (!allowNsfw) {
             filter.$match['document.tags'] = { $ne: 'nsfw' };
@@ -221,7 +221,7 @@ class Posts extends BasicController {
         authUserId
     ) {
         communityId = await resolveCommunityId({ communityId, communityAlias });
-        const filter = { $match: { 'contentId.communityId': communityId } };
+        const filter = { $match: { 'contentId.communityId': communityId, status: 'clean' } };
 
         if (!allowNsfw) {
             filter.$match['document.tags'] = { $ne: 'nsfw' };
@@ -249,7 +249,7 @@ class Posts extends BasicController {
     ) {
         // make default sorting, so nothing breaks
         const sortBy = { $sort: { _id: -1 } };
-        const filter = { $match: {} };
+        const filter = { $match: { status: 'clean' } };
         let addSortingField;
 
         if (!allowNsfw) {

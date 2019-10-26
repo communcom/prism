@@ -11,6 +11,7 @@ const Block = require('../controllers/connector/Block');
 const Search = require('../controllers/connector/Search');
 const Vote = require('../controllers/connector/Vote');
 const Community = require('../controllers/connector/Community');
+const Reports = require('../controllers/connector/Reports');
 
 class Connector extends BasicConnector {
     constructor({ prism }) {
@@ -35,6 +36,7 @@ class Connector extends BasicConnector {
             this._search = new Search(linking);
             this._vote = new Vote(linking);
             this._community = new Community(linking);
+            this._reports = new Reports(linking);
         } else {
             this._posts = empty;
             this._comment = empty;
@@ -45,6 +47,7 @@ class Connector extends BasicConnector {
             this._search = empty;
             this._vote = empty;
             this._community = empty;
+            this._reports = empty;
         }
     }
 
@@ -186,6 +189,52 @@ class Connector extends BasicConnector {
                             },
                             tags: {
                                 type: 'array',
+                            },
+                        },
+                    },
+                },
+                getReportsList: {
+                    handler: this._reports.getReportsList,
+                    scope: this._reports,
+                    inherits: ['onlyWhenPublicApiEnabled', 'paging'],
+                    validation: {
+                        required: ['contentType'],
+                        properties: {
+                            contentType: {
+                                enum: ['post', 'comment'],
+                            },
+                            communityIds: {
+                                items: {
+                                    type: 'string',
+                                },
+                                default: [],
+                            },
+                            status: {
+                                enum: ['open', 'closed'],
+                                default: 'open',
+                            },
+                            sortBy: {
+                                enum: ['time', 'timeDesc', 'reportsCount'],
+                                default: 'time',
+                            },
+                        },
+                    },
+                },
+                getEntityReports: {
+                    handler: this._reports.getEntityReports,
+                    scope: this._reports,
+                    inherits: ['onlyWhenPublicApiEnabled', 'paging'],
+                    validation: {
+                        required: ['communityId', 'userId', 'permlink'],
+                        properties: {
+                            communityId: {
+                                type: 'string',
+                            },
+                            userId: {
+                                type: 'string',
+                            },
+                            permlink: {
+                                type: 'string',
                             },
                         },
                     },

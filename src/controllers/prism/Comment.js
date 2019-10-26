@@ -10,6 +10,32 @@ const { isCommunityExists } = require('../../utils/lookup');
 const { calculateTracery } = require('../../utils/mosaic');
 
 class Comment extends Abstract {
+    async handleBan({ commun_code: communityId, message_id: messageId }) {
+        const contentId = {
+            communityId,
+            userId: messageId.author,
+            permlink: messageId.permlink,
+        };
+
+        const previousModel = CommentModel.findOneAndUpdate(
+            { contentId },
+            { $set: { status: 'banned' } }
+        );
+
+        if (previousModel) {
+            await this.registerForkChanges({
+                type: 'update',
+                Model: CommentModel,
+                documentId: previousModel._id,
+                data: {
+                    $set: {
+                        document: previousModel.document.toObject(),
+                    },
+                },
+            });
+        }
+    }
+
     async handleCreate(content, { blockNum, blockTime }) {
         const contentId = extractContentId(content);
         const { communityId, userId, permlink } = contentId;

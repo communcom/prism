@@ -57,6 +57,16 @@ module.exports = MongoDB.makeModel(
                 default: 0,
             },
         },
+        reports: {
+            userIds: {
+                type: [String],
+                default: [],
+            },
+            reportsCount: {
+                type: Number,
+                default: 0,
+            },
+        },
         stats: {
             commentsCount: {
                 type: Number,
@@ -68,6 +78,11 @@ module.exports = MongoDB.makeModel(
                 type: Date,
                 default: null,
             },
+        },
+        status: {
+            type: String,
+            enum: ['clean', 'locked', 'banned'],
+            default: 'clean',
         },
         mosaicState: {
             tracery: {

@@ -148,7 +148,7 @@ class Comment extends BasicController {
     }
 
     async _getProfileComments({ userId, limit, offset, sortBy, type }, authUserId) {
-        const filter = {};
+        const filter = { $match: { status: 'clean' } };
 
         if (type === 'user') {
             filter.$match = { 'contentId.userId': userId };
@@ -212,6 +212,7 @@ class Comment extends BasicController {
             'parents.post.userId': userId,
             'parents.post.permlink': permlink,
             'parents.post.communityId': communityId,
+            status: 'clean',
         };
 
         let nestedLevel = 1;

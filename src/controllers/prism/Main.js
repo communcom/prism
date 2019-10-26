@@ -3,6 +3,7 @@ const { Logger, metrics } = core.utils;
 const Post = require('./Post');
 const Comment = require('./Comment');
 const Profile = require('./Profile');
+const Report = require('./Report');
 const Vote = require('./Vote');
 const Subscribe = require('./Subscribe');
 const HashTag = require('./HashTag');
@@ -32,6 +33,7 @@ class Main {
         this._comment = new Comment({ connector, forkService });
         this._profile = new Profile({ connector, forkService });
         this._vote = new Vote({ connector, forkService });
+        this._report = new Report({ connector, forkService });
         this._subscribe = new Subscribe({ connector, forkService });
         // this._hashTag = new HashTag({ connector, forkService });
         this._leader = new Leader({ connector, forkService });
@@ -184,7 +186,7 @@ class Main {
                 break;
 
             case 'comn.gallery->report':
-                // TODO: add message report support
+                await this._report.handleReport(actionArgs);
                 break;
 
             case `${communityId}.social->updatemeta`:
@@ -205,7 +207,9 @@ class Main {
 
             case 'comn.gallery->ban':
                 // message payout ban
-                // todo: handle this
+                await this._report.handleBan(actionArgs);
+                await this._comment.handleBan(actionArgs);
+                await this._post.handleBan(actionArgs);
                 break;
 
             case 'comn.gallery->mosaicerase':
