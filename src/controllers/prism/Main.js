@@ -304,7 +304,7 @@ class Main {
                 break;
 
             case 'comn.ctrl':
-                await this._processCtrl(action.action, actionArgs, meta);
+                await this._leader.processAction(action.action, actionArgs, meta);
                 break;
         }
 
@@ -339,43 +339,6 @@ class Main {
             case 'create':
                 await this._communityPoints.createPoint(params);
                 break;
-        }
-    }
-
-    async _processCtrl(action, params, meta) {
-        // Игнорируем все события без commun_code, потому что функционал внутри контракта ctrl
-        // работает не только для сообществ.
-        if (!params.commun_code) {
-            return;
-        }
-
-        switch (action) {
-            case 'regleader':
-                await this._leader.register(params, meta);
-                break;
-
-            case 'unregleader':
-                await this._leader.unregister(params, meta);
-                break;
-
-            case 'startleader':
-                await this._leader.activate(params, meta);
-                break;
-
-            case 'stopleader':
-                await this._leader.deactivate(params, meta);
-                break;
-
-            case 'voteleader':
-                await this._leader.vote(params, meta);
-                break;
-
-            case 'unvotelead':
-                await this._leader.unvote(params, meta);
-                break;
-
-            default:
-            // Do nothing
         }
     }
 

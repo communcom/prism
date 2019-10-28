@@ -331,7 +331,7 @@ class Connector extends BasicConnector {
                     },
                 },
                 getLeaders: {
-                    handler: this._leaders.getTop,
+                    handler: this._leaders.getLeaders,
                     scope: this._leaders,
                     inherits: ['paging', 'onlyWhenPublicApiEnabled'],
                     validation: {

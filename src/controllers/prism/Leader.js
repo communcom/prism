@@ -37,37 +37,99 @@ class Leader extends Abstract {
         });
     }
 
-    async register({ commun_code: communityId, leader: userId, url }) {
-        const action = {
-            communityId,
-            userId,
-            isActive: true,
-            rating: '0',
-            ratingNum: 0,
-            position: LAST_LEADER_POSITION,
-        };
-
-        if (typeof url === 'string') {
-            action.url = url;
+    async processAction(action, params, meta) {
+        // Игнорируем все события без commun_code, потому что функционал внутри контракта ctrl
+        // работает не только для сообществ.
+        if (!params.commun_code) {
+            return;
         }
 
-        const previousModel = await LeaderModel.findOneAndUpdate(
+        const communityId = params.commun_code;
+        let isNeedReorderLeaders = false;
+
+        switch (action) {
+            case 'regleader':
+                await this._register(params);
+                isNeedReorderLeaders = true;
+                break;
+
+            case 'unregleader':
+                await this._unregister(params);
+                isNeedReorderLeaders = true;
+                break;
+
+            case 'startleader':
+                await this._activate(params);
+                isNeedReorderLeaders = true;
+                break;
+
+            case 'stopleader':
+                await this._deactivate(params);
+                isNeedReorderLeaders = true;
+                break;
+
+            case 'voteleader':
+                await this._vote(params);
+                isNeedReorderLeaders = true;
+                break;
+
+            case 'unvotelead':
+                await this._unvote(params);
+                isNeedReorderLeaders = true;
+                break;
+
+            default:
+            // Do nothing
+        }
+
+        if (meta.events && meta.events.length) {
+            if (await this._updateLeadersRating(meta.events)) {
+                isNeedReorderLeaders = true;
+            }
+        }
+
+        if (isNeedReorderLeaders) {
+            await this._reorderLeaders(communityId);
+        }
+    }
+
+    async _register({ commun_code: communityId, leader: userId, url }) {
+        const previousModel = await LeaderModel.findOne(
             { communityId, userId },
-            { $set: action }
+            { url: true, isActive: true },
+            { lean: true }
         );
 
         if (previousModel) {
+            await LeaderModel.updateOne(
+                { communityId, userId },
+                {
+                    $set: {
+                        isActive: true,
+                        url,
+                    },
+                }
+            );
+
             await this.registerForkChanges({
                 type: 'update',
                 Model: LeaderModel,
                 documentId: previousModel._id,
-                data: action,
+                data: {
+                    $set: {
+                        isActive: previousModel.isActive,
+                        url: previousModel.url,
+                    },
+                },
             });
         } else {
             const newModel = await LeaderModel.create({
                 communityId,
                 userId,
-                ...action,
+                isActive: true,
+                rating: '0',
+                ratingNum: 0,
+                position: LAST_LEADER_POSITION,
             });
 
             await this.registerForkChanges({
@@ -77,11 +139,10 @@ class Leader extends Abstract {
             });
         }
 
-        await this._reorderLeaders(communityId);
         await this._updateProfileLeaderIn(userId);
     }
 
-    async unregister({ commun_code: communityId, leader: userId }) {
+    async _unregister({ commun_code: communityId, leader: userId }) {
         const previousModel = await LeaderModel.findOneAndDelete({ userId, communityId });
 
         if (!previousModel) {
@@ -98,76 +159,14 @@ class Leader extends Abstract {
         await this._updateProfileLeaderIn(userId);
     }
 
-    async activate({ commun_code: communityId, leader: userId }) {
+    async _activate({ commun_code: communityId, leader: userId }) {
         await this._setActiveState({ communityId, userId, isActive: true });
         await this._updateProfileLeaderIn(userId);
     }
 
-    async deactivate({ commun_code: communityId, leader: userId }) {
+    async _deactivate({ commun_code: communityId, leader: userId }) {
         await this._setActiveState({ communityId, userId, isActive: false });
         await this._updateProfileLeaderIn(userId);
-    }
-
-    async vote({ commun_code: communityId, leader: leaderId, voter: userId }, meta) {
-        await this._vote({
-            communityId,
-            leaderId,
-            userId,
-            meta,
-            action: '$addToSet',
-            revert: '$pull',
-        });
-    }
-
-    async unvote({ commun_code: communityId, leader: leaderId, voter: userId }, meta) {
-        await this._vote({
-            communityId,
-            leaderId,
-            userId,
-            meta,
-            action: '$pull',
-            revert: '$addToSet',
-        });
-    }
-
-    async _vote({ communityId, leaderId, userId, meta, action, revert }) {
-        const update = {
-            [action]: { votes: userId },
-        };
-
-        if (meta.events.length) {
-            const rating = this._extractLeaderRating(meta.events);
-
-            update.$set = {
-                rating,
-                ratingNum: Number(rating) || 0,
-            };
-        }
-
-        const previousModel = await LeaderModel.findOneAndUpdate(
-            { communityId, userId: leaderId },
-            update
-        );
-
-        if (!previousModel) {
-            Logger.warn(`Voting for unknown leader (${leaderId})`);
-            return;
-        }
-
-        await this.registerForkChanges({
-            type: 'update',
-            Model: LeaderModel,
-            documentId: previousModel._id,
-            data: {
-                [revert]: { votes: userId },
-                $set: {
-                    rating: previousModel.rating,
-                    ratingNum: previousModel.ratingNum,
-                },
-            },
-        });
-
-        await this._reorderLeaders(communityId);
     }
 
     async _setActiveState({ userId, communityId, isActive }) {
@@ -188,6 +187,52 @@ class Leader extends Abstract {
                 },
             });
         }
+    }
+
+    async _vote({ commun_code: communityId, leader: leaderId, voter: userId }) {
+        await this._saveVote({
+            communityId,
+            leaderId,
+            userId,
+            action: '$addToSet',
+            revert: '$pull',
+        });
+    }
+
+    async _unvote({ commun_code: communityId, leader: leaderId, voter: userId }) {
+        await this._saveVote({
+            communityId,
+            leaderId,
+            userId,
+            action: '$pull',
+            revert: '$addToSet',
+        });
+    }
+
+    async _saveVote({ communityId, leaderId, userId, action, revert }) {
+        const previousModel = await LeaderModel.findOneAndUpdate(
+            {
+                communityId,
+                userId: leaderId,
+            },
+            {
+                [action]: { votes: userId },
+            }
+        );
+
+        if (!previousModel) {
+            Logger.warn(`Voting for unknown leader (${leaderId})`);
+            return;
+        }
+
+        await this.registerForkChanges({
+            type: 'update',
+            Model: LeaderModel,
+            documentId: previousModel._id,
+            data: {
+                [revert]: { votes: userId },
+            },
+        });
     }
 
     async _updateProfileLeaderIn(userId) {
@@ -401,7 +446,10 @@ class Leader extends Abstract {
                 const updatedPosition = i + 1;
 
                 if (position !== updatedPosition) {
-                    await LeaderModel.updateOne({ userId }, { position: updatedPosition });
+                    await LeaderModel.updateOne(
+                        { communityId, userId },
+                        { position: updatedPosition }
+                    );
                 }
             }
         } catch (err) {
@@ -409,8 +457,52 @@ class Leader extends Abstract {
         }
     }
 
-    _extractLeaderRating(events) {
-        return events[0].args.weight;
+    async _updateLeadersRating(events) {
+        let isSomebodyUpdated = false;
+
+        for (const { code, event, args } of events) {
+            if (code === 'comn.ctrl' && event === 'leaderstate') {
+                const {
+                    commun_code: communityId,
+                    leader: userId,
+                    weight: rating,
+                    active: isActive,
+                } = args;
+
+                const updatedObject = await LeaderModel.findOneAndUpdate(
+                    {
+                        communityId,
+                        userId,
+                    },
+                    {
+                        $set: {
+                            rating,
+                            ratingNum: Number(rating) || 0,
+                            isActive,
+                        },
+                    }
+                );
+
+                if (updatedObject) {
+                    await this.registerForkChanges({
+                        type: 'update',
+                        Model: LeaderModel,
+                        documentId: updatedObject._id,
+                        data: {
+                            $set: {
+                                rating: updatedObject.rating,
+                                ratingNum: updatedObject.ratingNum,
+                                isActive: updatedObject.isActive,
+                            },
+                        },
+                    });
+
+                    isSomebodyUpdated = true;
+                }
+            }
+        }
+
+        return isSomebodyUpdated;
     }
 }
 

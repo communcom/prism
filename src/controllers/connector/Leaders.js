@@ -4,7 +4,7 @@ const { isIncludes } = require('../../utils/mongodb');
 const LeaderModel = require('../../models/Leader');
 
 class Leaders extends BasicController {
-    async getTop({ communityId, limit, offset, prefix }, { userId }) {
+    async getLeaders({ communityId, limit, offset, prefix }, { userId }) {
         const queryText = prefix ? prefix.trim() : null;
         const isSearching = Boolean(queryText);
 
