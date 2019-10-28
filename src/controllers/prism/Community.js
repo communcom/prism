@@ -232,7 +232,7 @@ class Community {
 
         const oldCommunityObject = await CommunityModel.findOneAndUpdate(
             { communityId },
-            { [changeMethod]: { subscribers: userId, $inc: { subscribersCount: inc } } }
+            { [changeMethod]: { subscribers: userId }, $inc: { subscribersCount: inc } }
         );
 
         if (oldCommunityObject) {
@@ -243,6 +243,9 @@ class Community {
                 data: {
                     [revertMethod]: {
                         subscribers: userId,
+                    },
+                    $inc: {
+                        subscribersCount: -inc,
                     },
                 },
             });
