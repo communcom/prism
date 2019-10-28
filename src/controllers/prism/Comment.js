@@ -17,7 +17,7 @@ class Comment extends Abstract {
             permlink: messageId.permlink,
         };
 
-        const previousModel = CommentModel.findOneAndUpdate(
+        const previousModel = await CommentModel.findOneAndUpdate(
             { contentId },
             { $set: { status: 'banned' } }
         );
