@@ -18,7 +18,7 @@ class Post extends Abstract {
             permlink: messageId.permlink,
         };
 
-        const previousModel = PostModel.findOneAndUpdate(
+        const previousModel = await PostModel.findOneAndUpdate(
             { contentId },
             { $set: { status: 'banned' } }
         );
