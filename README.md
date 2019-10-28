@@ -4640,6 +4640,80 @@ waitForTransaction               // Дождаться и получить от�
 }
 ```
 
+### getLeaders
+=> Запрос лидеров к обществу
+```json
+{
+  "id": 3,
+  "method": "content.getLeaders",
+  "jsonrpc": "2.0",
+  "params": {
+    "communityId": "DUZKBN",
+    "limit": 10
+  }
+}
+```
+
+<= Ответ
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 3,
+  "result": {
+    "items": [
+      {
+        "url": "xsQn8gK12,_x.CVd",
+        "rating": "18",
+        "isActive": true,
+        "userId": "1khdwuolcvl2",
+        "position": 1,
+        "isVoted": false,
+        "ratingPercent": 0.3333333333333333,
+        "isSubscribed": false,
+        "username": null,
+        "avatarUrl": null
+      },
+      {
+        "url": "G;mVK*=26=OM4H!*",
+        "rating": "18",
+        "isActive": true,
+        "userId": "nwuhts1y1blb",
+        "position": 2,
+        "isVoted": false,
+        "ratingPercent": 0.3333333333333333,
+        "isSubscribed": false,
+        "username": null,
+        "avatarUrl": null
+      },
+      {
+        "url": "=eSFfu==<1-Rsm:F",
+        "rating": "18",
+        "isActive": true,
+        "userId": "tnbnqqgbjhqn",
+        "position": 3,
+        "isVoted": false,
+        "ratingPercent": 0.3333333333333333,
+        "isSubscribed": false,
+        "username": null,
+        "avatarUrl": null
+      },
+      {
+        "url": "Hello world",
+        "rating": "0",
+        "isActive": true,
+        "userId": "tst5xymcjdft",
+        "position": 9999999,
+        "isVoted": false,
+        "ratingPercent": 0,
+        "isSubscribed": false,
+        "username": "johnston-hong-i",
+        "avatarUrl": null
+      }
+    ]
+  }
+}
+```
+
 ### getComments
 
 => Запрос комментариев к посту
