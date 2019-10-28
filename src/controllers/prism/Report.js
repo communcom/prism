@@ -19,16 +19,19 @@ class Report extends Abstract {
             { $set: { status: 'closed' } }
         );
 
-        await this.registerForkChanges({
-            type: 'update',
-            Model: ReportModel,
-            documentId: previousReportModel._id,
-            data: {
-                $set: {
-                    status: previousReportModel.status,
+        // may not exist: leaders can ban any posts, not only reported ones
+        if (previousReportModel) {
+            await this.registerForkChanges({
+                type: 'update',
+                Model: ReportModel,
+                documentId: previousReportModel._id,
+                data: {
+                    $set: {
+                        status: previousReportModel.status,
+                    },
                 },
-            },
-        });
+            });
+        }
     }
 
     async handleReport({ commun_code: communityId, reporter, message_id: messageId, reason }) {
