@@ -165,6 +165,7 @@ class Connector extends BasicConnector {
                                     'topLikes',
                                     'topComments',
                                     'topRewards',
+                                    'hot',
                                 ],
                                 default: 'community',
                             },
@@ -186,9 +187,6 @@ class Connector extends BasicConnector {
                             },
                             communityAlias: {
                                 type: 'string',
-                            },
-                            tags: {
-                                type: 'array',
                             },
                         },
                     },

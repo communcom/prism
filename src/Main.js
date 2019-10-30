@@ -6,6 +6,7 @@ const Prism = require('./services/Prism');
 const Connector = require('./services/Connector');
 const SearchSync = require('./services/SearchSync');
 const Fork = require('./services/Fork');
+const Hot = require('./services/Hot');
 const ServiceMetaModel = require('./models/ServiceMeta');
 const Post = require('./models/Post');
 
@@ -35,6 +36,8 @@ class Main extends BasicMain {
         if (env.GLS_ENABLE_PUBLIC_API && env.GLS_SEARCH_ENABLED) {
             this.addNested(new SearchSync());
         }
+
+        this.addNested(new Hot());
 
         this.addNested(connector);
     }

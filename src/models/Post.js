@@ -105,6 +105,10 @@ module.exports = MongoDB.makeModel(
                 type: Boolean,
             },
         },
+        hot: {
+            type: Number,
+            default: null,
+        },
     },
     {
         index: [
@@ -144,6 +148,15 @@ module.exports = MongoDB.makeModel(
             {
                 fields: {
                     'votes.upCount': -1,
+                },
+            },
+            {
+                fields: {
+                    hot: -1,
+                    'contentId.communityId': 1,
+                },
+                options: {
+                    sparse: true,
                 },
             },
         ],

@@ -1,5 +1,7 @@
 const core = require('cyberway-core-service');
 const BasicController = core.controllers.Basic;
+const env = require('../../data/env');
+
 const { Logger } = core.utils;
 
 const PostModel = require('../../models/Post');
@@ -131,6 +133,11 @@ class Posts extends BasicController {
             case 'topRewards':
                 return await this._getTopFeed(
                     { type, timeframe, allowNsfw, offset, limit },
+                    authUserId
+                );
+            case 'hot':
+                return await this._getHotFeed(
+                    { communityId, communityAlias, allowNsfw, offset, limit },
                     authUserId
                 );
         }
@@ -291,6 +298,51 @@ class Posts extends BasicController {
             ...this._addCurrentUserFields(authUserId),
             cleanUpProjection,
         ]);
+
+        return { items };
+    }
+
+    async _getHotFeed({ communityId, communityAlias, allowNsfw, offset, limit }, authUserId) {
+        const now = Date.now();
+        const scope = 1000 * 60 * 60 * env.GLS_HOT_SCOPE_HOURS;
+        const startDate = now - scope;
+
+        const match = {
+            $match: {
+                'meta.creationTime': {
+                    $gte: new Date(startDate),
+                },
+            },
+        };
+
+        if (communityId || communityAlias) {
+            communityId = await resolveCommunityId({ communityId, communityAlias });
+            match.$match['contentId.communityId'] = communityId;
+        }
+
+        if (!allowNsfw) {
+            match.$match['document.tags'] = { $ne: 'nsfw' };
+        }
+
+        const sorting = {
+            $sort: {
+                hot: -1,
+            },
+        };
+
+        const paging = [{ $skip: offset }, { $limit: limit }];
+
+        const aggregation = [
+            match,
+            sorting,
+            ...paging,
+            ...lookups,
+            baseProjection,
+            ...this._addCurrentUserFields(authUserId),
+            cleanUpProjection,
+        ];
+
+        const items = await this._aggregate(aggregation);
 
         return { items };
     }
