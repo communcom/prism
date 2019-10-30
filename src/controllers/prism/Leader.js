@@ -461,7 +461,7 @@ class Leader extends Abstract {
         let isSomebodyUpdated = false;
 
         for (const { code, event, args } of events) {
-            if (code === 'comn.ctrl' && event === 'leaderstate') {
+            if (code === 'c.ctrl' && event === 'leaderstate') {
                 const {
                     commun_code: communityId,
                     leader: userId,

@@ -21,11 +21,11 @@ const ALLOWED_CONTRACTS = [
     'cyber.domain',
     'cyber.token',
     'cyber.msig',
-    'comn.list',
-    'comn.gallery',
-    'comn.social',
-    'comn.ctrl',
-    'comn.point',
+    'c.list',
+    'c.gallery',
+    'c.social',
+    'c.ctrl',
+    'c.point',
 ];
 class Main {
     constructor({ connector, forkService }) {
@@ -93,58 +93,58 @@ class Main {
         };
 
         switch (pathName) {
-            case 'comn.list->create':
+            case 'c.list->create':
                 await this._community.handleCreate(actionArgs);
                 break;
 
-            case 'comn.list->setinfo':
+            case 'c.list->setinfo':
                 await this._community.handleAddInfo(actionArgs);
                 break;
 
-            case 'comn.list->follow':
+            case 'c.list->follow':
                 await this._community.handleFollowUnfollow(actionArgs, 'follow');
                 break;
 
-            case 'comn.list->unfollow':
+            case 'c.list->unfollow':
                 await this._community.handleFollowUnfollow(actionArgs, 'unfollow');
                 break;
 
-            case 'comn.list->hide':
+            case 'c.list->hide':
                 // add community into user's blacklist
                 await this._community.handleHideUnhide(actionArgs, 'hide');
                 break;
 
-            case 'comn.list->unhide':
+            case 'c.list->unhide':
                 // remove community from user's blacklist
                 await this._community.handleHideUnhide(actionArgs, 'hide');
                 break;
 
-            case 'comn.list->setappparams':
+            case 'c.list->setappparams':
                 // community settings
                 // leaders of commun can change them
                 await this._community.handleSettings(actionArgs);
                 break;
 
-            case 'comn.list->setsysparams':
+            case 'c.list->setsysparams':
                 // community settings
                 // can be changed by commun.com
                 await this._community.handleSettings(actionArgs);
 
                 break;
 
-            case 'comn.list->setparams':
+            case 'c.list->setparams':
                 // community settings
                 // leaders can change these
                 await this._community.handleSettings(actionArgs);
 
                 break;
 
-            case 'comn.list->ban':
+            case 'c.list->ban':
                 // ban user in community
                 await this._community.handleBanUnban(actionArgs, 'ban');
                 break;
 
-            case 'comn.list->unban':
+            case 'c.list->unban':
                 // unban user in community
                 await this._community.handleBanUnban(actionArgs, 'unban');
                 break;
@@ -158,7 +158,7 @@ class Main {
             //     await this._post.handlePayout(actionArgs, meta);
             //     break;
 
-            case 'comn.gallery->create':
+            case 'c.gallery->create':
                 if (actionArgs.parent_id && actionArgs.parent_id.permlink) {
                     await this._comment.handleCreate(actionArgs, meta);
                 } else {
@@ -168,7 +168,7 @@ class Main {
                 }
                 break;
 
-            case 'comn.gallery->update':
+            case 'c.gallery->update':
                 if (await isPost(actionArgs)) {
                     await this._post.handleUpdate(actionArgs, meta);
                     // Временно не обрабатываем
@@ -178,14 +178,14 @@ class Main {
                 }
                 break;
 
-            case 'comn.gallery->remove':
+            case 'c.gallery->remove':
                 // Warning - do not change ordering
                 // await this._hashTag.handleDelete(actionArgs, meta);
                 await this._post.handleDelete(actionArgs, meta);
                 await this._comment.handleDelete(actionArgs, meta);
                 break;
 
-            case 'comn.gallery->report':
+            case 'c.gallery->report':
                 await this._report.handleReport(actionArgs);
                 break;
 
@@ -193,62 +193,62 @@ class Main {
                 await this._profile.handleMeta(actionArgs, meta);
                 break;
 
-            case 'comn.gallery->upvote':
+            case 'c.gallery->upvote':
                 await this._vote.handleUpVote(actionArgs, meta);
                 break;
 
-            case 'comn.gallery->downvote':
+            case 'c.gallery->downvote':
                 await this._vote.handleDownVote(actionArgs, meta);
                 break;
 
-            case 'comn.gallery->unvote':
+            case 'c.gallery->unvote':
                 await this._vote.handleUnVote(actionArgs, meta);
                 break;
 
-            case 'comn.gallery->ban':
+            case 'c.gallery->ban':
                 // message payout ban
                 await this._report.handleBan(actionArgs);
                 await this._comment.handleBan(actionArgs);
                 await this._post.handleBan(actionArgs);
                 break;
 
-            case 'comn.gallery->mosaicerase':
+            case 'c.gallery->mosaicchop':
                 // when post is closed
                 // todo: handle this
                 break;
-            case 'comn.gallery->gemstate':
+            case 'c.gallery->gemstate':
                 // when vote state changed; info about users' rewards
                 // todo: handle this
                 break;
 
-            case 'comn.gallery->chopevent':
+            case 'c.gallery->gemchop':
                 // when vote erased
                 // todo: handle this
                 break;
 
-            case 'comn.gallery->lock':
+            case 'c.gallery->lock':
                 // locking post
                 // todo: handle this
                 break;
 
-            case 'comn.gallery->unlock':
+            case 'c.gallery->unlock':
                 // unlocking post
                 // todo: handle this
                 break;
 
-            case 'comn.social->pin':
+            case 'c.social->pin':
                 await this._subscribe.pin(actionArgs, meta);
                 break;
 
-            case 'comn.social->unpin':
+            case 'c.social->unpin':
                 await this._subscribe.unpin(actionArgs, meta);
                 break;
 
-            case 'comn.social->block':
+            case 'c.social->block':
                 await this._subscribe.block(actionArgs);
                 break;
 
-            case 'comn.social->unblock':
+            case 'c.social->unblock':
                 await this._subscribe.unblock(actionArgs);
                 break;
 
@@ -299,11 +299,11 @@ class Main {
         }
 
         switch (action.code) {
-            case 'comn.point':
+            case 'c.point':
                 await this._processPoint(action.action, actionArgs, meta);
                 break;
 
-            case 'comn.ctrl':
+            case 'c.ctrl':
                 await this._leader.processAction(action.action, actionArgs, meta);
                 break;
         }
@@ -326,7 +326,7 @@ class Main {
             const eventArgs = event.args;
 
             switch (path) {
-                case 'comn.gallery->mosaicstate':
+                case 'c.gallery->mosaicstate':
                     // info about all rewards for post in sum
                     await this._gallery.handleMosaicState(eventArgs);
                     break;

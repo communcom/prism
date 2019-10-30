@@ -7,7 +7,7 @@ const ProfileModel = require('../../models/Profile');
 
 class Profile extends Abstract {
     async handleUsername({ owner: userId, name: username, creator: app }, { blockTime }) {
-        if (app !== 'comn') {
+        if (app !== 'c') {
             // TODO: remove in production
             Logger.warn('Non-commun scope username', username, 'in scope', app);
             return;
