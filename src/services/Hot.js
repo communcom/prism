@@ -32,7 +32,7 @@ class HotCache extends BasicService {
         let upVotesSystemTotalCount = 0;
 
         for (const post of relevantPosts) {
-            this.actualPosts.add(post._id);
+            this.actualPosts.add(post._id.toString());
 
             const commentsCount = post.stats.commentsCount;
             const upVotesCount = post.votes.upCount;
