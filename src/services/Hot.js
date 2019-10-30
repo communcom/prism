@@ -128,7 +128,7 @@ class HotCache extends BasicService {
         const commentsPostTotalWeight = commentsPostTotalCount * commentsWeightMultiplier;
         const postTotalWeight = positiveVotesTotalWeight + commentsPostTotalWeight;
 
-        return new postPeriodWeight() / (Math.log10(Math.abs(postTotalWeight)) || 1);
+        return postPeriodWeight / (Math.log10(Math.abs(postTotalWeight)) || 1);
     }
 
     clearNonActualPosts() {
