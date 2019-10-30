@@ -172,6 +172,13 @@ class Posts extends BasicController {
             { lean: true }
         );
 
+        if (!profile) {
+            throw {
+                code: 404,
+                message: `Profile ${userId} is not found`,
+            };
+        }
+
         const filter = {
             $match: {
                 $or: [
