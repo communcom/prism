@@ -139,7 +139,7 @@ class Reports extends BasicController {
                 $or: communityIds.map(communityId => ({
                     'contentId.communityId': communityId,
                 })),
-                reportsCount: { $gt: 0 },
+                'reports.reportsCount': { $gt: 0 },
                 status,
             },
         };
