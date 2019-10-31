@@ -45,41 +45,43 @@ const basePostProjection = {
 };
 
 const baseCommentProjection = {
-    _id: false,
-    communityId: true,
-    contentId: true,
-    'document.type': true,
-    'document.body': true,
-    'votes.upCount': true,
-    'votes.downCount': true,
-    'reports.reportsCount': true,
-    childCommentsCount: true,
-    isSubscribedAuthor: true,
-    isSubscribedCommunity: true,
-    parents: true,
-    meta: true,
-    author: {
-        $let: {
-            vars: {
-                profile: { $arrayElemAt: ['$profile', 0] },
-            },
-            in: {
-                userId: '$$profile.userId',
-                username: '$$profile.username',
-                avatarUrl: '$$profile.personal.avatarUrl',
+    $project: {
+        _id: false,
+        communityId: true,
+        contentId: true,
+        'document.type': true,
+        'document.body': true,
+        'votes.upCount': true,
+        'votes.downCount': true,
+        'reports.reportsCount': true,
+        childCommentsCount: true,
+        isSubscribedAuthor: true,
+        isSubscribedCommunity: true,
+        parents: true,
+        meta: true,
+        author: {
+            $let: {
+                vars: {
+                    profile: { $arrayElemAt: ['$profile', 0] },
+                },
+                in: {
+                    userId: '$$profile.userId',
+                    username: '$$profile.username',
+                    avatarUrl: '$$profile.personal.avatarUrl',
+                },
             },
         },
-    },
-    community: {
-        $let: {
-            vars: {
-                community: { $arrayElemAt: ['$community', 0] },
-            },
-            in: {
-                communityId: '$$community.communityId',
-                alias: '$$community.alias',
-                name: '$$community.name',
-                avatarUrl: '$$community.avatarUrl',
+        community: {
+            $let: {
+                vars: {
+                    community: { $arrayElemAt: ['$community', 0] },
+                },
+                in: {
+                    communityId: '$$community.communityId',
+                    alias: '$$community.alias',
+                    name: '$$community.name',
+                    avatarUrl: '$$community.avatarUrl',
+                },
             },
         },
     },
