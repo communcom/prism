@@ -102,15 +102,17 @@ class Report extends Abstract {
             { $addToSet: { 'reports.userIds': reporter }, $inc: { 'reports.reportsCount': 1 } }
         );
 
-        await this.registerForkChanges({
-            type: 'update',
-            Model: model,
-            documentId: previousContentModel._id,
-            data: {
-                $pull: { 'reports.userIds': reporter },
-                $inc: { 'reports.reportsCount': -1 },
-            },
-        });
+        if (previousContentModel) {
+            await this.registerForkChanges({
+                type: 'update',
+                Model: model,
+                documentId: previousContentModel._id,
+                data: {
+                    $pull: { 'reports.userIds': reporter },
+                    $inc: { 'reports.reportsCount': -1 },
+                },
+            });
+        }
 
         const newReportModel = await ReportModel.create({
             contentId,

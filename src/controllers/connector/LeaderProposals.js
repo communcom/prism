@@ -98,6 +98,8 @@ class LeaderProposals extends BasicController {
                 };
             }
 
+            item.proposerProfile = undefined;
+
             this._formatChanges(item);
 
             item.community = {
