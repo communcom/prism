@@ -213,7 +213,7 @@ class Community extends BasicController {
 
             community.friends = (await Promise.all(resolveSubscribersPromises)).map(user => ({
                 ...user,
-                avatarUrl: user.personal.avatarUrl,
+                avatarUrl: user.personal ? user.personal.avatarUrl : null,
                 personal: undefined,
             }));
         }
