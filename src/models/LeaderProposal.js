@@ -2,13 +2,13 @@ const core = require('cyberway-core-service');
 const MongoDB = core.services.MongoDB;
 
 module.exports = MongoDB.makeModel(
-    'Proposal',
+    'LeaderProposal',
     {
         communityId: {
             type: String,
             required: true,
         },
-        userId: {
+        proposer: {
             type: String,
             required: true,
         },
@@ -16,7 +16,7 @@ module.exports = MongoDB.makeModel(
             type: String,
             required: true,
         },
-        code: {
+        contract: {
             type: String,
             required: true,
         },
@@ -42,39 +42,13 @@ module.exports = MongoDB.makeModel(
         executedBlockTime: {
             type: Date,
         },
-        // В объекте может быть задано либо data либо массив changes для setparams.
         data: {
             type: Object,
-        },
-        changes: {
-            type: [
-                {
-                    structureName: {
-                        type: String,
-                        required: true,
-                    },
-                    values: {
-                        type: Object,
-                        required: true,
-                    },
-                },
-            ],
         },
         approves: {
             type: [
                 {
-                    userId: {
-                        type: String,
-                        required: true,
-                    },
-                    permission: {
-                        type: String,
-                        required: true,
-                    },
-                    isSigned: {
-                        type: Boolean,
-                        default: false,
-                    },
+                    type: String,
                 },
             ],
             required: true,
@@ -91,7 +65,8 @@ module.exports = MongoDB.makeModel(
             },
             {
                 fields: {
-                    userId: 1,
+                    communityId: 1,
+                    proposer: 1,
                     proposalId: 1,
                 },
                 options: {

@@ -8,6 +8,7 @@ const Vote = require('./Vote');
 const Subscribe = require('./Subscribe');
 const HashTag = require('./HashTag');
 const Leader = require('./Leader');
+const LeaderProposals = require('./LeaderProposals');
 const Community = require('./Community');
 const CommunitySettings = require('./CommunitySettings');
 const CommunityPoints = require('./CommunityPoints');
@@ -37,6 +38,7 @@ class Main {
         this._subscribe = new Subscribe({ connector, forkService });
         // this._hashTag = new HashTag({ connector, forkService });
         this._leader = new Leader({ connector, forkService });
+        this._leaderProposals = new LeaderProposals({ connector, forkService });
         this._communitySettings = new CommunitySettings({ connector, forkService });
         this._communityPoints = new CommunityPoints({ connector, forkService });
         this._community = new Community({ connector, forkService });
@@ -256,44 +258,6 @@ class Main {
             //     await this._post.handleRemoveRepost(actionArgs, meta);
             //     break;
 
-            // case 'cyber.msig->propose':
-            //     await this._leader.handleNewProposal(actionArgs, meta);
-            //     break;
-            //
-            // case 'cyber.msig->approve':
-            //     await this._leader.handleProposalApprove(actionArgs);
-            //     break;
-            //
-            // case 'cyber.msig->exec':
-            //     await this._leader.handleProposalExec(actionArgs, meta);
-            //     break;
-
-            case `${communityId}.charge->setrestorer`:
-                try {
-                    await this._communitySettings.handleSetParams(
-                        communityId,
-                        'charge',
-                        'setrestorer',
-                        [[null, actionArgs.params]]
-                    );
-                } catch (err) {
-                    Logger.error("Community Settings 'charge::setrestorer' processing failed", err);
-                }
-                break;
-
-            case `${communityId}.publish->setrules`:
-                try {
-                    await this._communitySettings.handleSetParams(
-                        communityId,
-                        'publish',
-                        'setrules',
-                        [[null, actionArgs.params]]
-                    );
-                } catch (err) {
-                    Logger.error("Community Settings 'publish::setrules' processing failed", err);
-                }
-                break;
-
             default:
             // unknown action, do nothing
         }
@@ -305,20 +269,8 @@ class Main {
 
             case 'c.ctrl':
                 await this._leader.processAction(action.action, actionArgs, meta);
+                await this._leaderProposals.processAction(action.action, actionArgs, meta);
                 break;
-        }
-
-        if (action.action === 'setparams') {
-            const [communityId, contractName] = action.code.split('.');
-
-            if (contractName) {
-                await this._communitySettings.handleSetParams(
-                    communityId,
-                    contractName,
-                    'setparams',
-                    actionArgs.params
-                );
-            }
         }
 
         for (const event of events) {

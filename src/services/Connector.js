@@ -7,6 +7,7 @@ const Profile = require('../controllers/connector/Profile');
 const Notify = require('../controllers/connector/Notify');
 const HashTag = require('../controllers/connector/HashTag');
 const Leaders = require('../controllers/connector/Leaders');
+const LeaderProposals = require('../controllers/connector/LeaderProposals');
 const Block = require('../controllers/connector/Block');
 const Search = require('../controllers/connector/Search');
 const Vote = require('../controllers/connector/Vote');
@@ -33,6 +34,7 @@ class Connector extends BasicConnector {
             this._notify = new Notify(linking);
             this._hashTag = new HashTag(linking);
             this._leaders = new Leaders(linking);
+            this._leaderProposals = new LeaderProposals(linking);
             this._search = new Search(linking);
             this._vote = new Vote(linking);
             this._community = new Community(linking);
@@ -44,6 +46,7 @@ class Connector extends BasicConnector {
             this._notify = empty;
             this._hashTag = empty;
             this._leaders = empty;
+            this._leaderProposals = empty;
             this._search = empty;
             this._vote = empty;
             this._community = empty;
@@ -345,14 +348,20 @@ class Connector extends BasicConnector {
                     },
                 },
                 getProposals: {
-                    handler: this._leaders.getProposals,
-                    scope: this._leaders,
-                    inherits: ['feedPaging', 'onlyWhenPublicApiEnabled'],
+                    handler: this._leaderProposals.getProposals,
+                    scope: this._leaderProposals,
+                    inherits: ['paging', 'onlyWhenPublicApiEnabled'],
                     validation: {
-                        required: ['communityId'],
+                        required: ['communitiesIds'],
                         properties: {
-                            communityId: {
-                                type: 'string',
+                            communitiesIds: {
+                                type: 'array',
+                                minItems: 1,
+                                items: [
+                                    {
+                                        type: 'string',
+                                    },
+                                ],
                             },
                         },
                     },

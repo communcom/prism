@@ -125,17 +125,16 @@ class Leaders extends BasicController {
             if (!item.avatarUrl) {
                 item.avatarUrl = null;
             }
+
+            if (item.rating) {
+                item.rating /= 1000;
+            } else {
+                item.rating = 0;
+            }
         }
 
         return {
             items: leaders,
-        };
-    }
-
-    async getProposals() {
-        throw {
-            code: -100,
-            message: 'Method not ready yet',
         };
     }
 
