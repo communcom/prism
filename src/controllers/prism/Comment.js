@@ -19,7 +19,7 @@ class Comment extends Abstract {
 
         const previousModel = await CommentModel.findOneAndUpdate(
             { contentId },
-            { $set: { status: 'banned' } }
+            { $set: { status: 'banned', 'report.status': 'closed' } }
         );
 
         if (previousModel) {

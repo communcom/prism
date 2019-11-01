@@ -66,6 +66,16 @@ module.exports = MongoDB.makeModel(
                 type: Number,
                 default: 0,
             },
+            status: {
+                type: String,
+                enum: [
+                    'open',
+                    'closed',
+                    // for 0 reports
+                    'clean',
+                ],
+                default: 'clean',
+            },
         },
         stats: {
             commentsCount: {

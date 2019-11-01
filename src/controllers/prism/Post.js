@@ -20,7 +20,7 @@ class Post extends Abstract {
 
         const previousModel = await PostModel.findOneAndUpdate(
             { contentId },
-            { $set: { status: 'banned' } }
+            { $set: { status: 'banned', 'reports.status': 'closed' } }
         );
 
         if (previousModel) {

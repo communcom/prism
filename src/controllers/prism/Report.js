@@ -99,7 +99,11 @@ class Report extends Abstract {
             {
                 contentId,
             },
-            { $addToSet: { 'reports.userIds': reporter }, $inc: { 'reports.reportsCount': 1 } }
+            {
+                $addToSet: { 'reports.userIds': reporter },
+                $inc: { 'reports.reportsCount': 1 },
+                $set: { 'reports.status': 'open' },
+            }
         );
 
         if (previousContentModel) {
@@ -110,6 +114,7 @@ class Report extends Abstract {
                 data: {
                     $pull: { 'reports.userIds': reporter },
                     $inc: { 'reports.reportsCount': -1 },
+                    $set: { 'reports.status': 'clean' },
                 },
             });
         }

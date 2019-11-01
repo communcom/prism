@@ -140,7 +140,7 @@ class Reports extends BasicController {
                     'contentId.communityId': communityId,
                 })),
                 'reports.reportsCount': { $gt: 0 },
-                status,
+                'reports.status': status,
             },
         };
 
