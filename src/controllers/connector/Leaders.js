@@ -190,12 +190,21 @@ class Leaders extends BasicController {
             },
             {
                 $project: {
-                    'community.communityId': true,
-                    'community.alias': true,
-                    'community.issuer': true,
-                    'community.avatarUrl': true,
-                    'community.name': true,
-                    'community.subscribersCount': true,
+                    community: {
+                        $let: {
+                            vars: {
+                                community: { $arrayElemAt: ['$community', 0] },
+                            },
+                            in: {
+                                communityId: '$$community.communityId',
+                                alias: '$$community.alias',
+                                issuer: '$$community.issuer',
+                                avatarUrl: '$$community.avatarUrl',
+                                name: '$$community.name',
+                                subscribersCount: '$$community.subscribersCount',
+                            },
+                        },
+                    },
                 },
             },
         ]);
