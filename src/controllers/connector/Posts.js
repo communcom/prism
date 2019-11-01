@@ -78,6 +78,14 @@ const fullPostProjection = {
     },
 };
 
+const addUrl = {
+    $addFields: {
+        url: {
+            $concat: ['/', '$community.alias', '/', '$author.username', '/', '$contentId.permlink'],
+        },
+    },
+};
+
 const cleanUpProjection = {
     $project: {
         'community.subscribers': false,
@@ -156,6 +164,7 @@ class Posts extends BasicController {
             },
             ...lookups,
             fullPostProjection,
+            addUrl,
             ...this._addCurrentUserFields(authUserId),
             cleanUpProjection,
         ];
@@ -212,6 +221,7 @@ class Posts extends BasicController {
             sort,
             ...lookups,
             baseProjection,
+            addUrl,
             ...this._addCurrentUserFields(authUserId),
             cleanUpProjection,
         ]);
@@ -235,6 +245,7 @@ class Posts extends BasicController {
             sort,
             ...lookups,
             baseProjection,
+            addUrl,
             ...this._addCurrentUserFields(authUserId),
             cleanUpProjection,
         ]);
@@ -268,6 +279,7 @@ class Posts extends BasicController {
             ...paging,
             ...lookups,
             baseProjection,
+            addUrl,
             ...this._addCurrentUserFields(authUserId),
             cleanUpProjection,
         ]);
@@ -295,6 +307,7 @@ class Posts extends BasicController {
             ...paging,
             ...lookups,
             baseProjection,
+            addUrl,
             ...this._addCurrentUserFields(authUserId),
             cleanUpProjection,
         ]);
@@ -338,6 +351,7 @@ class Posts extends BasicController {
             ...paging,
             ...lookups,
             baseProjection,
+            addUrl,
             ...this._addCurrentUserFields(authUserId),
             cleanUpProjection,
         ];
@@ -420,6 +434,7 @@ class Posts extends BasicController {
             ...paging,
             ...lookups,
             baseProjection,
+            addUrl,
             ...this._addCurrentUserFields(authUserId),
             cleanUpProjection
         );
