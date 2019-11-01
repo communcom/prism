@@ -156,6 +156,8 @@ class Reports extends BasicController {
 
         const items = await model.aggregate(aggregation);
 
+        this._fixDocuments(items, contentType);
+
         return { items };
     }
 
@@ -232,6 +234,20 @@ class Reports extends BasicController {
         const items = await ReportModel.aggregate(aggregation);
 
         return { items };
+    }
+
+    _fixDocuments(documents, type) {
+        for (const document of documents) {
+            this._fixDocument(document, type);
+        }
+    }
+
+    _fixDocument(document, type) {
+        document.type = type;
+
+        if (document.document) {
+            document.document = document.document.body;
+        }
     }
 }
 
