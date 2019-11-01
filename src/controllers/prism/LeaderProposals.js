@@ -31,26 +31,24 @@ class LeaderProposals extends Abstract {
     }
 
     async processAction(action, params, meta) {
-        // Игнорируем все события без commun_code, потому что функционал внутри контракта ctrl
-        // работает не только для сообществ.
-        if (!params.commun_code) {
-            return;
-        }
-
-        const communityId = params.commun_code;
-
         switch (action) {
             case 'propose':
-                await this.handleNewProposal(communityId, params, meta);
+                // Игнорируем предложения без commun_code, потому что функционал внутри контракта ctrl
+                // работает не только для сообществ.
+                if (!params.commun_code) {
+                    return;
+                }
+
+                await this.handleNewProposal(params, meta);
                 break;
 
             case 'approve':
             case 'unapprove':
-                await this.handleProposalVote(communityId, params, action === 'approve');
+                await this.handleProposalVote(params, action === 'approve');
                 break;
 
             case 'exec':
-                await this.handleProposalExec(communityId, params, meta);
+                await this.handleProposalExec(params, meta);
                 break;
 
             default:
@@ -59,8 +57,7 @@ class LeaderProposals extends Abstract {
     }
 
     async handleNewProposal(
-        communityId,
-        { proposer, proposal_name: proposalId, permission, trx },
+        { commun_code: communityId, proposer, proposal_name: proposalId, permission, trx },
         { blockTime }
     ) {
         if (trx.actions.length !== 1) {
@@ -150,11 +147,7 @@ class LeaderProposals extends Abstract {
         });
     }
 
-    async handleProposalVote(
-        communityId,
-        { proposer, proposal_name: proposalId, approver },
-        isApprove
-    ) {
+    async handleProposalVote({ proposer, proposal_name: proposalId, approver }, isApprove) {
         let action;
 
         if (isApprove) {
@@ -171,7 +164,6 @@ class LeaderProposals extends Abstract {
 
         const updatedModel = await ProposalModel.findOneAndUpdate(
             {
-                communityId,
                 proposer,
                 proposalId,
             },
@@ -199,14 +191,9 @@ class LeaderProposals extends Abstract {
         });
     }
 
-    async handleProposalExec(
-        communityId,
-        { proposer, proposal_name: proposalId, executer },
-        { blockTime }
-    ) {
+    async handleProposalExec({ proposer, proposal_name: proposalId, executer }, { blockTime }) {
         const updatedModel = await ProposalModel.findOneAndUpdate(
             {
-                communityId,
                 proposer,
                 proposalId,
             },

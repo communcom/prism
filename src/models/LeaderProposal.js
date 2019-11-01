@@ -73,6 +73,15 @@ module.exports = MongoDB.makeModel(
                     unique: true,
                 },
             },
+            {
+                fields: {
+                    proposer: 1,
+                    proposalId: 1,
+                },
+                options: {
+                    unique: true,
+                },
+            },
         ],
     }
 );
