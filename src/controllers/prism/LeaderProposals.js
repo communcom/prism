@@ -285,6 +285,7 @@ class LeaderProposals extends Abstract {
                     return false;
                 }
                 break;
+
             case 'update':
                 if (!data.id || typeof data.id !== 'string') {
                     return false;
@@ -302,11 +303,13 @@ class LeaderProposals extends Abstract {
                     return false;
                 }
                 break;
+
             case 'remove':
                 if (!data.id || typeof data.id !== 'string') {
                     return false;
                 }
                 break;
+
             default:
                 // Если patch содержит неизвестные типы действий то считаем его невалидным.
                 return false;

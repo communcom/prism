@@ -1,4 +1,6 @@
 const crypto = require('crypto');
+const core = require('cyberway-core-service');
+const { Logger } = core.utils;
 
 const CommunityModel = require('../../models/Community');
 const CommunityPointModel = require('../../models/CommunityPoint');
@@ -7,6 +9,7 @@ const BanModel = require('../../models/Ban');
 
 // Менять соль нельзя, это приведет к расхождению в alias между призмами.
 const SALT = 'AL1tsa3up0at';
+const RESERVED_SYSTEM_ID = '$$system';
 
 class Community {
     constructor({ forkService }) {
@@ -168,6 +171,7 @@ class Community {
             communityId,
             issuer: point.issuer,
             alias,
+            rules: [],
             name,
         });
 
@@ -194,7 +198,7 @@ class Community {
                     avatarUrl,
                     coverUrl,
                     description,
-                    rules,
+                    rules: this._parseRules(rules),
                 },
             }
         );
@@ -280,6 +284,26 @@ class Community {
             .update(`${SALT}${code.toLowerCase()}`)
             .digest()
             .readUInt32LE(16);
+    }
+
+    _parseRules(rawRules) {
+        try {
+            const rules = JSON.parse(rawRules);
+
+            if (Array.isArray(rules)) {
+                return rules;
+            }
+        } catch (err) {
+            Logger.warn('Rules parse failed:', rawRules, err);
+        }
+
+        return [
+            {
+                id: RESERVED_SYSTEM_ID,
+                title: rawRules,
+                text: '',
+            },
+        ];
     }
 }
 

@@ -30,7 +30,23 @@ module.exports = MongoDB.makeModel(
             type: String,
         },
         rules: {
-            type: String,
+            type: [
+                {
+                    id: {
+                        type: String,
+                        required: true,
+                    },
+                    title: {
+                        type: String,
+                        required: true,
+                    },
+                    text: {
+                        type: String,
+                        required: true,
+                    },
+                },
+            ],
+            required: true,
         },
         subscribers: {
             type: [String],

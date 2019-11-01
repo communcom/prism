@@ -158,13 +158,10 @@ class LeaderProposals extends BasicController {
             }
 
             if (!isNil(rules)) {
-                let currentRules;
+                const currentRules = community.rules;
 
-                try {
-                    currentRules = JSON.parse(community.rules);
-                } catch (err) {
-                    Logger.warn('Invalid current community rules:', community);
-                    currentRules = [];
+                if (!Array.isArray(currentRules)) {
+                    Logger.warn('Invalid rules json:', currentRules);
                 }
 
                 const rules = JSON.parse(data.rules);
@@ -178,7 +175,7 @@ class LeaderProposals extends BasicController {
                     let changes = null;
 
                     switch (action.type) {
-                        case 'add':
+                        case 'add': {
                             changes = {
                                 new: {
                                     id: actionData.id,
@@ -188,17 +185,18 @@ class LeaderProposals extends BasicController {
                                 old: null,
                             };
                             break;
+                        }
                         case 'update': {
                             const rule = currentRules.find(rule => rule.id === actionData.id);
 
                             if (rule) {
                                 const updated = { ...rule };
 
-                                if (actionData.title === undefined) {
+                                if (actionData.title !== undefined) {
                                     updated.title = actionData.title;
                                 }
 
-                                if (actionData.text === undefined) {
+                                if (actionData.text !== undefined) {
                                     updated.text = actionData.text;
                                 }
 
