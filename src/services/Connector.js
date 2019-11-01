@@ -347,6 +347,11 @@ class Connector extends BasicConnector {
                         },
                     },
                 },
+                getLeaderCommunities: {
+                    handler: this._leaders.getLeaderCommunities,
+                    scope: this._leaders,
+                    inherits: ['paging', 'onlyWhenPublicApiEnabled'],
+                },
                 getProposals: {
                     handler: this._leaderProposals.getProposals,
                     scope: this._leaderProposals,

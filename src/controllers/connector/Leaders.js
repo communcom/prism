@@ -159,6 +159,51 @@ class Leaders extends BasicController {
 
         return result.totalRating;
     }
+
+    async getLeaderCommunities({ offset, limit }, { userId }) {
+        if (!userId) {
+            throw {
+                code: 401,
+                message: 'Unauthorized',
+            };
+        }
+
+        const items = await LeaderModel.aggregate([
+            {
+                $match: {
+                    userId,
+                },
+            },
+            {
+                $skip: offset,
+            },
+            {
+                $limit: limit,
+            },
+            {
+                $lookup: {
+                    from: 'communities',
+                    localField: 'communityId',
+                    foreignField: 'communityId',
+                    as: 'community',
+                },
+            },
+            {
+                $project: {
+                    'community.communityId': true,
+                    'community.alias': true,
+                    'community.issuer': true,
+                    'community.avatarUrl': true,
+                    'community.name': true,
+                    'community.subscribersCount': true,
+                },
+            },
+        ]);
+
+        return {
+            items: items.map(({ community }) => community),
+        };
+    }
 }
 
 module.exports = Leaders;
