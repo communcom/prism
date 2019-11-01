@@ -90,6 +90,9 @@ class LeaderProposals extends BasicController {
                     as: 'community',
                 },
             },
+            {
+                $project: projection,
+            },
         ]);
 
         for (const item of items) {
