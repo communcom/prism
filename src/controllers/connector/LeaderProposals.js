@@ -2,10 +2,58 @@ const { isNil } = require('lodash');
 const core = require('cyberway-core-service');
 const { Logger } = core.utils;
 const BasicController = core.controllers.Basic;
+
 const LeaderProposalModel = require('../../models/LeaderProposal');
+const { isIncludes } = require('../../utils/mongodb');
 
 class LeaderProposals extends BasicController {
     async getProposals({ communitiesIds, limit, offset }, { userId }) {
+        const projection = {
+            _id: false,
+            proposer: true,
+            proposalId: true,
+            contract: true,
+            action: true,
+            blockTime: true,
+            expiration: true,
+            data: true,
+            approvesCount: {
+                $size: '$approves',
+            },
+            proposerProfile: {
+                $let: {
+                    vars: {
+                        proposer: { $arrayElemAt: ['$proposerProfile', 0] },
+                    },
+                    in: {
+                        userId: '$$proposer.userId',
+                        username: '$$proposer.username',
+                        avatarUrl: '$$proposer.personal.avatarUrl',
+                    },
+                },
+            },
+            community: {
+                $let: {
+                    vars: {
+                        community: { $arrayElemAt: ['$community', 0] },
+                    },
+                    in: {
+                        communityId: '$$community.communityId',
+                        alias: '$$community.alias',
+                        name: '$$community.name',
+                        avatarUrl: '$$community.avatarUrl',
+                        coverUrl: '$$community.coverUrl',
+                        description: '$$community.description',
+                        rules: '$$community.rules',
+                    },
+                },
+            },
+        };
+
+        if (userId) {
+            projection.isApproved = isIncludes('$approves', userId);
+        }
+
         const items = await LeaderProposalModel.aggregate([
             {
                 $match: {
@@ -40,49 +88,6 @@ class LeaderProposals extends BasicController {
                     localField: 'communityId',
                     foreignField: 'communityId',
                     as: 'community',
-                },
-            },
-            {
-                $project: {
-                    _id: false,
-                    proposer: true,
-                    proposalId: true,
-                    contract: true,
-                    action: true,
-                    blockTime: true,
-                    expiration: true,
-                    data: true,
-                    approvesCount: {
-                        $size: '$approves',
-                    },
-                    proposerProfile: {
-                        $let: {
-                            vars: {
-                                proposer: { $arrayElemAt: ['$proposerProfile', 0] },
-                            },
-                            in: {
-                                userId: '$$proposer.userId',
-                                username: '$$proposer.username',
-                                avatarUrl: '$$proposer.personal.avatarUrl',
-                            },
-                        },
-                    },
-                    community: {
-                        $let: {
-                            vars: {
-                                community: { $arrayElemAt: ['$community', 0] },
-                            },
-                            in: {
-                                communityId: '$$community.communityId',
-                                alias: '$$community.alias',
-                                name: '$$community.name',
-                                avatarUrl: '$$community.avatarUrl',
-                                coverUrl: '$$community.coverUrl',
-                                description: '$$community.description',
-                                rules: '$$community.rules',
-                            },
-                        },
-                    },
                 },
             },
         ]);

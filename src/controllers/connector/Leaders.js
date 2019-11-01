@@ -1,6 +1,6 @@
 const core = require('cyberway-core-service');
 const BasicController = core.controllers.Basic;
-const { isIncludes } = require('../../utils/mongodb');
+const { addFieldIsIncludes } = require('../../utils/mongodb');
 const LeaderModel = require('../../models/Leader');
 
 class Leaders extends BasicController {
@@ -41,7 +41,7 @@ class Leaders extends BasicController {
 
         if (userId) {
             aggregation.push(
-                isIncludes({
+                addFieldIsIncludes({
                     newField: 'isVoted',
                     arrayPath: '$votes',
                     value: userId,
@@ -91,7 +91,7 @@ class Leaders extends BasicController {
 
         if (userId) {
             aggregation.push(
-                isIncludes({
+                addFieldIsIncludes({
                     newField: 'isSubscribed',
                     arrayPath: '$profile.subscribers.userIds',
                     value: userId,

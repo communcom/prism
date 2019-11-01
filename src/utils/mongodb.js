@@ -1,18 +1,23 @@
-function isIncludes({ newField, arrayPath, value }) {
+function isIncludes(arrayPath, value) {
+    return {
+        $gte: [
+            {
+                $indexOfArray: [arrayPath, value],
+            },
+            0,
+        ],
+    };
+}
+
+function addFieldIsIncludes({ newField, arrayPath, value }) {
     return {
         $addFields: {
-            [newField]: {
-                $gte: [
-                    {
-                        $indexOfArray: [arrayPath, value],
-                    },
-                    0,
-                ],
-            },
+            [newField]: isIncludes(arrayPath, value),
         },
     };
 }
 
 module.exports = {
     isIncludes,
+    addFieldIsIncludes,
 };

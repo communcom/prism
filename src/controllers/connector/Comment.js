@@ -2,7 +2,7 @@ const core = require('cyberway-core-service');
 const BasicController = core.controllers.Basic;
 const CommentModel = require('../../models/Comment');
 const { resolveCommunityId } = require('../../utils/lookup');
-const { isIncludes } = require('../../utils/mongodb');
+const { addFieldIsIncludes } = require('../../utils/mongodb');
 const env = require('../../data/env');
 
 const CHILD_COMMENTS_INLINE_LIMIT = 5;
@@ -308,22 +308,22 @@ class Comment extends BasicController {
         }
 
         return [
-            isIncludes({
+            addFieldIsIncludes({
                 newField: 'author.isSubscribed',
                 arrayPath: '$author.subscribers.userIds',
                 value: userId,
             }),
-            isIncludes({
+            addFieldIsIncludes({
                 newField: 'community.isSubscribed',
                 arrayPath: '$community.subscribers',
                 value: userId,
             }),
-            isIncludes({
+            addFieldIsIncludes({
                 newField: 'votes.hasUpVote',
                 arrayPath: '$votes.upVotes.userId',
                 value: userId,
             }),
-            isIncludes({
+            addFieldIsIncludes({
                 newField: 'votes.hasDownVote',
                 arrayPath: '$votes.downVotes.userId',
                 value: userId,

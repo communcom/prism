@@ -11,7 +11,7 @@ const {
     lookupUserIdByUsername,
     resolveCommunityId,
 } = require('../../utils/lookup');
-const { isIncludes } = require('../../utils/mongodb');
+const { addFieldIsIncludes } = require('../../utils/mongodb');
 
 const lookups = [
     {
@@ -475,22 +475,22 @@ class Posts extends BasicController {
         }
 
         return [
-            isIncludes({
+            addFieldIsIncludes({
                 newField: 'author.isSubscribed',
                 arrayPath: '$author.subscribers',
                 value: userId,
             }),
-            isIncludes({
+            addFieldIsIncludes({
                 newField: 'community.isSubscribed',
                 arrayPath: '$community.subscribers',
                 value: userId,
             }),
-            isIncludes({
+            addFieldIsIncludes({
                 newField: 'votes.hasUpVote',
                 arrayPath: '$votes.upVotes.userId',
                 value: userId,
             }),
-            isIncludes({
+            addFieldIsIncludes({
                 newField: 'votes.hasDownVote',
                 arrayPath: '$votes.downVotes.userId',
                 value: userId,

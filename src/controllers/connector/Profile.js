@@ -2,7 +2,7 @@ const core = require('cyberway-core-service');
 const BasicController = core.controllers.Basic;
 const ProfileModel = require('../../models/Profile');
 const CommunityModel = require('../../models/Community');
-const { isIncludes } = require('../../utils/mongodb');
+const { addFieldIsIncludes } = require('../../utils/mongodb');
 
 const COMMON_COMMUNITIES_COUNT = 5;
 
@@ -58,7 +58,7 @@ class Profile extends BasicController {
 
             if (authUserId) {
                 addFields.push(
-                    isIncludes({
+                    addFieldIsIncludes({
                         newField: 'isSubscribed',
                         arrayPath: '$subscribers',
                         value: authUserId,
@@ -96,7 +96,7 @@ class Profile extends BasicController {
 
             if (authUserId) {
                 addFields.push(
-                    isIncludes({
+                    addFieldIsIncludes({
                         newField: 'isSubscribed',
                         arrayPath: '$subscribers.userIds',
                         value: authUserId,
@@ -173,17 +173,17 @@ class Profile extends BasicController {
 
         if (authUserId) {
             aggregation.push(
-                isIncludes({
+                addFieldIsIncludes({
                     newField: 'isSubscribed',
                     arrayPath: '$subscribers.userIds',
                     value: authUserId,
                 }),
-                isIncludes({
+                addFieldIsIncludes({
                     newField: 'isSubscription',
                     arrayPath: '$subscriptions.userIds',
                     value: authUserId,
                 }),
-                isIncludes({
+                addFieldIsIncludes({
                     newField: 'isBlocked',
                     arrayPath: '$blacklist.userIds',
                     value: authUserId,
