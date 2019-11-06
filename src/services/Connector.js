@@ -357,9 +357,8 @@ class Connector extends BasicConnector {
                     scope: this._leaderProposals,
                     inherits: ['paging', 'onlyWhenPublicApiEnabled'],
                     validation: {
-                        required: ['communitiesIds'],
                         properties: {
-                            communitiesIds: {
+                            communityIds: {
                                 type: 'array',
                                 minItems: 1,
                                 items: [

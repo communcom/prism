@@ -3,11 +3,29 @@ const core = require('cyberway-core-service');
 const { Logger } = core.utils;
 const BasicController = core.controllers.Basic;
 
+const ProfileModel = require('../../models/Profile');
 const LeaderProposalModel = require('../../models/LeaderProposal');
 const { isIncludes } = require('../../utils/mongodb');
 
 class LeaderProposals extends BasicController {
-    async getProposals({ communitiesIds, limit, offset }, { userId }) {
+    async getProposals({ communityIds, limit, offset }, { userId }) {
+        if (!communityIds) {
+            const profile = await ProfileModel.findOne(
+                { userId },
+                { _id: false, leaderIn: true },
+                { lean: true }
+            );
+
+            if (!profile) {
+                throw {
+                    code: 404,
+                    message: 'Profile is not found',
+                };
+            }
+
+            communityIds = profile.leaderIn;
+        }
+
         const projection = {
             _id: false,
             proposer: true,
@@ -58,7 +76,7 @@ class LeaderProposals extends BasicController {
             {
                 $match: {
                     communityId: {
-                        $in: communitiesIds,
+                        $in: communityIds,
                     },
                     isExecuted: false,
                 },
