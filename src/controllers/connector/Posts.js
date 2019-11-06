@@ -81,7 +81,7 @@ const fullPostProjection = {
 const addUrl = {
     $addFields: {
         url: {
-            $concat: ['/', '$community.alias', '/', '$author.username', '/', '$contentId.permlink'],
+            $concat: ['/', '$community.alias', '/@', '$author.username', '/', '$contentId.permlink'],
         },
     },
 };
