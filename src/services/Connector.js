@@ -205,10 +205,11 @@ class Connector extends BasicConnector {
                                 enum: ['post', 'comment'],
                             },
                             communityIds: {
+                                type: 'array',
+                                minItems: 1,
                                 items: {
                                     type: 'string',
                                 },
-                                default: [],
                             },
                             status: {
                                 enum: ['open', 'closed'],
@@ -361,11 +362,9 @@ class Connector extends BasicConnector {
                             communityIds: {
                                 type: 'array',
                                 minItems: 1,
-                                items: [
-                                    {
-                                        type: 'string',
-                                    },
-                                ],
+                                items: {
+                                    type: 'string',
+                                },
                             },
                         },
                     },

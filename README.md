@@ -41,9 +41,9 @@ getProfile:                        // Получение профиля поль
     userId <string/null>           // Id пользователя
     username <string/null>         // Имя пользователя
     user <string/null>             // userId либо username
-    
+
 getReportsList:                    // Списка контента, на который есть репорты
-    communityIds <[string]>        // Массив communityId сообществ
+    communityIds <[string]/null>   // Массив communityId сообществ, если null то все сообщества где человек лидер
     status <string>('open')        // Фильтр по статусу рассмотрения
         [
           open
@@ -51,7 +51,7 @@ getReportsList:                    // Списка контента, на кот
         ]
     contentType <string>           // Тип контента
         [
-          post                     
+          post
         | comment
         ]
     sortBy <string>('time')        // Сортировка
@@ -62,12 +62,12 @@ getReportsList:                    // Списка контента, на кот
         ]
     limit <number>(10)             // Ограничение на размер найденных результатов
     offset <number>(0)             // Количество результатов, которое надо "пропустить"
-    
-    
+
+
 getEntityReports:                  // Получение списка репортов конкретного контента
     userId <string>                // Id пользователя
     permlink <string>              // Пермлинк контента
-    communityId <string>           // Идетификатор сообщества, в котором опубликован контент    
+    communityId <string>           // Идетификатор сообщества, в котором опубликован контент
     limit <number>(10)             // Ограничение на размер найденных результатов
     offset <number>(0)             // Количество результатов, которое надо "пропустить"
 
@@ -75,7 +75,7 @@ getPost:                           // Получение конкретного 
     userId <string>                // Id пользователя
     permlink <string>              // Пермлинк поста
     communityId <string>           // Идетификатор сообщества, в котором опубликован пост
-    
+
 getPosts:                          // Получение ленты по определенному принципу
     userId <string>                // Id пользователя
     communityId <string/null>      // Id сообщества
@@ -133,7 +133,7 @@ getComments:                                // Получение ленты к�
     communityAlias <string/null>            // Alias сообщества (замена communityId при необходимости)
     parentComment: <object/null>            // userId и permlink родительского комментария (при необходимости получить ответы на этот комментарий)
     resolveNestedComments: <boolean>(false) // флаг, запрашивающий вложенные комментарии
-    
+
 getNotifyMeta:                // Получение мета-данных для отображения нотификации
     userId <string>           // Получить данные пользователя по id
     communityId <string>      // Получить данные комьюнити по идентификатору
@@ -187,13 +187,13 @@ getSubscribers:                  // Получить подписчиков по
     communityId <string>         // Идентификатор сообщества
     offset <number>(0)           // Кол-во записей, которые следует пропустить
     limit <number>(10)           // Количество элементов
-    
+
 getBlacklist:                    // Получить черный список профиля
     userId <string>              // Идентификатор пользователя
     type <string> [
         users                    // Пользователи, внесенные в черный список
     |   communities              // Сообщества, внесенные в черный список
-    ]              
+    ]
 
 getHashTagTop:                   // Получение топа хеш-тегов
     communityId <string>         // Идентификатор комьюнити
@@ -207,23 +207,23 @@ getLeaders:                      // Получить топ лидеров
     query <string>               // Префиксный поиск по имени аккаунта
 
 getProposals:                    // Получить список предлагаемых изменений параметров сообществ
-    communityId <string>         // Идентификатор комьюнити
+    communityIds <[string]|null> // Идентификаторы комьюнити, если null то все где пользователь лидер
     sequenceKey <string/null>    // Идентификатор пагинации для получения следующего контента
     limit <number>(10)           // Количество элементов
 
 getCommunities:
     offset <number>              // Сдвиг пагинации
     limit <number>               // Количество элементов
-    
+
 getCommunity:                    // Получить сообщество
     communityId <string>         // Id сообщества
     communityAlias <string>      // Алиас сообщества
-    
+
 getCommunityBlacklist:           // Получить список пользователей, заблокированных в сообществе
     communityId <string>         // Id сообщества
-    communityAlias <string>      // Алиас сообщества   
+    communityAlias <string>      // Алиас сообщества
     offset <number>              // Сдвиг пагинации
-    limit <number>               // Количество элементов 
+    limit <number>               // Количество элементов
 
 waitForBlock                     // Дождаться и получить ответ когда призма обработает указанный блок
     blockNum <number>            // Номер блока
@@ -246,9 +246,7 @@ waitForTransaction               // Дождаться и получить от�
     "jsonrpc": "2.0",
     "params": {
         "contentType": "post",
-        "communityIds": [
-            "IDDQD"
-        ]
+        "communityIds": ["IDDQD"]
     }
 }
 ```
@@ -281,7 +279,7 @@ waitForTransaction               // Дождаться и получить от�
                                         "id": 3,
                                         "type": "text",
                                         "content": "Some post text here :)"
-                                        }
+                                    }
                                 ]
                             },
                             {
@@ -2977,7 +2975,6 @@ waitForTransaction               // Дождаться и получить от�
                         "type": "basic",
                         "version": "1.0",
                         "title": "Athena fights with Arachne against Themis and common man named Mr.Pamula JaskolskiJr. on Gulltown"
-
                     },
                     "id": 1,
                     "type": "post",
@@ -3596,7 +3593,7 @@ waitForTransaction               // Дождаться и получить от�
     "jsonrpc": "2.0",
     "params": {
         "type": "community",
-    	"communityId": "WWAPEPA"
+        "communityId": "WWAPEPA"
     }
 }
 ```
@@ -3696,7 +3693,6 @@ waitForTransaction               // Дождаться и получить от�
 
 <= Ответ
 См. другие ленты
-
 
 ### getComment
 
@@ -3887,7 +3883,6 @@ waitForTransaction               // Дождаться и получить от�
 #### Subscriptions (my feed)
 
 Персональная лента пользователя
-
 
 => Запрос
 
@@ -4514,7 +4509,7 @@ waitForTransaction               // Дождаться и получить от�
     "method": "getSubscriptions",
     "jsonrpc": "2.0",
     "params": {
-    	"type": "user",
+        "type": "user",
         "userId": "tst3fwejlkvx"
     }
 }
@@ -4557,7 +4552,7 @@ waitForTransaction               // Дождаться и получить от�
     "method": "getSubscriptions",
     "jsonrpc": "2.0",
     "params": {
-    	"type": "community",
+        "type": "community",
         "userId": "tst3fwejlkvx"
     }
 }
@@ -4663,83 +4658,85 @@ waitForTransaction               // Дождаться и получить от�
 ```
 
 ### getLeaders
+
 => Запрос лидеров к обществу
+
 ```json
 {
-  "id": 3,
-  "method": "content.getLeaders",
-  "jsonrpc": "2.0",
-  "params": {
-    "communityId": "DUZKBN",
-    "limit": 10
-  }
+    "id": 3,
+    "method": "content.getLeaders",
+    "jsonrpc": "2.0",
+    "params": {
+        "communityId": "DUZKBN",
+        "limit": 10
+    }
 }
 ```
 
 <= Ответ
+
 ```json
 {
-  "jsonrpc": "2.0",
-  "id": 3,
-  "result": {
-    "items": [
-      {
-        "url": "xsQn8gK12,_x.CVd",
-        "rating": "18",
-        "isActive": true,
-        "userId": "1khdwuolcvl2",
-        "position": 1,
-        "isVoted": false,
-        "ratingPercent": 0.3333333333333333,
-        "isSubscribed": false,
-        "username": null,
-        "avatarUrl": null
-      },
-      {
-        "url": "G;mVK*=26=OM4H!*",
-        "rating": "18",
-        "isActive": true,
-        "userId": "nwuhts1y1blb",
-        "position": 2,
-        "isVoted": false,
-        "ratingPercent": 0.3333333333333333,
-        "isSubscribed": false,
-        "username": null,
-        "avatarUrl": null
-      },
-      {
-        "url": "=eSFfu==<1-Rsm:F",
-        "rating": "18",
-        "isActive": true,
-        "userId": "tnbnqqgbjhqn",
-        "position": 3,
-        "isVoted": false,
-        "ratingPercent": 0.3333333333333333,
-        "isSubscribed": false,
-        "username": null,
-        "avatarUrl": null
-      },
-      {
-        "url": "Hello world",
-        "rating": "0",
-        "isActive": true,
-        "userId": "tst5xymcjdft",
-        "position": 9999999,
-        "isVoted": false,
-        "ratingPercent": 0,
-        "isSubscribed": false,
-        "username": "johnston-hong-i",
-        "avatarUrl": null
-      }
-    ]
-  }
+    "jsonrpc": "2.0",
+    "id": 3,
+    "result": {
+        "items": [
+            {
+                "url": "xsQn8gK12,_x.CVd",
+                "rating": "18",
+                "isActive": true,
+                "userId": "1khdwuolcvl2",
+                "position": 1,
+                "isVoted": false,
+                "ratingPercent": 0.3333333333333333,
+                "isSubscribed": false,
+                "username": null,
+                "avatarUrl": null
+            },
+            {
+                "url": "G;mVK*=26=OM4H!*",
+                "rating": "18",
+                "isActive": true,
+                "userId": "nwuhts1y1blb",
+                "position": 2,
+                "isVoted": false,
+                "ratingPercent": 0.3333333333333333,
+                "isSubscribed": false,
+                "username": null,
+                "avatarUrl": null
+            },
+            {
+                "url": "=eSFfu==<1-Rsm:F",
+                "rating": "18",
+                "isActive": true,
+                "userId": "tnbnqqgbjhqn",
+                "position": 3,
+                "isVoted": false,
+                "ratingPercent": 0.3333333333333333,
+                "isSubscribed": false,
+                "username": null,
+                "avatarUrl": null
+            },
+            {
+                "url": "Hello world",
+                "rating": "0",
+                "isActive": true,
+                "userId": "tst5xymcjdft",
+                "position": 9999999,
+                "isVoted": false,
+                "ratingPercent": 0,
+                "isSubscribed": false,
+                "username": "johnston-hong-i",
+                "avatarUrl": null
+            }
+        ]
+    }
 }
 ```
 
 ### getComments
 
 => Запрос комментариев к посту
-
 
 ```json
 {
@@ -4756,7 +4753,6 @@ waitForTransaction               // Дождаться и получить от�
 ```
 
 <= Ответ
-
 
 ```json
 {
@@ -4905,9 +4901,7 @@ waitForTransaction               // Дождаться и получить от�
 }
 ```
 
-
 => Запрос комментариев к посту, включая выдачу до 3 вложенных комментариев (children)
-
 
 ```json
 {
@@ -4925,7 +4919,6 @@ waitForTransaction               // Дождаться и получить от�
 ```
 
 <= Ответ
-
 
 ```json
 {
@@ -5263,7 +5256,7 @@ waitForTransaction               // Дождаться и получить от�
     "method": "getComments",
     "jsonrpc": "2.0",
     "params": {
-    	"type": "user",
+        "type": "user",
         "userId": "tst4zphxiuon",
         "sortBy": "timeDesc"
     }
@@ -5429,7 +5422,7 @@ waitForTransaction               // Дождаться и получить от�
     "method": "getComments",
     "jsonrpc": "2.0",
     "params": {
-    	"type": "replies",
+        "type": "replies",
         "userId": "tst3ydywtehj",
         "sortBy": "timeDesc"
     }
@@ -5801,6 +5794,6 @@ waitForTransaction               // Дождаться и получить от�
 
 -   `GLS_HOT_REBUILD_INTERVAL_MINUTES` - интервал перестройки hot-рейтинга постов (в минутах).
     Дефолтное значение - `1`
-    
+
 -   `GLS_HOT_SCOPE_HOURS` - ограничение размера ленты hot (в часах).
     Дефолтное значение - `24`

@@ -106,7 +106,24 @@ const communityLookup = {
 };
 
 class Reports extends BasicController {
-    async getReportsList({ contentType, communityIds, status, sortBy, offset, limit }) {
+    async getReportsList({ contentType, communityIds, status, sortBy, offset, limit }, { userId }) {
+        if (!communityIds) {
+            const profile = await ProfileModel.findOne(
+                { userId },
+                { _id: false, leaderIn: true },
+                { lean: true }
+            );
+
+            if (!profile) {
+                throw {
+                    code: 404,
+                    message: 'Profile is not found',
+                };
+            }
+
+            communityIds = profile.leaderIn;
+        }
+
         let model;
         let projection;
         let sorting;
