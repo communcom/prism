@@ -155,6 +155,7 @@ class LeaderProposals extends BasicController {
 
             if (!isNil(description)) {
                 proposal.change = {
+                    type: 'description',
                     old: community.description,
                     new: description,
                 };
@@ -162,6 +163,7 @@ class LeaderProposals extends BasicController {
 
             if (!isNil(language)) {
                 proposal.change = {
+                    type: 'language',
                     old: community.language,
                     new: language,
                 };
