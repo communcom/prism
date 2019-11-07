@@ -172,6 +172,7 @@ class Leaders extends BasicController {
             {
                 $match: {
                     userId,
+                    isActive: true,
                 },
             },
             {
