@@ -5,6 +5,7 @@ const { Logger } = core.utils;
 const ReportModel = require('../../models/Report');
 const PostModel = require('../../models/Post');
 const CommentModel = require('../../models/Comment');
+const ProfileModel = require('../../models/Profile');
 
 const basePostProjection = {
     $project: {
