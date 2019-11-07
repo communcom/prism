@@ -546,6 +546,38 @@ class Connector extends BasicConnector {
                         },
                     },
                 },
+                isInCommunityBlacklist: {
+                    handler: this._community.isInCommunityBlacklist,
+                    scope: this._community,
+                    inherits: ['onlyWhenPublicApiEnabled'],
+                    validation: {
+                        required: ['communityId', 'userId'],
+                        properties: {
+                            communityId: {
+                                type: 'string',
+                            },
+                            userId: {
+                                type: 'string',
+                            },
+                        },
+                    },
+                },
+                isInUserBlacklist: {
+                    handler: this._profile.isInUserBlacklist,
+                    scope: this._profile,
+                    inherits: ['onlyWhenPublicApiEnabled'],
+                    validation: {
+                        required: ['targetUserId', 'userId'],
+                        properties: {
+                            targetUserId: {
+                                type: 'string',
+                            },
+                            userId: {
+                                type: 'string',
+                            },
+                        },
+                    },
+                },
             },
             serverDefaults: {
                 parents: {

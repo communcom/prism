@@ -23,6 +23,15 @@ const baseProjection = {
 const FRIEND_SUBSCRIBERS_LIMIT = 5;
 
 class Community extends BasicController {
+    async isInCommunityBlacklist({ userId, communityId }) {
+        const community = await this.getCommunity({ communityId }, { userId });
+        if (!community) {
+            return false;
+        }
+
+        return community.isBlocked;
+    }
+
     async getCommunityBanHistory({ communityId, communityAlias, userId, limit, offset }) {
         communityId = await resolveCommunityId({ communityId, communityAlias });
 

@@ -7,6 +7,15 @@ const { addFieldIsIncludes } = require('../../utils/mongodb');
 const COMMON_COMMUNITIES_COUNT = 5;
 
 class Profile extends BasicController {
+    async isInUserBlacklist({ userId, targetUserId }) {
+        const user = await this.getProfile({ userId: targetUserId }, { userId });
+        if (!user) {
+            return false;
+        }
+
+        return user.isBlocked;
+    }
+
     async getProfileBanHistory({ userId, limit, offset }) {
         const filter = { userId };
 
