@@ -107,6 +107,9 @@ module.exports = MongoDB.makeModel(
                 type: String,
                 required: true,
             },
+            collectionEnd: {
+                type: Date,
+            },
             gemCount: {
                 type: Number,
                 default: 0,

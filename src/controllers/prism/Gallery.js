@@ -28,6 +28,7 @@ class Gallery extends Abstract {
                 $set: {
                     mosaicState: {
                         tracery,
+                        collectionEnd: state.collection_end_date,
                         gemCount: state.gem_count,
                         shares: state.shares,
                         damnShares: state.damn_shares,
