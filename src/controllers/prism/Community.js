@@ -1,4 +1,5 @@
 const crypto = require('crypto');
+const { isNil } = require('lodash');
 const core = require('cyberway-core-service');
 const { Logger } = core.utils;
 
@@ -190,16 +191,42 @@ class Community {
         rules,
         language,
     }) {
+        const updates = {};
+        let hasUpdate = false;
+
+        if (!isNil(language)) {
+            updates.language = language;
+            hasUpdate = true;
+        }
+
+        if (!isNil(avatarUrl)) {
+            updates.avatarUrl = avatarUrl;
+            hasUpdate = true;
+        }
+
+        if (!isNil(coverUrl)) {
+            updates.coverUrl = coverUrl;
+            hasUpdate = true;
+        }
+
+        if (!isNil(description)) {
+            updates.description = description;
+            hasUpdate = true;
+        }
+
+        if (!isNil(rules)) {
+            updates.rules = this._parseRules(rules);
+            hasUpdate = true;
+        }
+
+        if (!hasUpdate) {
+            return;
+        }
+
         const oldObject = await CommunityModel.findOneAndUpdate(
             { communityId },
             {
-                $set: {
-                    language,
-                    avatarUrl,
-                    coverUrl,
-                    description,
-                    rules: this._parseRules(rules),
-                },
+                $set: updates,
             }
         );
 
