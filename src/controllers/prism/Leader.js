@@ -164,8 +164,7 @@ class Leader extends Abstract {
             communityId,
             leaderId,
             userId,
-            action: '$addToSet',
-            revert: '$pull',
+            type: 'vote',
         });
     }
 
@@ -174,12 +173,23 @@ class Leader extends Abstract {
             communityId,
             leaderId,
             userId,
-            action: '$pull',
-            revert: '$addToSet',
+            type: 'unvote',
         });
     }
 
-    async _saveVote({ communityId, leaderId, userId, action, revert }) {
+    async _saveVote({ communityId, leaderId, userId, type }) {
+        let action, revert, inc;
+
+        if (type === 'vote') {
+            action = '$addToSet';
+            revert = '$pull';
+            inc = 1;
+        } else {
+            action = '$pull';
+            revert = '$addToSet';
+            inc = -1;
+        }
+
         const previousModel = await LeaderModel.findOneAndUpdate(
             {
                 communityId,
@@ -187,6 +197,7 @@ class Leader extends Abstract {
             },
             {
                 [action]: { votes: userId },
+                $inc: { votesCount: inc },
             }
         );
 
@@ -201,6 +212,7 @@ class Leader extends Abstract {
             documentId: previousModel._id,
             data: {
                 [revert]: { votes: userId },
+                $inc: { votesCount: -inc },
             },
         });
     }
