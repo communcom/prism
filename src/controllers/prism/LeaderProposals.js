@@ -133,6 +133,7 @@ class LeaderProposals extends Abstract {
             proposalId,
             contract,
             action,
+            permission,
             blockTime,
             expiration,
             isExecuted: false,

@@ -7,6 +7,12 @@ const ProfileModel = require('../../models/Profile');
 const LeaderProposalModel = require('../../models/LeaderProposal');
 const { isIncludes } = require('../../utils/mongodb');
 
+const APPROVES_THRESHOLD = {
+    'lead.smajor': 3,
+    'lead.major': 3,
+    'lead.minor': 1,
+};
+
 class LeaderProposals extends BasicController {
     async getProposals({ communityIds, limit, offset }, { userId }) {
         if (!communityIds) {
@@ -32,6 +38,7 @@ class LeaderProposals extends BasicController {
             proposalId: true,
             contract: true,
             action: true,
+            permission: true,
             blockTime: true,
             expiration: true,
             data: true,
@@ -125,6 +132,7 @@ class LeaderProposals extends BasicController {
             }
 
             item.proposerProfile = undefined;
+            item.approvesNeed = APPROVES_THRESHOLD[item.permission];
 
             this._formatChanges(item);
 

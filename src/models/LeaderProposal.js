@@ -24,6 +24,10 @@ module.exports = MongoDB.makeModel(
             type: String,
             required: true,
         },
+        permission: {
+            type: String,
+            required: true,
+        },
         blockTime: {
             type: Date,
             required: true,
