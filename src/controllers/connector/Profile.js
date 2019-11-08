@@ -249,6 +249,8 @@ class Profile extends BasicController {
                             alias: true,
                             name: true,
                             avatarUrl: true,
+                            coverUrl: true,
+                            subscribersCount: true,
                             _id: false,
                         },
                     },
@@ -516,6 +518,8 @@ class Profile extends BasicController {
                                 alias: '$$community.alias',
                                 name: '$$community.name',
                                 avatarUrl: '$$community.avatarUrl',
+                                coverUrl: '$$community.coverUrl',
+                                postsCount: '$$community.postsCount',
                                 subscribers: '$$community.subscribers.userIds',
                             },
                         },
@@ -539,8 +543,8 @@ class Profile extends BasicController {
             lookupSubscriptions
         );
 
-        aggregation.push({ $limit: limit });
         aggregation.push({ $skip: offset });
+        aggregation.push({ $limit: limit });
 
         aggregation.push(subscriptionsProjection);
 
@@ -555,24 +559,13 @@ class Profile extends BasicController {
                     break;
             }
 
-            aggregation.push({
-                $addFields: {
-                    isSubscribed: {
-                        $cond: {
-                            if: {
-                                $eq: [
-                                    -1,
-                                    {
-                                        $indexOfArray: [`$${pathPrefix}.subscribers`, authUserId],
-                                    },
-                                ],
-                            },
-                            then: false,
-                            else: true,
-                        },
-                    },
-                },
-            });
+            aggregation.push(
+                addFieldIsIncludes({
+                    newField: 'isSubscribed',
+                    arrayPath: `$${pathPrefix}.subscribers`,
+                    value: authUserId,
+                })
+            );
         }
 
         aggregation.push(finalRoot);
