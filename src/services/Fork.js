@@ -17,10 +17,6 @@ class Fork extends BasicService {
             data = {};
         }
 
-        if (!data) {
-            return;
-        }
-
         await ForkModel.findOneAndUpdate(
             {},
             { $push: { stack: { type, className, documentId, data } } },
@@ -151,17 +147,20 @@ class Fork extends BasicService {
             return this._packDataIteration(data, 0);
         } catch (err) {
             if (err === 'Too many recursion') {
-                err = new Error(err);
+                throw new Error(err);
             }
 
-            Logger.error('Fork management: data packing failed on data:', data, 'Error:', err);
-            return null;
+            throw err;
         }
     }
 
     _packDataIteration(data, iteration) {
         if (iteration > 20) {
             throw 'Too many recursion';
+        }
+
+        if (data && typeof data.toObject === 'function') {
+            data = data.toObject();
         }
 
         const specialKeys = [];
