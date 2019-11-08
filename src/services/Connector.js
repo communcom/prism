@@ -163,6 +163,7 @@ class Connector extends BasicConnector {
                                 enum: [
                                     'community',
                                     'subscriptions',
+                                    'subscriptionsHot',
                                     'byUser',
                                     'new',
                                     'topLikes',

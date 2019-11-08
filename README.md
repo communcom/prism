@@ -3880,6 +3880,24 @@ waitForTransaction               // Дождаться и получить от�
 }
 ```
 
+#### Subscriptions hot (my feed hot)
+
+Персональная горячая лента пользователя
+
+=> Запрос
+
+```json
+{
+    "id": 1,
+    "method": "getPosts",
+    "jsonrpc": "2.0",
+    "params": {
+        "userId": "tst1bvcvnjwn",
+        "type": "subscriptionsHot"
+    }
+}
+```
+
 #### Subscriptions (my feed)
 
 Персональная лента пользователя

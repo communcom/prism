@@ -220,7 +220,21 @@ class Posts extends BasicController {
         }
 
         const paging = [{ $skip: offset }, { $limit: limit }];
-        const sort = { $sort: { 'meta.creationTime': -1 } };
+        const sort = { $sort: {} };
+
+        switch (type) {
+            case 'subscriptionsHot':
+                sort.$sort = { hot: -1 };
+
+                const scope = 1000 * 60 * 60 * env.GLS_HOT_SCOPE_HOURS;
+                const startDate = now - scope;
+                filter.$match['meta.creationTime'] = { $gte: new Date(startDate) };
+                break;
+            case 'subscriptions':
+            default:
+                sort.$sort = { 'meta.creationTime': -1 };
+                break;
+        }
 
         const items = await this._aggregate([
             filter,
