@@ -108,6 +108,7 @@ class Leaders extends BasicController {
                 position: true,
                 rating: true,
                 ratingPercent: true,
+                votesCount: true,
                 isActive: true,
                 isVoted: true,
                 isSubscribed: true,
