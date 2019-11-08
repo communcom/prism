@@ -16,6 +16,8 @@ const baseProjection = {
     'document.body': true,
     'votes.upCount': true,
     'votes.downCount': true,
+    'votes.hasUpVote': true,
+    'votes.hasDownVote': true,
     childCommentsCount: true,
     isSubscribedAuthor: true,
     isSubscribedCommunity: true,
@@ -117,6 +119,7 @@ class Comment extends BasicController {
                     },
                 },
             });
+            aggregation.push(...this._addCurrentUserFields(authUserId));
         }
 
         aggregation.push({
