@@ -164,7 +164,7 @@ class Connector extends BasicConnector {
                                     'community',
                                     'subscriptions',
                                     'subscriptionsHot',
-                                    'subscriptionsTop',
+                                    'subscriptionsPopular',
                                     'byUser',
                                     'new',
                                     'topLikes',
