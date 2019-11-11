@@ -427,13 +427,19 @@ class Posts extends BasicController {
 
         switch (type) {
             case 'topLikes':
-            case 'subscriptionsPopular':
                 const profile = await ProfileModel.findOne(
                     { userId },
                     { _id: false, subscriptions: true, blacklist: true },
                     { lean: true }
                 );
 
+                if (!profile) {
+                    throw {
+                        code: 404,
+                        message: 'User not found',
+                    };
+                }
+            case 'subscriptionsPopular':
                 filter.$match.$or = [
                     { 'contentId.userId': { $in: profile.subscriptions.userIds } },
                     { 'contentId.communityId': { $in: profile.subscriptions.communityIds } },
