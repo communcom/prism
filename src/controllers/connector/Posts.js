@@ -427,7 +427,7 @@ class Posts extends BasicController {
         let profile;
 
         switch (type) {
-            case 'topLikes':
+            case 'subscriptionsPopular':
                 profile = await ProfileModel.findOne(
                     { userId },
                     { _id: false, subscriptions: true, blacklist: true },
@@ -440,7 +440,6 @@ class Posts extends BasicController {
                         message: 'User not found',
                     };
                 }
-            case 'subscriptionsPopular':
                 filter.$match.$or = [
                     { 'contentId.userId': { $in: profile.subscriptions.userIds } },
                     { 'contentId.communityId': { $in: profile.subscriptions.communityIds } },
@@ -449,6 +448,7 @@ class Posts extends BasicController {
                     { 'contentId.userId': { $in: profile.blacklist.userIds } },
                     { 'contentId.communityId': { $in: profile.blacklist.communityIds } },
                 ];
+            case 'topLikes':
                 addSortingField = {
                     $addFields: {
                         votesSum: {
