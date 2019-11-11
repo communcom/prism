@@ -68,6 +68,7 @@ class Leaders extends BasicController {
                     votesCount: true,
                     isVoted: true,
                     isActive: true,
+                    inTop: true,
                     ratingPercent: totalRating
                         ? {
                               $divide: ['$ratingNum', totalRating],
@@ -174,6 +175,7 @@ class Leaders extends BasicController {
             {
                 $match: {
                     userId,
+                    hasRating: true,
                     isActive: true,
                 },
             },

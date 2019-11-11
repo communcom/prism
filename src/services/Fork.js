@@ -2,24 +2,33 @@ const core = require('cyberway-core-service');
 const BasicService = core.services.Basic;
 const { Logger } = core.utils;
 const ForkModel = require('../models/Fork');
+const { reorderLeaders } = require('../utils/leaders');
 
 class Fork extends BasicService {
     async initBlock({ blockNum, blockTime, sequence }) {
         await ForkModel.create({ blockNum, blockTime, blockSequence: sequence });
     }
 
-    async registerChanges({ type, Model, documentId, data }) {
-        const className = Model.modelName;
+    async registerChanges({ type, Model, documentId, data, meta }) {
+        let revertItem;
 
-        if (data) {
-            data = this._packData(data);
+        if (type === 'reorderLeaders') {
+            revertItem = {
+                type,
+                meta,
+            };
         } else {
-            data = {};
+            revertItem = {
+                type,
+                className: Model.modelName,
+                documentId,
+                data: data ? this._packData(data) : {},
+            };
         }
 
         await ForkModel.findOneAndUpdate(
             {},
-            { $push: { stack: { type, className, documentId, data } } },
+            { $push: { stack: revertItem } },
             { sort: { blockNum: -1 } }
         );
     }
@@ -44,11 +53,7 @@ class Fork extends BasicService {
             process.exit(1);
         }
 
-        for (const document of documents) {
-            Logger.info(`Reverting block num: ${document.blockNum}`);
-            await this._restoreBy(document.toObject());
-            await document.remove();
-        }
+        await this._revertStacks(documents);
 
         await ForkModel.deleteMany({
             blockNum: {
@@ -62,6 +67,26 @@ class Fork extends BasicService {
         });
 
         Logger.info('Revert on fork done!');
+    }
+
+    async _revertStacks(documents) {
+        const reorderLeadersInCommunities = new Set();
+
+        for (const document of documents) {
+            Logger.info(`Reverting block num: ${document.blockNum}`);
+            await this._restoreBy(document.toObject(), reorderLeadersInCommunities);
+            await document.remove();
+        }
+
+        if (reorderLeadersInCommunities.size) {
+            for (const communityId of reorderLeadersInCommunities.keys()) {
+                try {
+                    await reorderLeaders(communityId);
+                } catch (err) {
+                    Logger.error(`Community ${communityId} leaders reordering failed:`, err);
+                }
+            }
+        }
     }
 
     async registerIrreversibleBlock({ blockNum }) {
@@ -92,7 +117,7 @@ class Fork extends BasicService {
             return;
         }
 
-        await this._restoreBy(current.toObject());
+        await this._revertStacks([current]);
         await current.remove();
 
         if (!previous) {
@@ -105,12 +130,18 @@ class Fork extends BasicService {
         });
     }
 
-    async _restoreBy(document) {
+    async _restoreBy(document, reorderLeadersInCommunities) {
         const stack = document.stack;
         let stackItem;
 
         while ((stackItem = stack.pop())) {
-            const { type, className, documentId } = stackItem;
+            const { type, className, documentId, meta } = stackItem;
+
+            if (type === 'reorderLeaders') {
+                reorderLeadersInCommunities.add(meta.communityId);
+                continue;
+            }
+
             const data = this._unpackData(stackItem.data || {});
             const Model = require(`../models/${className}`);
 
