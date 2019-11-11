@@ -555,7 +555,7 @@ class Profile extends BasicController {
                     pathPrefix = 'profile';
                     break;
                 case 'community':
-                    pathPrefix = 'communities';
+                    pathPrefix = 'community';
                     break;
             }
 
