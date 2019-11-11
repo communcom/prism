@@ -131,7 +131,7 @@ class Posts extends BasicController {
         switch (type) {
             case 'subscriptions':
                 return await this._getPostsBySubscriptions(
-                    { userId, limit, offset, allowNsfw },
+                    { userId, limit, type, offset, allowNsfw },
                     authUserId
                 );
             case 'byUser':
@@ -188,7 +188,7 @@ class Posts extends BasicController {
         return post;
     }
 
-    async _getPostsBySubscriptions({ userId, allowNsfw, limit, offset }, authUserId) {
+    async _getPostsBySubscriptions({ userId, allowNsfw, type, limit, offset }, authUserId) {
         const profile = await ProfileModel.findOne(
             { userId },
             { _id: false, subscriptions: true, blacklist: true },
