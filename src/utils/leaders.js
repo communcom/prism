@@ -41,11 +41,16 @@ async function reorderLeaders(communityId) {
             if (currentInTop !== inTop) {
                 const action = currentInTop ? '$addToSet' : '$pull';
 
-                await ProfileModel.updateOne({
-                    [action]: {
-                        leaderIn: communityId,
+                await ProfileModel.updateOne(
+                    {
+                        userId,
                     },
-                });
+                    {
+                        [action]: {
+                            leaderIn: communityId,
+                        },
+                    }
+                );
             }
         }
     }
