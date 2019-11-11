@@ -2,6 +2,7 @@ const core = require('cyberway-core-service');
 const { Logger } = core.utils;
 const Abstract = require('./Abstract');
 const LeaderModel = require('../../models/Leader');
+const CommunityModel = require('../../models/Community');
 const { reorderLeaders } = require('../../utils/leaders');
 
 const LAST_LEADER_POSITION = 9999999;
@@ -110,6 +111,8 @@ class Leader extends Abstract {
                 documentId: newModel._id,
             });
         }
+
+        await this._incrementLeadersCount({ communityId, inc: 1 });
     }
 
     async _unregister({ commun_code: communityId, leader: userId }) {
@@ -125,6 +128,8 @@ class Leader extends Abstract {
             documentId: previousModel._id,
             data: previousModel.toObject(),
         });
+
+        await this._incrementLeadersCount({ communityId, inc: -1 });
     }
 
     async _activate({ commun_code: communityId, leader: userId }) {
@@ -278,6 +283,28 @@ class Leader extends Abstract {
         }
 
         return isSomebodyUpdated;
+    }
+
+    async _incrementLeadersCount({ communityId, inc }) {
+        const previous = await CommunityModel.findOneAndUpdate(
+            { communityId },
+            {
+                $inc: {
+                    leadersCount: inc,
+                },
+            }
+        );
+
+        await this.registerForkChanges({
+            type: 'update',
+            Model: CommunityModel,
+            documentId: previous._id,
+            data: {
+                $inc: {
+                    leadersCount: -inc,
+                },
+            },
+        });
     }
 }
 
