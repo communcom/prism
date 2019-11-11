@@ -441,13 +441,14 @@ class Posts extends BasicController {
                         message: 'User not found',
                     };
                 }
+
                 filter.$match.$or = [
-                    { 'contentId.userId': { $in: profile.subscriptions.userIds } },
-                    { 'contentId.communityId': { $in: profile.subscriptions.communityIds } },
+                    { 'contentId.userId': { $in: [...profile.subscriptions.userIds] } },
+                    { 'contentId.communityId': { $in: [...profile.subscriptions.communityIds] } },
                 ];
                 filter.$match.$nor = [
-                    { 'contentId.userId': { $in: profile.blacklist.userIds } },
-                    { 'contentId.communityId': { $in: profile.blacklist.communityIds } },
+                    { 'contentId.userId': { $in: [...profile.blacklist.userIds] } },
+                    { 'contentId.communityId': { $in: [...profile.blacklist.communityIds] } },
                 ];
             case 'topLikes':
                 addSortingField = {
