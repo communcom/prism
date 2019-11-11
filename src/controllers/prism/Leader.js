@@ -2,7 +2,7 @@ const core = require('cyberway-core-service');
 const { Logger } = core.utils;
 const Abstract = require('./Abstract');
 const LeaderModel = require('../../models/Leader');
-const ProfileModel = require('../../models/Profile');
+const { reorderLeaders } = require('../../utils/leaders');
 
 const LAST_LEADER_POSITION = 9999999;
 
@@ -96,9 +96,11 @@ class Leader extends Abstract {
             const newModel = await LeaderModel.create({
                 communityId,
                 userId,
+                url,
                 isActive: true,
                 rating: '0',
                 ratingNum: 0,
+                hasRating: false,
                 position: LAST_LEADER_POSITION,
             });
 
@@ -108,8 +110,6 @@ class Leader extends Abstract {
                 documentId: newModel._id,
             });
         }
-
-        await this._updateProfileLeaderIn(userId);
     }
 
     async _unregister({ commun_code: communityId, leader: userId }) {
@@ -125,18 +125,14 @@ class Leader extends Abstract {
             documentId: previousModel._id,
             data: previousModel.toObject(),
         });
-
-        await this._updateProfileLeaderIn(userId);
     }
 
     async _activate({ commun_code: communityId, leader: userId }) {
         await this._setActiveState({ communityId, userId, isActive: true });
-        await this._updateProfileLeaderIn(userId);
     }
 
     async _deactivate({ commun_code: communityId, leader: userId }) {
         await this._setActiveState({ communityId, userId, isActive: false });
-        await this._updateProfileLeaderIn(userId);
     }
 
     async _setActiveState({ userId, communityId, isActive }) {
@@ -152,7 +148,7 @@ class Leader extends Abstract {
                 documentId: previousModel._id,
                 data: {
                     $set: {
-                        isActive: !isActive,
+                        isActive: previousModel.isActive,
                     },
                 },
             });
@@ -217,59 +213,16 @@ class Leader extends Abstract {
         });
     }
 
-    async _updateProfileLeaderIn(userId) {
-        const communities = await LeaderModel.find(
-            { userId, isActive: true },
-            { communityId: true },
-            { lean: true }
-        );
-
-        const previousModel = await ProfileModel.findOneAndUpdate(
-            { userId },
-            {
-                $set: {
-                    leaderIn: communities.map(community => community.communityId),
-                },
-            }
-        );
-
-        if (!previousModel) {
-            return;
-        }
-
-        await this.registerForkChanges({
-            type: 'update',
-            Model: ProfileModel,
-            documentId: previousModel._id,
-            data: {
-                $set: {
-                    leaderIn: previousModel.leaderIn.toObject(),
-                },
-            },
-        });
-    }
-
     async _reorderLeaders(communityId) {
         try {
-            const leaders = await LeaderModel.find(
-                { communityId },
-                { _id: false, userId: true, position: true },
-                { sort: { isActive: -1, ratingNum: -1, userId: 1 }, lean: true }
-            );
+            await reorderLeaders(communityId);
 
-            for (let i = 0; i < leaders.length; i++) {
-                const { userId, position } = leaders[i];
-
-                // Позиции начинаем с 1
-                const updatedPosition = i + 1;
-
-                if (position !== updatedPosition) {
-                    await LeaderModel.updateOne(
-                        { communityId, userId },
-                        { position: updatedPosition }
-                    );
-                }
-            }
+            await this.registerForkChanges({
+                type: 'reorderLeaders',
+                meta: {
+                    communityId,
+                },
+            });
         } catch (err) {
             Logger.error('Leaders reordering failed:', err);
         }
@@ -287,7 +240,9 @@ class Leader extends Abstract {
                     active: isActive,
                 } = args;
 
-                const updatedObject = await LeaderModel.findOneAndUpdate(
+                const ratingNum = Number(rating) || 0;
+
+                const previous = await LeaderModel.findOneAndUpdate(
                     {
                         communityId,
                         userId,
@@ -295,22 +250,24 @@ class Leader extends Abstract {
                     {
                         $set: {
                             rating,
-                            ratingNum: Number(rating) || 0,
+                            ratingNum: ratingNum,
+                            hasRating: ratingNum > 0,
                             isActive,
                         },
                     }
                 );
 
-                if (updatedObject) {
+                if (previous) {
                     await this.registerForkChanges({
                         type: 'update',
                         Model: LeaderModel,
-                        documentId: updatedObject._id,
+                        documentId: previous._id,
                         data: {
                             $set: {
-                                rating: updatedObject.rating,
-                                ratingNum: updatedObject.ratingNum,
-                                isActive: updatedObject.isActive,
+                                rating: previous.rating,
+                                ratingNum: previous.ratingNum,
+                                hasRating: previous.hasRating,
+                                isActive: previous.isActive,
                             },
                         },
                     });

@@ -5,6 +5,7 @@ const { addFieldIsIncludes } = require('../../utils/mongodb');
 const { resolveCommunityId } = require('../../utils/lookup');
 const CommunityModel = require('../../models/Community');
 const ProfileModel = require('../../models/Profile');
+const LeaderModel = require('../../models/Leader');
 const BanModel = require('../../models/Ban');
 
 const baseProjection = {
@@ -143,8 +144,6 @@ class Community extends BasicController {
     }
 
     async getCommunity({ communityId, communityAlias }, { userId: authUserId }) {
-        let authUser;
-
         communityId = await resolveCommunityId({ communityId, communityAlias });
         const match = { communityId };
 
@@ -166,11 +165,6 @@ class Community extends BasicController {
                     arrayPath: '$blacklist',
                     value: authUserId,
                 })
-            );
-
-            authUser = await ProfileModel.findOne(
-                { userId: authUserId },
-                { _id: false, subscriptions: true }
             );
         }
 
@@ -196,35 +190,66 @@ class Community extends BasicController {
             };
         }
 
-        if (authUser) {
-            const friendsSubscribers = authUser.subscriptions.userIds.filter(friend =>
-                community.subscribers.includes(friend)
-            );
+        if (authUserId) {
+            const [authUser, authLeader] = await Promise.all([
+                ProfileModel.findOne(
+                    {
+                        userId: authUserId,
+                    },
+                    { _id: false, subscriptions: true }
+                ),
+                LeaderModel.findOne(
+                    {
+                        communityId,
+                        userId: authUserId,
+                    },
+                    {
+                        _id: false,
+                        isActive: true,
+                    },
+                    {
+                        lean: true,
+                    }
+                ),
+            ]);
 
-            community.friendsCount = friendsSubscribers.length;
-
-            const resolveSubscribersPromises = [];
-
-            for (let i = 0; i < FRIEND_SUBSCRIBERS_LIMIT && i < friendsSubscribers.length; i++) {
-                resolveSubscribersPromises.push(
-                    ProfileModel.findOne(
-                        { userId: friendsSubscribers[i] },
-                        {
-                            userId: true,
-                            username: true,
-                            'personal.avatarUrl': true,
-                            _id: false,
-                        },
-                        { lean: true }
-                    )
+            if (authUser) {
+                const friendsSubscribers = authUser.subscriptions.userIds.filter(friend =>
+                    community.subscribers.includes(friend)
                 );
+
+                community.friendsCount = friendsSubscribers.length;
+
+                const resolveSubscribersPromises = [];
+
+                for (
+                    let i = 0;
+                    i < FRIEND_SUBSCRIBERS_LIMIT && i < friendsSubscribers.length;
+                    i++
+                ) {
+                    resolveSubscribersPromises.push(
+                        ProfileModel.findOne(
+                            { userId: friendsSubscribers[i] },
+                            {
+                                userId: true,
+                                username: true,
+                                'personal.avatarUrl': true,
+                                _id: false,
+                            },
+                            { lean: true }
+                        )
+                    );
+                }
+
+                community.friends = (await Promise.all(resolveSubscribersPromises)).map(user => ({
+                    ...user,
+                    avatarUrl: user.personal ? user.personal.avatarUrl : null,
+                    personal: undefined,
+                }));
             }
 
-            community.friends = (await Promise.all(resolveSubscribersPromises)).map(user => ({
-                ...user,
-                avatarUrl: user.personal ? user.personal.avatarUrl : null,
-                personal: undefined,
-            }));
+            community.isLeader = Boolean(authLeader);
+            community.isStoppedLeader = authLeader ? !authLeader.isActive : false;
         }
 
         delete community.subscribers;

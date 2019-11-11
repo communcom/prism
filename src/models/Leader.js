@@ -35,6 +35,14 @@ module.exports = MongoDB.makeModel(
             type: Boolean,
             default: true,
         },
+        hasRating: {
+            type: Boolean,
+            default: false,
+        },
+        inTop: {
+            type: Boolean,
+            default: false,
+        },
         position: {
             type: Number,
             required: true,
@@ -76,9 +84,12 @@ module.exports = MongoDB.makeModel(
                     unique: true,
                 },
             },
+
+            // For leaders reordering
             {
                 fields: {
                     communityId: 1,
+                    hasRating: -1,
                     isActive: -1,
                     ratingNum: -1,
                     userId: 1,
