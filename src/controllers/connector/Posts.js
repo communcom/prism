@@ -228,6 +228,7 @@ class Posts extends BasicController {
             case 'subscriptionsHot':
                 sort.$sort = { hot: -1 };
 
+                const now = Date.now();
                 const scope = 1000 * 60 * 60 * env.GLS_HOT_SCOPE_HOURS;
                 const startDate = now - scope;
                 filter.$match['meta.creationTime'] = { $gte: new Date(startDate) };
