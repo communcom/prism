@@ -520,7 +520,7 @@ class Profile extends BasicController {
                                 avatarUrl: '$$community.avatarUrl',
                                 coverUrl: '$$community.coverUrl',
                                 postsCount: '$$community.postsCount',
-                                subscribers: '$$community.subscribers.userIds',
+                                subscribers: '$$community.subscribers',
                             },
                         },
                     },
