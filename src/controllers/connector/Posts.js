@@ -427,7 +427,7 @@ class Posts extends BasicController {
 
         switch (type) {
             case 'topLikes':
-            case 'subscriptionsTop':
+            case 'subscriptionsPopular':
                 const profile = await ProfileModel.findOne(
                     { userId },
                     { _id: false, subscriptions: true, blacklist: true },
