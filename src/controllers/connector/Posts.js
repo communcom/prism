@@ -424,10 +424,11 @@ class Posts extends BasicController {
                 filter.$match['meta.creationTime'] = { $gte: monthAgo };
                 break;
         }
+        let profile;
 
         switch (type) {
             case 'topLikes':
-                const profile = await ProfileModel.findOne(
+                profile = await ProfileModel.findOne(
                     { userId },
                     { _id: false, subscriptions: true, blacklist: true },
                     { lean: true }
