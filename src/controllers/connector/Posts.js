@@ -130,6 +130,7 @@ class Posts extends BasicController {
 
         switch (type) {
             case 'subscriptions':
+            case 'subscriptionsHot':
                 return await this._getPostsBySubscriptions(
                     { userId, limit, type, offset, allowNsfw },
                     authUserId
