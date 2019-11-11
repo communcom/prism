@@ -147,6 +147,7 @@ class Posts extends BasicController {
             case 'topLikes':
             case 'topComments':
             case 'topRewards':
+            case 'subscriptionsPopular':
                 return await this._getTopFeed(
                     { type, timeframe, allowNsfw, offset, limit },
                     authUserId
@@ -384,7 +385,7 @@ class Posts extends BasicController {
     }
 
     async _getTopFeed(
-        { type, timeframe, allowNsfw, limit, offset, communityId, communityAlias },
+        { type, timeframe, allowNsfw, limit, offset, communityId, userId, communityAlias },
         authUserId
     ) {
         // make default sorting, so nothing breaks
@@ -426,6 +427,21 @@ class Posts extends BasicController {
 
         switch (type) {
             case 'topLikes':
+            case 'subscriptionsTop':
+                const profile = await ProfileModel.findOne(
+                    { userId },
+                    { _id: false, subscriptions: true, blacklist: true },
+                    { lean: true }
+                );
+
+                filter.$match.$or = [
+                    { 'contentId.userId': { $in: profile.subscriptions.userIds } },
+                    { 'contentId.communityId': { $in: profile.subscriptions.communityIds } },
+                ];
+                filter.$match.$nor = [
+                    { 'contentId.userId': { $in: profile.blacklist.userIds } },
+                    { 'contentId.communityId': { $in: profile.blacklist.communityIds } },
+                ];
                 addSortingField = {
                     $addFields: {
                         votesSum: {
@@ -433,6 +449,7 @@ class Posts extends BasicController {
                         },
                     },
                 };
+
                 sortBy.$sort = { votesSum: -1 };
                 break;
             case 'topComments':
