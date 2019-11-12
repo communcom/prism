@@ -100,8 +100,8 @@ class Profile extends BasicController {
                     userId: '$blacklist.userId',
                     username: '$blacklist.username',
                     avatarUrl: '$blacklist.personal.avatarUrl',
-                    postsCount: '$blacklist.postsCount',
-                    subscribersCount: '$blacklist.subscribersCount',
+                    postsCount: '$blacklist.stats.postsCount',
+                    subscribersCount: '$blacklist.subscribers.usersCount',
                 },
             };
 
