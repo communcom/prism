@@ -4,7 +4,7 @@ const ProfileModel = require('../../models/Profile');
 const CommunityModel = require('../../models/Community');
 const { addFieldIsIncludes } = require('../../utils/mongodb');
 
-const COMMON_COMMUNITIES_COUNT = 5;
+const COMMON_COMMUNITIES_COUNT = 10;
 
 class Profile extends BasicController {
     async isInUserBlacklist({ userId, targetUserId }) {
@@ -153,9 +153,7 @@ class Profile extends BasicController {
         return { items };
     }
 
-    async getProfile({ userId, username, user }, { userId: authUserId }) {
-        let authUser;
-
+    async getProfile({ userId, username, user, maxCommonCommunities }, { userId: authUserId }) {
         const filter = {};
         if (username) {
             filter.username = username;
@@ -173,7 +171,6 @@ class Profile extends BasicController {
             username: true,
             registration: true,
             personal: true,
-            communities: '$subscriptions.communityIds',
             'subscriptions.communitiesCount': true,
             'subscriptions.usersCount': true,
             'subscribers.usersCount': true,
@@ -202,13 +199,8 @@ class Profile extends BasicController {
                     value: authUserId,
                 })
             );
-
-            authUser = await ProfileModel.findOne(
-                { userId: authUserId },
-                { subscriptions: true },
-                { lean: true }
-            );
         }
+
         aggregation.push({ $project: projection });
 
         let resultUser;
@@ -227,42 +219,16 @@ class Profile extends BasicController {
             resultUser = result[0];
         }
 
-        if (authUser) {
-            const authUserCommunities = authUser.subscriptions.communityIds;
+        resultUser.highlightCommunities = [];
+        resultUser.highlightCommunitiesCount = 0;
 
-            const commonCommunities = authUserCommunities.filter(community =>
-                resultUser.communities.includes(community)
-            );
-
-            resultUser.commonCommunitiesCount = commonCommunities.length;
-            resultUser.commonCommunities = [];
-
-            if (commonCommunities.length) {
-                resultUser.commonCommunities = await CommunityModel.aggregate([
-                    {
-                        $match: {
-                            $or: commonCommunities.map(communityId => ({ communityId })),
-                        },
-                    },
-                    {
-                        $limit: COMMON_COMMUNITIES_COUNT,
-                    },
-                    {
-                        $project: {
-                            communityId: true,
-                            alias: true,
-                            name: true,
-                            avatarUrl: true,
-                            coverUrl: true,
-                            subscribersCount: true,
-                            _id: false,
-                        },
-                    },
-                ]);
-            }
+        if (authUserId) {
+            resultUser.highlightCommunities = await this._getHighlightCommunities({
+                hostUserId: userId,
+                guestUserId: authUserId,
+                maxCommonCommunities,
+            });
         }
-
-        delete resultUser.communities;
 
         return resultUser;
     }
@@ -604,6 +570,80 @@ class Profile extends BasicController {
             username: profile.username,
             avatarUrl: (profile.personal && profile.personal.avatarUrl) || null,
         };
+    }
+
+    async _getHighlightCommunities({ hostUserId, guestUserId, maxCommonCommunities }) {
+        const [commonCommunities, popularCommunities] = await ProfileModel.aggregate([
+            { $match: { userId: hostUserId } },
+            { $project: { _id: false, communities: '$subscriptions.communityIds' } },
+            {
+                $lookup: {
+                    from: 'communities',
+                    localField: 'communities',
+                    foreignField: 'communityId',
+                    as: 'communities',
+                },
+            },
+            {
+                $unwind: {
+                    path: '$communities',
+                },
+            },
+            {
+                $sort: { 'communities.subscribers': -1 },
+            },
+            {
+                $project: {
+                    communityId: '$communities.communityId',
+                    alias: '$communities.alias',
+                    name: '$communities.name',
+                    avatarUrl: '$communities.avatarUrl',
+                    coverUrl: '$communities.coverUrl',
+                    postsCount: '$communities.postsCount',
+                    subscribers: '$communities.subscribers',
+                    subscribersCount: '$communities.subscribersCount',
+                },
+            },
+            {
+                ...addFieldIsIncludes({
+                    newField: 'isSubscribed',
+                    arrayPath: '$subscribers',
+                    value: guestUserId,
+                }),
+            },
+            {
+                $group: {
+                    _id: '$isSubscribed',
+                    communities: {
+                        $push: {
+                            communityId: '$communityId',
+                            alias: '$alias',
+                            name: '$name',
+                            avatarUrl: '$avatarUrl',
+                            coverUrl: '$coverUrl',
+                            postsCount: '$postsCount',
+                            isSubscribed: '$isSubscribed',
+                            subscribersCount: '$subscribersCount',
+                        },
+                    },
+                },
+            },
+        ]);
+
+        const highlightCommunities = [];
+
+        for (let i = 0; i < maxCommonCommunities && i < commonCommunities.communities.length; i++) {
+            highlightCommunities.push(commonCommunities.communities[i]);
+        }
+
+        highlightCommunities.push(
+            ...popularCommunities.communities.slice(
+                0,
+                COMMON_COMMUNITIES_COUNT - maxCommonCommunities
+            )
+        );
+
+        return highlightCommunities;
     }
 }
 
