@@ -39,6 +39,10 @@ module.exports = MongoDB.makeModel(
             metadata: {
                 type: Object,
             },
+            textLength: {
+                type: Number,
+                default: 0,
+            },
         },
         childCommentsCount: {
             type: Number,

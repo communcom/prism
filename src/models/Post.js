@@ -38,6 +38,10 @@ module.exports = MongoDB.makeModel(
             tags: {
                 type: [String],
             },
+            textLength: {
+                type: Number,
+                default: 0,
+            },
         },
         votes: {
             upVotes: {
