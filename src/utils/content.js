@@ -69,8 +69,6 @@ async function processContent(connector, data, allowedTypes) {
         return null;
     }
 
-    const textLength = countSymbols(data);
-
     switch (type) {
         case 'basic':
         case 'comment': {
@@ -90,7 +88,7 @@ async function processContent(connector, data, allowedTypes) {
                 article: null,
                 tags,
                 metadata,
-                textLength,
+                textLength: countSymbols(doc),
             };
         }
 
@@ -118,7 +116,7 @@ async function processContent(connector, data, allowedTypes) {
                 article: doc,
                 tags,
                 metadata,
-                textLength,
+                textLength: countSymbols(doc),
             };
         }
 
