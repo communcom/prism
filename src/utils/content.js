@@ -69,6 +69,8 @@ async function processContent(connector, data, allowedTypes) {
         return null;
     }
 
+    const textLength = countSymbols(data);
+
     switch (type) {
         case 'basic':
         case 'comment': {
@@ -88,6 +90,7 @@ async function processContent(connector, data, allowedTypes) {
                 article: null,
                 tags,
                 metadata,
+                textLength,
             };
         }
 
@@ -115,6 +118,7 @@ async function processContent(connector, data, allowedTypes) {
                 article: doc,
                 tags,
                 metadata,
+                textLength,
             };
         }
 
@@ -212,6 +216,35 @@ async function getEmbedsInfo(connector, items) {
     );
 
     return results;
+}
+
+function countSymbols(node) {
+    switch (node.type) {
+        case 'post':
+        case 'paragraph': {
+            const list = Array.isArray(node.content) ? node.content : [node.content];
+            let symbols = 0;
+
+            for (const childNode of list) {
+                symbols += countSymbols(childNode);
+            }
+
+            return symbols;
+        }
+
+        case 'text':
+        case 'link':
+            return node.content.length;
+
+        case 'tag':
+        case 'mention':
+            // + 1 because of adding symbol @ before username, and # before tag
+            return node.content.length + 1;
+
+        // Всё остальное просто игнорируем
+        default:
+            return 0;
+    }
 }
 
 module.exports = {

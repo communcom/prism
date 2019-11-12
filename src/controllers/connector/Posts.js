@@ -38,6 +38,7 @@ const baseProjection = {
         contentId: true,
         'document.type': true,
         'document.body': true,
+        'document.textLength': true,
         votes: true,
         stats: true,
         meta: true,
@@ -521,6 +522,7 @@ class Posts extends BasicController {
 
         if (post.document) {
             post.type = post.document.type;
+            post.textLength = post.document.textLength;
 
             if (isFullPostQuery) {
                 post.document = post.document.article || post.document.body;
@@ -529,6 +531,8 @@ class Posts extends BasicController {
             }
         } else {
             post.type = 'basic';
+            post.document = null;
+            post.textLength = 0;
         }
     }
 
