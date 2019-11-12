@@ -52,6 +52,8 @@ const baseProjection = {
                     username: '$$profile.username',
                     avatarUrl: '$$profile.personal.avatarUrl',
                     subscribers: '$$profile.subscribers.userIds',
+                    postsCount: '$$profile.postsCount',
+                    subscribersCount: '$$profile.subscribersCount',
                 },
             },
         },

@@ -100,6 +100,8 @@ class Profile extends BasicController {
                     userId: '$blacklist.userId',
                     username: '$blacklist.username',
                     avatarUrl: '$blacklist.personal.avatarUrl',
+                    postsCount: '$blacklist.postsCount',
+                    subscribersCount: '$blacklist.subscribersCount',
                 },
             };
 
@@ -118,6 +120,8 @@ class Profile extends BasicController {
                 username: true,
                 avatarUrl: true,
                 isSubscribed: true,
+                postsCount: true,
+                subscribersCount: true,
             };
         }
 
