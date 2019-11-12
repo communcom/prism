@@ -173,7 +173,7 @@ class Community {
             issuer: point.issuer,
             alias,
             rules: [],
-            name: name || communityId,
+            name,
         });
 
         await this._forkService.registerChanges({
