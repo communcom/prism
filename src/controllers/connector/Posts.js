@@ -251,8 +251,8 @@ class Posts extends BasicController {
 
         const items = await this._aggregate([
             filter,
-            ...paging,
             sort,
+            ...paging,
             ...lookups,
             baseProjection,
             addUrl,
@@ -275,8 +275,8 @@ class Posts extends BasicController {
 
         const items = await this._aggregate([
             filter,
-            ...paging,
             sort,
+            ...paging,
             ...lookups,
             baseProjection,
             addUrl,
