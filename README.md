@@ -564,7 +564,8 @@ waitForTransaction               // Дождаться и получить от�
     "jsonrpc": "2.0",
     "id": 1,
     "result": {
-        "subscribersCount": 0,
+        "subscribersCount": 5,
+        "leadersCount": 3,
         "communityId": "WREK",
         "alias": "id2599799600",
         "name": "WREK comunity",
@@ -651,7 +652,8 @@ waitForTransaction               // Дождаться и получить от�
     "result": {
         "communities": [
             {
-                "subscribersCount": 0,
+                "subscribersCount": 5,
+                "leadersCount": 3,
                 "postsCount": 0,
                 "communityId": "TWO comunity",
                 "isSubscribed": false

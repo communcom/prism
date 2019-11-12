@@ -15,6 +15,7 @@ const baseProjection = {
     name: true,
     avatarUrl: true,
     subscribersCount: true,
+    leadersCount: true,
     language: true,
     isSubscribed: true,
     isBlocked: true,

@@ -56,6 +56,10 @@ module.exports = MongoDB.makeModel(
             type: Number,
             default: 0,
         },
+        leadersCount: {
+            type: Number,
+            default: 0,
+        },
         language: {
             type: String,
         },
