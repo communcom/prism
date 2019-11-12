@@ -14,6 +14,7 @@ const baseProjection = {
     contentId: true,
     'document.type': true,
     'document.body': true,
+    'document.textLength': true,
     'votes.upCount': true,
     'votes.downCount': true,
     'votes.hasUpVote': true,
