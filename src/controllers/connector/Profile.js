@@ -228,6 +228,7 @@ class Profile extends BasicController {
                 guestUserId: authUserId,
                 maxCommonCommunities,
             });
+            resultUser.highlightCommunitiesCount = resultUser.highlightCommunities.length;
         }
 
         return resultUser;

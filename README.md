@@ -541,7 +541,7 @@ waitForTransaction               // Дождаться и получить от�
                 "subscribersCount": 1
             }
         ],
-        "highlightCommunitiesCount": 0
+        "highlightCommunitiesCount": 9
     }
 }
 ```
