@@ -150,7 +150,16 @@ class Posts extends BasicController {
             case 'topRewards':
             case 'subscriptionsPopular':
                 return await this._getTopFeed(
-                    { type, timeframe, userId, allowNsfw, offset, limit },
+                    {
+                        type,
+                        timeframe,
+                        userId,
+                        allowNsfw,
+                        communityId,
+                        communityAlias,
+                        offset,
+                        limit,
+                    },
                     authUserId
                 );
             case 'hot':
