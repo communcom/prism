@@ -144,10 +144,10 @@ class Reports extends BasicController {
                 sorting = { $sort: { 'reports.reportsCount': -1 } };
                 break;
             case 'time':
-                sorting = { $sort: { 'meta.creationTime': -1 } };
+                sorting = { $sort: { 'meta.creationTime': 1 } };
                 break;
             case 'timeDesc':
-                sorting = { $sort: { 'meta.creationTime': 1 } };
+                sorting = { $sort: { 'meta.creationTime': -1 } };
                 break;
         }
 

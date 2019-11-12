@@ -165,7 +165,7 @@ class Comment extends BasicController {
         const paging = [{ $skip: offset }, { $limit: limit }];
         const sorting = {
             $sort: {
-                'meta.creationTime': sortBy === 'time' ? -1 : 1,
+                'meta.creationTime': sortBy === 'time' ? 1 : -1,
             },
         };
         const aggregation = [
@@ -239,13 +239,13 @@ class Comment extends BasicController {
                 break;
             case 'timeDesc':
                 sorting.$sort = {
-                    'meta.creationTime': -1,
+                    'meta.creationTime': 1,
                 };
                 break;
             case 'time':
             default:
                 sorting.$sort = {
-                    'meta.creationTime': 1,
+                    'meta.creationTime': -1,
                 };
         }
 
