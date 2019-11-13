@@ -240,6 +240,7 @@ class Profile extends BasicController {
         return {
             items: await ProfileModel.aggregate([
                 { $match: { username: { $regex: `^${escape(text.toLowerCase())}` } } },
+                { $limit: 10 },
                 {
                     $project: {
                         _id: false,
