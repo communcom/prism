@@ -589,7 +589,7 @@ class Profile extends BasicController {
     }
 
     async _getHighlightCommunities({ hostUserId, guestUserId, maxCommonCommunities }) {
-        const [commonCommunities, popularCommunities] = await ProfileModel.aggregate([
+        const groups = await ProfileModel.aggregate([
             { $match: { userId: hostUserId } },
             { $project: { _id: false, communities: '$subscriptions.communityIds' } },
             {
@@ -644,24 +644,30 @@ class Profile extends BasicController {
             },
         ]);
 
+        let commonCommunities, popularCommunities;
+
+        for (const group of groups) {
+            if (group._id === true) {
+                commonCommunities = group.communities;
+                continue;
+            }
+
+            if (group._id === false) {
+                popularCommunities = group.communities;
+            }
+        }
+
         const highlightCommunities = [];
 
         if (commonCommunities) {
-            for (
-                let i = 0;
-                i < maxCommonCommunities && i < commonCommunities.communities.length;
-                i++
-            ) {
-                highlightCommunities.push(commonCommunities.communities[i]);
+            for (let i = 0; i < maxCommonCommunities && i < commonCommunities.length; i++) {
+                highlightCommunities.push(commonCommunities[i]);
             }
         }
 
         if (popularCommunities) {
             highlightCommunities.push(
-                ...popularCommunities.communities.slice(
-                    0,
-                    COMMON_COMMUNITIES_COUNT - maxCommonCommunities
-                )
+                ...popularCommunities.slice(0, COMMON_COMMUNITIES_COUNT - maxCommonCommunities)
             );
         }
 
