@@ -269,7 +269,7 @@ class Profile extends BasicController {
 
     async suggestNames({ text }) {
         return await ProfileModel.aggregate([
-            { $match: { username: new RegExp(`^${text}.*`) } },
+            { $match: { username: new RegExp(`^${text.toLowerCase()}`) } },
             {
                 $project: {
                     _id: false,
