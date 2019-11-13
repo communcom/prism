@@ -426,50 +426,19 @@ waitForTransaction               // Дождаться и получить от�
 {
     "jsonrpc": "2.0",
     "id": 1,
-    "result": [
-        {
-            "subscriptions": {
-                "usersCount": 0,
-                "communitiesCount": 9
+    "result": {
+        "items": [
+            {
+                "userId": "tst5spspkgac",
+                "username": "catraed",
+                "avatarUrl": "https://img.golos.io/images/3r3CCZXMY7ct5QobX55W82MFeZiX.jpg"
             },
-            "subscribers": {
-                "usersCount": 2
-            },
-            "stats": {
-                "reputation": 0,
-                "postsCount": 1,
-                "commentsCount": 11
-            },
-            "leaderIn": [],
-            "userId": "tst5spspkgac",
-            "username": "catraed",
-            "registration": {
-                "time": "2019-11-06T09:55:45.000Z"
-            },
-            "avatarUrl": "https://img.golos.io/images/3r3CCZXMY7ct5QobX55W82MFeZiX.jpg",
-            "coverUrl": "https://img.golos.io/images/KWk34xqkvvk7cKLR1miPRscghwz.jpg"
-        },
-        {
-            "subscriptions": {
-                "usersCount": 0,
-                "communitiesCount": 0
-            },
-            "subscribers": {
-                "usersCount": 0
-            },
-            "stats": {
-                "reputation": 0,
-                "postsCount": 0,
-                "commentsCount": 0
-            },
-            "leaderIn": [],
-            "userId": "tst5rfrkhvsj",
-            "username": "catrard",
-            "registration": {
-                "time": "2019-11-07T08:34:30.000Z"
+            {
+                "userId": "tst5rfrkhvsj",
+                "username": "catrard"
             }
-        }
-    ]
+        ]
+    }
 }
 ```
 
