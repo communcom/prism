@@ -37,10 +37,11 @@ search:                            // Поиск по данным из приз
     limit <number>(10)             // Ограничение на размер найденных результатов
     offset <number>(0)             // Количество результатов, которое надо "пропустить"
 
-getProfile:                        // Получение профиля пользователя (нужно передать одно из полей):
-    userId <string/null>           // Id пользователя
-    username <string/null>         // Имя пользователя
-    user <string/null>             // userId либо username
+getProfile:                                           // Получение профиля пользователя (нужно передать одно из полей):
+    userId <string/null>                              // Id пользователя
+    username <string/null>                            // Имя пользователя
+    user <string/null>                                // userId либо username
+    maxCommonCommunities <number/null>(2)             // максимальное количество общих сообществ в списке highlightCommunities
     
 suggestNames:                      // Поиск пользователя по началу username:
     text <string>                  // Текст поиска
@@ -464,46 +465,123 @@ waitForTransaction               // Дождаться и получить от�
     "jsonrpc": "2.0",
     "id": 1,
     "result": {
-        "stats": {
-            "reputation": 0,
-            "postsCount": 7,
-            "commentsCount": 2
-        },
-        "leaderIn": [],
-        "userId": "tst3evxcjgjn",
-        "username": "bayer-van-dds",
-        "registration": {
-            "time": "2019-10-08T14:03:30.000Z"
-        },
-        "subscribers": {
-            "usersCount": 0
-        },
         "subscriptions": {
             "usersCount": 0,
-            "communitiesCount": 0
+            "communitiesCount": 9
+        },
+        "subscribers": {
+            "usersCount": 2
+        },
+        "stats": {
+            "reputation": 0,
+            "postsCount": 1,
+            "commentsCount": 11
+        },
+        "leaderIn": [],
+        "userId": "tst5spspkgac",
+        "username": "catraed",
+        "registration": {
+            "time": "2019-11-06T09:55:45.000Z"
         },
         "personal": {
-            "avatarUrl": "https://img.golos.io/images/12DcKUF5SFgXyt9dazqn7ibu5Pn.jpg",
-            "biography": "Chuck Norris burst the dot com bubble.2",
-            "contacts": {
-                "facebook": "Jan Natalis1",
-                "telegram": "Zyvik",
-                "weChat": "Hephaestus",
-                "whatsApp": "Hera"
-            },
-            "coverUrl": "https://img.golos.io/images/3fEfyKMfsbWRCteFj13TWwQitxRE.jpg"
+            "avatarUrl": "https://img.golos.io/images/3r3CCZXMY7ct5QobX55W82MFeZiX.jpg",
+            "biography": "Rockin' and rollin' the web-development",
+            "coverUrl": "https://img.golos.io/images/KWk34xqkvvk7cKLR1miPRscghwz.jpg"
         },
         "isSubscribed": false,
         "isSubscription": false,
         "isBlocked": false,
-        "commonCommunitiesCount": 1,
-        "commonCommunities": [
+        "highlightCommunities": [
+            {
+                "communityId": "BUSY",
+                "alias": "id487992613",
+                "name": "Business",
+                "avatarUrl": "https://img.golos.io/images/2AuihQyZuX6RDN9ppeRaZHnTMiYH.png",
+                "coverUrl": "https://img.golos.io/images/3CpT2eb2zW8aDY9JNuVWdJ4k2o9C.png",
+                "postsCount": 2,
+                "isSubscribed": true,
+                "subscribersCount": 4
+            },
+            {
+                "communityId": "COMMN",
+                "alias": "id3226088501",
+                "name": "Commun",
+                "avatarUrl": "",
+                "coverUrl": "",
+                "postsCount": 0,
+                "isSubscribed": true,
+                "subscribersCount": 2
+            },
+            {
+                "communityId": "CYBERP",
+                "alias": "id3171454281",
+                "name": "Cyberpunk 2077",
+                "avatarUrl": "https://img.golos.io/images/2P3naqvNiTtG3CDUSnhsqPaZzns2.png",
+                "coverUrl": "https://img.golos.io/images/3e5eeAr58XQ7bkoWtZQFdHxtmWon.jpg",
+                "postsCount": 6,
+                "isSubscribed": false,
+                "subscribersCount": 7
+            },
             {
                 "communityId": "CATS",
                 "alias": "id2507527990",
-                "name": "cats"
+                "name": "cats",
+                "postsCount": 0,
+                "isSubscribed": false,
+                "subscribersCount": 3
+            },
+            {
+                "communityId": "DIY",
+                "alias": "id1092206949",
+                "name": "DIY",
+                "avatarUrl": "https://img.golos.io/images/iRK5XX7B9obT7SHrxbsQinHHoFU.png",
+                "coverUrl": "https://img.golos.io/images/3zWm1rkPvegJbnLutxhBsaRckhqm.png",
+                "postsCount": 0,
+                "isSubscribed": false,
+                "subscribersCount": 1
+            },
+            {
+                "communityId": "DOTA",
+                "alias": "id3787321974",
+                "name": "Dota 2",
+                "avatarUrl": "https://img.golos.io/images/scydJ4wGSQAJu3bWLm7CXkvNTxH.png",
+                "coverUrl": "https://img.golos.io/images/2xAkRqvRWTU2cVbcZJFXDjgvbAeV.png",
+                "postsCount": 0,
+                "isSubscribed": false,
+                "subscribersCount": 1
+            },
+            {
+                "communityId": "MEME",
+                "alias": "id2863239064",
+                "name": "Meme's",
+                "avatarUrl": "",
+                "coverUrl": "",
+                "postsCount": 0,
+                "isSubscribed": false,
+                "subscribersCount": 1
+            },
+            {
+                "communityId": "PORN",
+                "alias": "id3492610999",
+                "name": "Porn",
+                "avatarUrl": "",
+                "coverUrl": "",
+                "postsCount": 2,
+                "isSubscribed": false,
+                "subscribersCount": 1
+            },
+            {
+                "communityId": "PROGRAM",
+                "alias": "id455686835",
+                "name": "Programming",
+                "avatarUrl": "",
+                "coverUrl": "",
+                "postsCount": 0,
+                "isSubscribed": false,
+                "subscribersCount": 1
             }
-        ]
+        ],
+        "highlightCommunitiesCount": 9
     }
 }
 ```

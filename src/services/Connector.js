@@ -253,6 +253,10 @@ class Connector extends BasicConnector {
                             userId: {
                                 type: 'string',
                             },
+                            maxCommonCommunities: {
+                                type: 'number',
+                                default: 2,
+                            },
                         },
                     },
                 },
