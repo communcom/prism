@@ -605,13 +605,11 @@ class Profile extends BasicController {
                     subscribersCount: '$communities.subscribersCount',
                 },
             },
-            {
-                ...addFieldIsIncludes({
-                    newField: 'isSubscribed',
-                    arrayPath: '$subscribers',
-                    value: guestUserId,
-                }),
-            },
+            addFieldIsIncludes({
+                newField: 'isSubscribed',
+                arrayPath: '$subscribers',
+                value: guestUserId,
+            }),
             {
                 $group: {
                     _id: '$isSubscribed',

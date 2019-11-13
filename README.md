@@ -41,7 +41,7 @@ getProfile:                                           // Получение пр
     userId <string/null>                              // Id пользователя
     username <string/null>                            // Имя пользователя
     user <string/null>                                // userId либо username
-    maxCommonCommunities <number/null>(2)             // userId либо username
+    maxCommonCommunities <number/null>(2)             // максимальное количество общих сообществ в списке highlightCommunities
 
 getReportsList:                    // Списка контента, на который есть репорты
     communityIds <[string]/null>   // Массив communityId сообществ, если null то все сообщества где человек лидер
