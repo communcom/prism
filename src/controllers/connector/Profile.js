@@ -225,7 +225,7 @@ class Profile extends BasicController {
 
         if (authUserId) {
             resultUser.highlightCommunities = await this._getHighlightCommunities({
-                hostUserId: userId,
+                hostUserId: resultUser.userId,
                 guestUserId: authUserId,
                 maxCommonCommunities,
             });
@@ -589,6 +589,14 @@ class Profile extends BasicController {
     }
 
     async _getHighlightCommunities({ hostUserId, guestUserId, maxCommonCommunities }) {
+        if (
+            !hostUserId ||
+            !guestUserId ||
+            (hostUserId === guestUserId || guestUserId === hostUserId)
+        ) {
+            return [];
+        }
+
         const groups = await ProfileModel.aggregate([
             { $match: { userId: hostUserId } },
             { $project: { _id: false, communities: '$subscriptions.communityIds' } },
