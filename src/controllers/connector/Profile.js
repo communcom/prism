@@ -614,7 +614,7 @@ class Profile extends BasicController {
                 },
             },
             {
-                $sort: { 'communities.subscribers': -1 },
+                $sort: { 'communities.subscribersCount': -1 },
             },
             {
                 $project: {
