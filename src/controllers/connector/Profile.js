@@ -646,16 +646,24 @@ class Profile extends BasicController {
 
         const highlightCommunities = [];
 
-        for (let i = 0; i < maxCommonCommunities && i < commonCommunities.communities.length; i++) {
-            highlightCommunities.push(commonCommunities.communities[i]);
+        if (commonCommunities) {
+            for (
+                let i = 0;
+                i < maxCommonCommunities && i < commonCommunities.communities.length;
+                i++
+            ) {
+                highlightCommunities.push(commonCommunities.communities[i]);
+            }
         }
 
-        highlightCommunities.push(
-            ...popularCommunities.communities.slice(
-                0,
-                COMMON_COMMUNITIES_COUNT - maxCommonCommunities
-            )
-        );
+        if (popularCommunities) {
+            highlightCommunities.push(
+                ...popularCommunities.communities.slice(
+                    0,
+                    COMMON_COMMUNITIES_COUNT - maxCommonCommunities
+                )
+            );
+        }
 
         return highlightCommunities;
     }
