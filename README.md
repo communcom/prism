@@ -41,6 +41,9 @@ getProfile:                        // Получение профиля поль
     userId <string/null>           // Id пользователя
     username <string/null>         // Имя пользователя
     user <string/null>             // userId либо username
+    
+suggestNames:                      // Поиск пользователя по началу username:
+    text <string>                  // Текст поиска
 
 getReportsList:                    // Списка контента, на который есть репорты
     communityIds <[string]/null>   // Массив communityId сообществ, если null то все сообщества где человек лидер
@@ -399,6 +402,74 @@ waitForTransaction               // Дождаться и получить от�
             }
         ]
     }
+}
+```
+
+### suggestNames
+
+=> Запрос
+
+```json
+{
+    "id": 1,
+    "method": "suggestNames",
+    "jsonrpc": "2.0",
+    "params": {
+        "text": "cat"
+    }
+}
+```
+
+<= Ответ
+
+```json
+{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "result": [
+        {
+            "subscriptions": {
+                "usersCount": 0,
+                "communitiesCount": 9
+            },
+            "subscribers": {
+                "usersCount": 2
+            },
+            "stats": {
+                "reputation": 0,
+                "postsCount": 1,
+                "commentsCount": 11
+            },
+            "leaderIn": [],
+            "userId": "tst5spspkgac",
+            "username": "catraed",
+            "registration": {
+                "time": "2019-11-06T09:55:45.000Z"
+            },
+            "avatarUrl": "https://img.golos.io/images/3r3CCZXMY7ct5QobX55W82MFeZiX.jpg",
+            "coverUrl": "https://img.golos.io/images/KWk34xqkvvk7cKLR1miPRscghwz.jpg"
+        },
+        {
+            "subscriptions": {
+                "usersCount": 0,
+                "communitiesCount": 0
+            },
+            "subscribers": {
+                "usersCount": 0
+            },
+            "stats": {
+                "reputation": 0,
+                "postsCount": 0,
+                "commentsCount": 0
+            },
+            "leaderIn": [],
+            "userId": "tst5rfrkhvsj",
+            "username": "catrard",
+            "registration": {
+                "time": "2019-11-07T08:34:30.000Z"
+            }
+        }
+    ]
 }
 ```
 
