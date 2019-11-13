@@ -273,16 +273,9 @@ class Profile extends BasicController {
             {
                 $project: {
                     _id: false,
-                    stats: true,
-                    leaderIn: true,
                     userId: true,
                     username: true,
-                    registration: true,
-                    'subscriptions.communitiesCount': true,
-                    'subscriptions.usersCount': true,
-                    'subscribers.usersCount': true,
                     avatarUrl: '$personal.avatarUrl',
-                    coverUrl: '$personal.coverUrl',
                 },
             },
         ]);
