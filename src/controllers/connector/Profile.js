@@ -267,8 +267,25 @@ class Profile extends BasicController {
         return resultUser;
     }
 
-    suggestNames() {
-        // TODO: suggest names based on input
+    async suggestNames({ text }) {
+        return await ProfileModel.aggregate([
+            { $match: { username: new RegExp(`^${text}.*`) } },
+            {
+                $project: {
+                    _id: false,
+                    stats: true,
+                    leaderIn: true,
+                    userId: true,
+                    username: true,
+                    registration: true,
+                    'subscriptions.communitiesCount': true,
+                    'subscriptions.usersCount': true,
+                    'subscribers.usersCount': true,
+                    avatarUrl: '$personal.avatarUrl',
+                    coverUrl: '$personal.coverUrl',
+                },
+            },
+        ]);
     }
 
     async _getUserSubscribers({ userId, limit, offset }, { userId: authUserId }) {
