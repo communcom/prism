@@ -141,6 +141,14 @@ module.exports = MongoDB.makeModel(
             },
             {
                 fields: {
+                    contentId: 1,
+                },
+                options: {
+                    unique: true,
+                },
+            },
+            {
+                fields: {
                     'contentId.userId': 1,
                     'document.tags': 1,
                     'meta.creationTime': 1,

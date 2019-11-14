@@ -6,3 +6,4 @@ db
 .npmrc
 docker-compose.yml
 stats.txt
+/slow blocks/

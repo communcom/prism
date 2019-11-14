@@ -2,7 +2,7 @@ const lodash = require('lodash');
 const Abstract = require('./Abstract');
 const PostModel = require('../../models/Post');
 const CommentModel = require('../../models/Comment');
-const { extractContentId } = require('../../utils/content');
+const contentUtils = require('../../utils/content');
 
 class Vote extends Abstract {
     async handleUpVote(content) {
@@ -18,23 +18,96 @@ class Vote extends Abstract {
     }
 
     async _handle(content, { up, down }) {
-        const model = await this._getModel(content);
+        const isPost = await contentUtils.isPost(content);
 
-        if (!model) {
+        let Model;
+        if (isPost) {
+            Model = PostModel;
+        } else {
+            Model = CommentModel;
+        }
+
+        const upVoteActions = {};
+        const downVoteActions = {};
+
+        if (up === 'add') {
+            upVoteActions.inc = 1;
+            upVoteActions.action = '$addToSet';
+            upVoteActions.fork = '$pull';
+        } else {
+            upVoteActions.inc = -1;
+            upVoteActions.action = '$pull';
+            upVoteActions.fork = '$addToSet';
+        }
+
+        if (down === 'add') {
+            downVoteActions.inc = 1;
+            downVoteActions.action = '$addToSet';
+            downVoteActions.fork = '$pull';
+        } else {
+            downVoteActions.inc = -1;
+            downVoteActions.action = '$pull';
+            downVoteActions.fork = '$addToSet';
+        }
+
+        const contentId = contentUtils.extractContentId(content);
+
+        const { userId } = contentId.userId;
+
+        const previousModel = await Model.findOneAndUpdate(
+            { contentId },
+            {
+                [upVoteActions.action]: {
+                    'votes.upVotes': userId,
+                },
+                [downVoteActions.action]: {
+                    'votes.downVotes': userId,
+                },
+                $inc: {
+                    'votes.upCount': upVoteActions.inc,
+                    'votes.downCount': downVoteActions.inc,
+                },
+            }
+        );
+
+        if (!previousModel) {
             return;
         }
 
-        const vote = {
-            userId: content.voter,
-            weight: content.weight,
-        };
+        this.registerForkChanges({
+            type: 'update',
+            Model,
+            documentId: previousModel._id,
+            data: {
+                [upVoteActions.fork]: {
+                    'votes.upVotes': userId,
+                },
+                [downVoteActions.fork]: {
+                    'votes.downVotes': userId,
+                },
+                $inc: {
+                    'votes.upCount': -upVoteActions.inc,
+                    'votes.downCount': -downVoteActions.inc,
+                },
+            },
+        }).catch(error => {
+            console.error('Error during fork register', error);
+            throw error;
+        });
 
-        await this._manageVotes({ model, vote, type: 'up', action: up });
-        await this._manageVotes({ model, vote, type: 'down', action: down });
+        // const vote = {
+        //     userId: content.voter,
+        //     weight: content.weight,
+        // };
+        //
+        // await Promise.all([
+        //     this._manageVotes({ model, vote, type: 'up', action: up }),
+        //     this._manageVotes({ model, vote, type: 'down', action: down }),
+        // ]);
     }
 
     async _getModel(content) {
-        const contentId = extractContentId(content);
+        const contentId = contentUtils.extractContentId(content);
 
         const query = {
             'contentId.userId': contentId.userId,
@@ -95,7 +168,7 @@ class Vote extends Abstract {
             removeVoteObject = { userId: vote.userId };
         }
 
-        await this.registerForkChanges({
+        this.registerForkChanges({
             type: 'update',
             Model,
             documentId: previousVotes._id,
@@ -103,6 +176,9 @@ class Vote extends Abstract {
                 [removeAction]: { [votesArrayPath]: removeVoteObject },
                 $inc: { [votesCountPath]: -increment },
             },
+        }).catch(error => {
+            console.error('Error during fork register', error);
+            throw error;
         });
     }
 }

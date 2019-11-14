@@ -31,7 +31,7 @@ class Main extends BasicMain {
             prism.setConnector(connector);
         }
 
-        this.startMongoBeforeBoot(null, { poolSize: 100 });
+        this.startMongoBeforeBoot(null, { poolSize: 500 });
 
         if (env.GLS_ENABLE_PUBLIC_API && env.GLS_SEARCH_ENABLED) {
             this.addNested(new SearchSync());
@@ -43,19 +43,7 @@ class Main extends BasicMain {
     }
 
     async boot() {
-        await this._setDbQueryMemoryLimit();
         await this._initMetadata();
-    }
-
-    async _setDbQueryMemoryLimit() {
-        try {
-            await Post.db.db.command({
-                setParameter: 1,
-                internalQueryExecMaxBlockingSortBytes: env.GLS_MAX_QUERY_MEMORY_LIMIT,
-            });
-        } catch (err) {
-            Logger.warn('Can`t set MongoDB memory limit');
-        }
     }
 
     async _initMetadata() {

@@ -702,6 +702,7 @@ class Connector extends BasicConnector {
             },
             requiredClients: {
                 facade: env.GLS_FACADE_CONNECT,
+                embedsCache: env.GLS_EMBEDS_CACHE_CONNECT,
                 meta: env.GLS_META_CONNECT,
             },
         });

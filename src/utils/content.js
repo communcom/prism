@@ -186,12 +186,9 @@ async function getEmbedsInfo(connector, items) {
     await Promise.all(
         items.map(async attach => {
             try {
-                const embedData = await connector.callService('facade', 'frame.getEmbed', {
-                    auth: {},
-                    params: {
-                        type: 'oembed',
-                        url: attach.content,
-                    },
+                const embedData = await connector.callService('embedsCache', 'getEmbed', {
+                    type: 'oembed',
+                    url: attach.content,
                 });
 
                 let type = embedData.type;
@@ -208,11 +205,10 @@ async function getEmbedsInfo(connector, items) {
                     attributes: embedData,
                 });
             } catch (err) {
-                Logger.warn('frame.getEmbed failed for', attach.content, err);
+                Logger.warn('getEmbed failed for', attach.content, err);
             }
         })
     );
-
     return results;
 }
 

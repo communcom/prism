@@ -149,11 +149,28 @@ module.exports = MongoDB.makeModel(
                     unique: true,
                 },
             },
+            {
+                fields: {
+                    contentId: 1,
+                },
+                options: {
+                    unique: true,
+                },
+            },
             // Post comments, sorted by time
             {
                 fields: {
                     'parents.post.userId': 1,
                     'parents.post.permlink': 1,
+                    'ordering.byTime': 1,
+                },
+                options: {
+                    sparse: true,
+                },
+            },
+            {
+                fields: {
+                    'parents.post': 1,
                     'ordering.byTime': 1,
                 },
                 options: {
