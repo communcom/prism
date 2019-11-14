@@ -73,6 +73,10 @@ module.exports = MongoDB.makeModel(
             type: Number,
             default: 0,
         },
+        registrationTime: {
+            type: Date,
+            required: true,
+        },
     },
     {
         index: [

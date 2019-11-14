@@ -148,7 +148,7 @@ class Community {
         }
     }
 
-    async handleCreate({ community_name: name, commun_code: communityId }) {
+    async handleCreate({ community_name: name, commun_code: communityId }, { blockTime }) {
         const alias = `id${this._extractAlias(communityId)}`;
 
         const point = await CommunityPointModel.findOne(
@@ -174,6 +174,7 @@ class Community {
             alias,
             rules: [],
             name,
+            registrationTime: new Date(blockTime),
         });
 
         await this._forkService.registerChanges({
