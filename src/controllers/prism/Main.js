@@ -96,7 +96,7 @@ class Main {
 
         switch (pathName) {
             case 'c.list->create':
-                await this._community.handleCreate(actionArgs);
+                await this._community.handleCreate(actionArgs, meta);
                 break;
 
             case 'c.list->setinfo':
