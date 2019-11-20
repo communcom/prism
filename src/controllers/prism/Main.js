@@ -153,7 +153,7 @@ class Main {
         switch (pathName) {
             case 'c.list->create':
                 this._communityCreateActions.push(() => {
-                    return this._community.handleCreate(actionArgs);
+                    return this._community.handleCreate(actionArgs, meta);
                 });
                 break;
 
