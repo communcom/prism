@@ -7,7 +7,6 @@ const env = require('../data/env');
 const MainPrismController = require('../controllers/prism/Main');
 const GenesisController = require('../controllers/prism/GenesisContent');
 const ServiceMetaModel = require('../models/ServiceMeta');
-const env = require('../../data/env');
 
 const Libhoney = require('libhoney');
 const hny = new Libhoney({
