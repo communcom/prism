@@ -702,7 +702,8 @@ waitForTransaction               // Дождаться и получить от�
                 "username": "bayer-van-dds",
                 "avatarUrl": "https://img.golos.io/images/12DcKUF5SFgXyt9dazqn7ibu5Pn.jpg"
             }
-        ]
+        ],
+        "registrationTime": "2019-11-06T09:55:45.000Z"
     }
 }
 ```

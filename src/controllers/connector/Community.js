@@ -20,6 +20,7 @@ const baseProjection = {
     isSubscribed: true,
     isBlocked: true,
     postsCount: true,
+    registrationTime: true,
 };
 
 const FRIEND_SUBSCRIBERS_LIMIT = 5;
