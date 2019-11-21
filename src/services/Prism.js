@@ -12,12 +12,6 @@ const Libhoney = require('libhoney');
 const hny = new Libhoney({
     writeKey: env.GLS_HONEYCOMB_KEY,
     dataset: env.GLS_HONEYCOMB_DATASET,
-    responseCallback: responses =>
-        responses.forEach(response => {
-            if (response.error) {
-                console.error('Libhoney error:', response.error);
-            }
-        }),
 });
 
 class Prism extends BasicService {
@@ -25,11 +19,6 @@ class Prism extends BasicService {
         super(...args);
 
         this.getEmitter().setMaxListeners(Infinity);
-        this._blocksHandled = 0;
-        this._prevLoggedStatsBlockNum = 0;
-        this._totalHandleTime = 0;
-        this._totalTrxAmount = 0;
-        this._totalTimeStart = Date.now();
     }
 
     setForkService(forkService) {

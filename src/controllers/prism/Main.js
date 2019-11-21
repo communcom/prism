@@ -17,12 +17,6 @@ const Libhoney = require('libhoney');
 const hny = new Libhoney({
     writeKey: env.GLS_HONEYCOMB_KEY,
     dataset: env.GLS_HONEYCOMB_DATASET,
-    responseCallback: responses =>
-        responses.forEach(response => {
-            if (response.error) {
-                console.error('Libhoney error:', response.error);
-            }
-        }),
 });
 
 const ALLOWED_CONTRACTS = [
@@ -64,6 +58,7 @@ class Main {
         this._commentCreateActions = [];
 
         this._galleryActions = [];
+        this._voteActions = {};
     }
 
     async disperse({ transactions, blockNum, blockTime }) {
@@ -115,6 +110,17 @@ class Main {
             newBlockEvent.send();
         }
 
+        const votePromises = [];
+        for (const voterActions of Object.values(this._voteActions)) {
+            votePromises.push(async () => {
+                for (const action of voterActions) {
+                    await action();
+                }
+            });
+        }
+
+        await Promise.all(votePromises.map(wrappedAction => wrappedAction()));
+
         this._newUsernameActions = [];
         this._pointActions = [];
 
@@ -128,6 +134,7 @@ class Main {
         this._commentCreateActions = [];
 
         this._galleryActions = [];
+        this._voteActions = {};
 
         this.actions = [];
 
@@ -286,19 +293,22 @@ class Main {
                 break;
 
             case 'c.gallery->upvote':
-                this._galleryActions.push(() => {
+                this._voteActions[actionArgs.voter] = this._voteActions[actionArgs.voter] || [];
+                this._voteActions[actionArgs.voter].push(() => {
                     return this._vote.handleUpVote(actionArgs, meta);
                 });
                 break;
 
             case 'c.gallery->downvote':
-                this._galleryActions.push(() => {
+                this._voteActions[actionArgs.voter] = this._voteActions[actionArgs.voter] || [];
+                this._voteActions[actionArgs.voter].push(() => {
                     return this._vote.handleDownVote(actionArgs, meta);
                 });
                 break;
 
             case 'c.gallery->unvote':
-                this._galleryActions.push(() => {
+                this._voteActions[actionArgs.voter] = this._voteActions[actionArgs.voter] || [];
+                this._voteActions[actionArgs.voter].push(() => {
                     return this._vote.handleUnVote(actionArgs, meta);
                 });
                 break;
