@@ -99,6 +99,14 @@ module.exports = MongoDB.makeModel(
             },
             {
                 fields: {
+                    name: 1,
+                },
+                options: {
+                    unique: true,
+                },
+            },
+            {
+                fields: {
                     subscribersCount: 1,
                 },
             },

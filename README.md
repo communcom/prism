@@ -216,6 +216,11 @@ getProposals:                    // Получить список предлаг
     limit <number>(10)           // Количество элементов
 
 getCommunities:
+    type <string>(all)
+            all                  // Все сообщества
+        |   user                 // Сообщества пользователя
+    userId <string/null>         // userId пользователя
+    search <string/null>         // Поиск по имени сообщества
     offset <number>              // Сдвиг пагинации
     limit <number>               // Количество элементов
 

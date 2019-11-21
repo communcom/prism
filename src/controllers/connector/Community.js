@@ -259,8 +259,12 @@ class Community extends BasicController {
         return community;
     }
 
-    async getCommunities({ type, userId, limit, offset }, { userId: authUserId }) {
+    async getCommunities({ type, userId, search, limit, offset }, { userId: authUserId }) {
         const query = {};
+
+        if (search) {
+            query.communityName = { $regex: `^${escape(search.trim())}` };
+        }
         let isQuerySubscriptions = false;
 
         if (type === 'user') {
