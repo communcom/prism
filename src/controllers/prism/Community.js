@@ -3,6 +3,7 @@ const { isNil } = require('lodash');
 const core = require('cyberway-core-service');
 const { Logger } = core.utils;
 
+const { patchRules } = require('../../utils/patchRules');
 const CommunityModel = require('../../models/Community');
 const CommunityPointModel = require('../../models/CommunityPoint');
 const ProfileModel = require('../../models/Profile');
@@ -216,8 +217,12 @@ class Community {
         }
 
         if (!isNil(rules)) {
-            updates.rules = this._parseRules(rules);
-            hasUpdate = true;
+            const updatedRules = await this._tryToApplyPatchOrSet(communityId, rules);
+
+            if (updatedRules) {
+                updates.rules = updatedRules;
+                hasUpdate = true;
+            }
         }
 
         if (!hasUpdate) {
@@ -314,24 +319,53 @@ class Community {
             .readUInt32LE(16);
     }
 
-    _parseRules(rawRules) {
+    async _tryToApplyPatchOrSet(communityId, rawRules) {
+        let rules = null;
+
         try {
-            const rules = JSON.parse(rawRules);
+            rules = JSON.parse(rawRules);
+
+            if (!rules) {
+                return null;
+            }
 
             if (Array.isArray(rules)) {
                 return rules;
             }
         } catch (err) {
             Logger.warn('Rules parse failed:', rawRules, err);
+
+            return [
+                {
+                    id: RESERVED_SYSTEM_ID,
+                    title: rawRules,
+                    text: '',
+                },
+            ];
         }
 
-        return [
+        const community = await CommunityModel.findOne(
             {
-                id: RESERVED_SYSTEM_ID,
-                title: rawRules,
-                text: '',
+                communityId,
             },
-        ];
+            {
+                _id: true,
+                rules: true,
+            },
+            {
+                lean: true,
+            }
+        );
+
+        if (!community) {
+            return null;
+        }
+
+        if (rules.type === 'patch') {
+            return patchRules(community.rules, rules);
+        }
+
+        return null;
     }
 }
 
