@@ -66,7 +66,10 @@ async function processContent(connector, data, allowedTypes) {
     const { type = 'basic' } = doc.attributes;
 
     if (!allowedTypes.includes(type)) {
-        return null;
+        return {
+            document: null,
+            tags,
+        };
     }
 
     switch (type) {
@@ -83,12 +86,14 @@ async function processContent(connector, data, allowedTypes) {
             }
 
             return {
-                type,
-                body: doc,
-                article: null,
+                document: {
+                    type,
+                    body: doc,
+                    article: null,
+                    metadata,
+                    textLength: countSymbols(doc),
+                },
                 tags,
-                metadata,
-                textLength: countSymbols(doc),
             };
         }
 
@@ -98,20 +103,25 @@ async function processContent(connector, data, allowedTypes) {
             doc.content = await processEmbeds(connector, doc.content);
 
             return {
-                type,
-                body: {
-                    ...doc,
-                    content: [],
+                document: {
+                    type,
+                    body: {
+                        ...doc,
+                        content: [],
+                    },
+                    article: doc,
+                    metadata,
+                    textLength: countSymbols(doc),
                 },
-                article: doc,
                 tags,
-                metadata,
-                textLength: countSymbols(doc),
             };
         }
 
         default:
-            return null;
+            return {
+                document: null,
+                tags,
+            };
     }
 }
 
