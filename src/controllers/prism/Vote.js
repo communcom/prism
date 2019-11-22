@@ -97,15 +97,11 @@ class Vote extends Abstract {
         }
 
         if (upVoteActions.inc) {
-            updateQuery.$inc = {
-                'votes.upCount': upVoteActions.inc,
-            };
+            updateQuery.$inc['votes.upCount'] = upVoteActions.inc;
         }
 
         if (downVoteActions.inc) {
-            updateQuery.$inc = {
-                'votes.downCount': downVoteActions.inc,
-            };
+            updateQuery.$inc['votes.downCount'] = downVoteActions.inc;
         }
 
         await Model.update({ contentId }, updateQuery);
