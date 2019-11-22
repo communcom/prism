@@ -81,7 +81,9 @@ class Comment extends Abstract {
         }
 
         try {
-            modelData.document = await processContent(this, content, ['comment']);
+            const { document } = await processContent(this, content, ['comment']);
+
+            modelData.document = document;
         } catch (err) {
             modelData.document = null;
             Logger.warn(`Invalid comment content, block num: ${blockNum}`, contentId, err);
@@ -114,7 +116,9 @@ class Comment extends Abstract {
         const updateFields = {};
 
         try {
-            updateFields.document = await processContent(this, content, ['comment']);
+            const { document } = await processContent(this, content, ['comment']);
+
+            updateFields.document = document;
         } catch (err) {
             updateFields.document = null;
             Logger.warn(`Invalid comment content, block num: ${blockNum}`, contentId, err);

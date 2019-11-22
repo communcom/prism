@@ -41,6 +41,8 @@ class Report extends Abstract {
             permlink: messageId.permlink,
         };
 
+        await this._checkNsftReport(contentId, reason);
+
         const oldReportObject = await ReportModel.findOne({ contentId });
 
         if (oldReportObject) {
@@ -55,10 +57,57 @@ class Report extends Abstract {
         }
     }
 
-    async _appendReport({ type, contentId, reporter, reason }) {
-        let model = type === 'post' ? PostModel : CommentModel;
+    async _checkNsftReport(contentId, reason) {
+        try {
+            const reasonList = JSON.parse(reason);
 
-        const previousContentModel = await model.findOneAndUpdate(
+            if (!reasonList.includes('nsfw') && !reasonList.includes('nudity')) {
+                return;
+            }
+        } catch (err) {
+            Logger.error('Invalid report reason format:', reason, err);
+            return;
+        }
+
+        const postModel = await PostModel.findOne(
+            {
+                'contentId.communityId': contentId.communityId,
+                'contentId.userId': contentId.userId,
+                'contentId.permlink': contentId.permlink,
+                tags: 'nsfw',
+            },
+            {
+                _id: true,
+            }
+        );
+
+        if (postModel) {
+            await PostModel.updateOne(
+                {
+                    _id: postModel._id,
+                },
+                {
+                    $addToSet: {
+                        tags: 'nsfw',
+                    },
+                }
+            );
+
+            await this.registerForkChanges({
+                type: 'update',
+                Model: PostModel,
+                documentId: postModel._id,
+                data: {
+                    $pull: { tags: 'nsfw' },
+                },
+            });
+        }
+    }
+
+    async _appendReport({ type, contentId, reporter, reason }) {
+        let Model = type === 'post' ? PostModel : CommentModel;
+
+        const previousContentModel = await Model.findOneAndUpdate(
             {
                 contentId,
             },
@@ -67,7 +116,7 @@ class Report extends Abstract {
 
         await this.registerForkChanges({
             type: 'update',
-            Model: model,
+            Model,
             documentId: previousContentModel._id,
             data: {
                 $pull: { 'reports.userIds': reporter },
@@ -93,9 +142,9 @@ class Report extends Abstract {
 
     async _createReport({ contentId, reporter, reason }) {
         const type = PostModel.findOne({ contentId }) ? 'post' : 'comment';
-        const model = type === 'post' ? PostModel : CommentModel;
+        const Model = type === 'post' ? PostModel : CommentModel;
 
-        const previousContentModel = await model.findOneAndUpdate(
+        const previousContentModel = await Model.findOneAndUpdate(
             {
                 contentId,
             },
@@ -109,7 +158,7 @@ class Report extends Abstract {
         if (previousContentModel) {
             await this.registerForkChanges({
                 type: 'update',
-                Model: model,
+                Model,
                 documentId: previousContentModel._id,
                 data: {
                     $pull: { 'reports.userIds': reporter },

@@ -7,7 +7,7 @@ const { extractContentId, isPost } = require('../../utils/content');
 
 class HashTag extends Abstract {
     async handleCreate(content, { communityId }) {
-        const model = await this._tryGetModel(content, { 'content.tags': true });
+        const model = await this._tryGetModel(content, { tags: true });
 
         if (!model) {
             return;
@@ -15,37 +15,37 @@ class HashTag extends Abstract {
 
         const newTags = await this._extractTags(content);
 
-        model.document.tags = newTags;
+        model.tags = newTags;
 
         await model.save();
         await this.registerForkChanges({
             type: 'update',
             Model: HashTagModel,
             documentId: model._id,
-            data: { $set: { 'content.tags': [] } },
+            data: { $set: { tags: [] } },
         });
 
         await this._incrementTagsScore(newTags, communityId);
     }
 
     async handleUpdate(content, { communityId }) {
-        const model = await this._tryGetModel(content, { 'content.tags': true });
+        const model = await this._tryGetModel(content, { tags: true });
 
         if (!model) {
             return;
         }
 
         const newTags = await this._extractTags(content);
-        const recentTags = model.document.tags;
+        const recentTags = model.tags;
 
-        model.document.tags = newTags;
+        model.tags = newTags;
 
         await model.save();
         await this.registerForkChanges({
             type: 'update',
             Model: HashTagModel,
             documentId: model._id,
-            data: { $set: { 'content.tags': recentTags.toObject() } },
+            data: { $set: { tags: recentTags.toObject() } },
         });
 
         await this._decrementTagsScore(recentTags, communityId);
@@ -57,13 +57,13 @@ class HashTag extends Abstract {
             return;
         }
 
-        const model = await this._tryGetModel(content, { 'content.tags': true });
+        const model = await this._tryGetModel(content, { tags: true });
 
         if (!model) {
             return;
         }
 
-        const recentTags = model.document.tags;
+        const recentTags = model.tags;
 
         await this._decrementTagsScore(recentTags, communityId);
     }

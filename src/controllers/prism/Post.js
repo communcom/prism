@@ -50,10 +50,11 @@ class Post extends Abstract {
             return;
         }
 
-        let processedContent = null;
+        let document = null;
+        let tags = [];
 
         try {
-            processedContent = await processContent(this, content, ALLOWED_POST_TYPES);
+            ({ document, tags } = await processContent(this, content, ALLOWED_POST_TYPES));
         } catch (err) {
             Logger.warn(`Invalid post content, block num: ${blockNum}`, contentId, err);
         }
@@ -63,7 +64,8 @@ class Post extends Abstract {
         const model = await PostModel.create({
             communityId,
             contentId,
-            document: processedContent,
+            document,
+            tags,
             meta: {
                 creationTime: blockTime,
             },
@@ -86,10 +88,11 @@ class Post extends Abstract {
     async handleUpdate(content, { blockNum }) {
         const contentId = extractContentId(content);
 
-        let updatedContent = null;
+        let document = null;
+        let tags = [];
 
         try {
-            updatedContent = await processContent(this, content, ALLOWED_POST_TYPES);
+            ({ document, tags } = await processContent(this, content, ALLOWED_POST_TYPES));
         } catch (err) {
             Logger.warn(`Invalid post content, block num: ${blockNum}`, contentId, err);
         }
@@ -102,7 +105,8 @@ class Post extends Abstract {
             },
             {
                 $set: {
-                    document: updatedContent,
+                    document,
+                    tags,
                 },
             }
         );
@@ -115,6 +119,7 @@ class Post extends Abstract {
                 data: {
                     $set: {
                         document: previousModel.document.toObject(),
+                        tags: previousModel.tags.toObject(),
                     },
                 },
             });
