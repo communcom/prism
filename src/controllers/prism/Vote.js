@@ -44,9 +44,11 @@ class Vote extends Abstract {
         const downVoteActions = {};
 
         if (up === 'add') {
-            upVoteActions.inc = 1;
-            upVoteActions.action = '$addToSet';
-            upVoteActions.fork = '$pull';
+            if (!hasUpVote) {
+                upVoteActions.inc = 1;
+                upVoteActions.action = '$addToSet';
+                upVoteActions.fork = '$pull';
+            }
         } else {
             if (hasUpVote) {
                 upVoteActions.inc = -1;
@@ -56,9 +58,11 @@ class Vote extends Abstract {
         }
 
         if (down === 'add') {
-            downVoteActions.inc = 1;
-            downVoteActions.action = '$addToSet';
-            downVoteActions.fork = '$pull';
+            if (!hasDownVote) {
+                downVoteActions.inc = 1;
+                downVoteActions.action = '$addToSet';
+                downVoteActions.fork = '$pull';
+            }
         } else {
             if (hasDownVote) {
                 downVoteActions.inc = -1;
@@ -71,13 +75,13 @@ class Vote extends Abstract {
 
         if (upVoteActions.action) {
             updateQuery[upVoteActions.action] = {
-                'votes.upVotes': userId,
+                'votes.upVotes': { userId },
             };
         }
 
         if (downVoteActions.action) {
             updateQuery[downVoteActions.action] = {
-                'votes.downVotes': userId,
+                'votes.downVotes': { userId },
             };
         }
 
@@ -106,10 +110,10 @@ class Vote extends Abstract {
             data: {
                 $set: {
                     [upVoteActions.fork]: {
-                        'votes.upVotes': userId,
+                        'votes.upVotes': { userId },
                     },
                     [downVoteActions.fork]: {
-                        'votes.downVotes': userId,
+                        'votes.downVotes': { userId },
                     },
                 },
                 $inc: {
@@ -125,8 +129,8 @@ class Vote extends Abstract {
 
     _hasVotes({ model, userId }) {
         return {
-            hasUpVote: model.votes.upVotes.includes(userId),
-            hasDownVote: model.votes.downVotes.includes(userId),
+            hasUpVote: model.votes.upVotes.includes({ userId }),
+            hasDownVote: model.votes.downVotes.includes({ userId }),
         };
     }
 }
