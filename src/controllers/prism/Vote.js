@@ -2,6 +2,7 @@ const Abstract = require('./Abstract');
 const PostModel = require('../../models/Post');
 const CommentModel = require('../../models/Comment');
 const contentUtils = require('../../utils/content');
+const { addFieldIsIncludes } = require('../../utils/mongodb');
 
 class Vote extends Abstract {
     async handleUpVote(content) {
@@ -29,16 +30,26 @@ class Vote extends Abstract {
 
         const { voter: userId } = content;
 
-        const previousModel = await Model.findOne({ contentId }, { votes: true }, { lean: true });
+        const [previousModel] = await Model.aggregate([
+            { $match: { contentId } },
+            { $project: { votes: 1 } },
+            addFieldIsIncludes({
+                newField: 'votes.hasUpVote',
+                arrayPath: '$votes.upVotes.userId',
+                value: userId,
+            }),
+            addFieldIsIncludes({
+                newField: 'votes.hasDownVote',
+                arrayPath: '$votes.downVotes.userId',
+                value: userId,
+            }),
+        ]);
 
         if (!previousModel) {
             return;
         }
 
-        const { hasUpVote, hasDownVote } = this._hasVotes({
-            model: previousModel,
-            userId,
-        });
+        const { hasUpVote, hasDownVote } = previousModel.votes;
 
         const upVoteActions = {};
         const downVoteActions = {};
