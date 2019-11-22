@@ -169,7 +169,33 @@ class Posts extends BasicController {
                     { communityId, communityAlias, allowNsfw, offset, limit },
                     authUserId
                 );
+            case 'voted':
+                return await this._getVotedPosts({ userId, allowNsfw, limit, offset }, authUserId);
         }
+    }
+
+    async _getVotedPosts({ userId, allowNsfw, limit, offset }, authUserId) {
+        const filter = { $match: { 'votes.upVotes.userId': userId, status: 'clean' } };
+
+        if (!allowNsfw) {
+            filter.$match.tags = { $ne: 'nsfw' };
+        }
+
+        const paging = [{ $skip: offset }, { $limit: limit }];
+        const sort = { $sort: { 'meta.creationTime': -1 } };
+
+        const items = await this._aggregate([
+            filter,
+            sort,
+            ...paging,
+            ...lookups,
+            baseProjection,
+            addUrl,
+            ...this._addCurrentUserFields(authUserId),
+            cleanUpProjection,
+        ]);
+
+        return { items };
     }
 
     async getPost(params, { userId: authUserId }) {
