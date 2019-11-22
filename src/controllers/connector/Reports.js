@@ -153,13 +153,17 @@ class Reports extends BasicController {
 
         const match = {
             $match: {
-                $or: communityIds.map(communityId => ({
-                    'contentId.communityId': communityId,
-                })),
                 'reports.reportsCount': { $gt: 0 },
                 'reports.status': status,
             },
         };
+
+        const communitiesMatch = communityIds.map(communityId => ({
+            'contentId.communityId': communityId,
+        }));
+        if (communitiesMatch.length > 0) {
+            match.$match.$or = communitiesMatch;
+        }
 
         const aggregation = [
             match,
