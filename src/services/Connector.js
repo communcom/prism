@@ -549,6 +549,9 @@ class Connector extends BasicConnector {
                             userId: {
                                 type: 'string',
                             },
+                            search: {
+                                type: 'string',
+                            },
                         },
                     },
                 },
