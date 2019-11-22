@@ -97,21 +97,11 @@ async function processContent(connector, data, allowedTypes) {
 
             doc.content = await processEmbeds(connector, doc.content);
 
-            const baseContent = [];
-            const firstImage = doc.content.find(({ type }) => type === 'image');
-
-            if (firstImage) {
-                baseContent.push({
-                    type: 'image',
-                    content: firstImage.content,
-                });
-            }
-
             return {
                 type,
                 body: {
                     ...doc,
-                    content: baseContent,
+                    content: [],
                 },
                 article: doc,
                 tags,

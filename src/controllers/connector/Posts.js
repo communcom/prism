@@ -230,7 +230,7 @@ class Posts extends BasicController {
         };
 
         if (!allowNsfw) {
-            filter.$match['document.tags'] = { $ne: 'nsfw' };
+            filter.$match.tags = { $ne: 'nsfw' };
         }
 
         const paging = [{ $skip: offset }, { $limit: limit }];
@@ -269,7 +269,7 @@ class Posts extends BasicController {
         const filter = { $match: { 'contentId.userId': userId, status: 'clean' } };
 
         if (!allowNsfw) {
-            filter.$match['document.tags'] = { $ne: 'nsfw' };
+            filter.$match.tags = { $ne: 'nsfw' };
         }
 
         const paging = [{ $skip: offset }, { $limit: limit }];
@@ -293,7 +293,7 @@ class Posts extends BasicController {
         const filter = { $match: { status: 'clean' } };
 
         if (!allowNsfw) {
-            filter.$match['document.tags'] = { $ne: 'nsfw' };
+            filter.$match.tags = { $ne: 'nsfw' };
         }
 
         if (authUserId) {
@@ -331,7 +331,7 @@ class Posts extends BasicController {
         const filter = { $match: { 'contentId.communityId': communityId, status: 'clean' } };
 
         if (!allowNsfw) {
-            filter.$match['document.tags'] = { $ne: 'nsfw' };
+            filter.$match.tags = { $ne: 'nsfw' };
         }
 
         const paging = [{ $skip: offset }, { $limit: limit }];
@@ -370,7 +370,7 @@ class Posts extends BasicController {
         }
 
         if (!allowNsfw) {
-            match.$match['document.tags'] = { $ne: 'nsfw' };
+            match.$match.tags = { $ne: 'nsfw' };
         }
 
         const sorting = {
@@ -407,7 +407,7 @@ class Posts extends BasicController {
         let addSortingField;
 
         if (!allowNsfw) {
-            filter.$match['document.tags'] = { $ne: 'nsfw' };
+            filter.$match.tags = { $ne: 'nsfw' };
         }
 
         if (communityAlias || communityId) {
