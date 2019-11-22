@@ -78,6 +78,7 @@ const fullPostProjection = {
     $project: {
         ...baseProjection.$project,
         'document.article': true,
+        tags: true,
     },
 };
 
