@@ -171,6 +171,7 @@ class Connector extends BasicConnector {
                                     'topComments',
                                     'topRewards',
                                     'hot',
+                                    'voted',
                                 ],
                                 default: 'community',
                             },
