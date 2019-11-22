@@ -97,10 +97,12 @@ class Vote extends Abstract {
         }
 
         if (upVoteActions.inc) {
+            updateQuery.$inc = updateQuery.$inc || {};
             updateQuery.$inc['votes.upCount'] = upVoteActions.inc;
         }
 
         if (downVoteActions.inc) {
+            updateQuery.$inc = updateQuery.$inc || {};
             updateQuery.$inc['votes.downCount'] = downVoteActions.inc;
         }
 
