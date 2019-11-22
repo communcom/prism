@@ -74,7 +74,9 @@ class Report extends Abstract {
                 'contentId.communityId': contentId.communityId,
                 'contentId.userId': contentId.userId,
                 'contentId.permlink': contentId.permlink,
-                tags: 'nsfw',
+                tags: {
+                    $ne: 'nsfw',
+                },
             },
             {
                 _id: true,
