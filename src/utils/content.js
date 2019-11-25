@@ -66,7 +66,10 @@ async function processContent(connector, data, allowedTypes) {
     const { type = 'basic' } = doc.attributes;
 
     if (!allowedTypes.includes(type)) {
-        return null;
+        return {
+            document: null,
+            tags,
+        };
     }
 
     switch (type) {
@@ -83,12 +86,14 @@ async function processContent(connector, data, allowedTypes) {
             }
 
             return {
-                type,
-                body: doc,
-                article: null,
+                document: {
+                    type,
+                    body: doc,
+                    article: null,
+                    metadata,
+                    textLength: countSymbols(doc),
+                },
                 tags,
-                metadata,
-                textLength: countSymbols(doc),
             };
         }
 
@@ -97,31 +102,26 @@ async function processContent(connector, data, allowedTypes) {
 
             doc.content = await processEmbeds(connector, doc.content);
 
-            const baseContent = [];
-            const firstImage = doc.content.find(({ type }) => type === 'image');
-
-            if (firstImage) {
-                baseContent.push({
-                    type: 'image',
-                    content: firstImage.content,
-                });
-            }
-
             return {
-                type,
-                body: {
-                    ...doc,
-                    content: baseContent,
+                document: {
+                    type,
+                    body: {
+                        ...doc,
+                        content: [],
+                    },
+                    article: doc,
+                    metadata,
+                    textLength: countSymbols(doc),
                 },
-                article: doc,
                 tags,
-                metadata,
-                textLength: countSymbols(doc),
             };
         }
 
         default:
-            return null;
+            return {
+                document: null,
+                tags,
+            };
     }
 }
 
@@ -186,12 +186,9 @@ async function getEmbedsInfo(connector, items) {
     await Promise.all(
         items.map(async attach => {
             try {
-                const embedData = await connector.callService('facade', 'frame.getEmbed', {
-                    auth: {},
-                    params: {
-                        type: 'oembed',
-                        url: attach.content,
-                    },
+                const embedData = await connector.callService('embedsCache', 'getEmbed', {
+                    type: 'oembed',
+                    url: attach.content,
                 });
 
                 let type = embedData.type;
@@ -208,11 +205,10 @@ async function getEmbedsInfo(connector, items) {
                     attributes: embedData,
                 });
             } catch (err) {
-                Logger.warn('frame.getEmbed failed for', attach.content, err);
+                Logger.warn('getEmbed failed for', attach.content, err);
             }
         })
     );
-
     return results;
 }
 

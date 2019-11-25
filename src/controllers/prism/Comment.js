@@ -81,25 +81,34 @@ class Comment extends Abstract {
         }
 
         try {
-            modelData.document = await processContent(this, content, ['comment']);
+            const { document } = await processContent(this, content, ['comment']);
+
+            modelData.document = document;
         } catch (err) {
             modelData.document = null;
             Logger.warn(`Invalid comment content, block num: ${blockNum}`, contentId, err);
         }
 
-        const model = new CommentModel(modelData);
+        const model = await CommentModel.create(modelData);
 
-        await model.save();
-        await this.registerForkChanges({
-            type: 'create',
-            Model: CommentModel,
-            documentId: model._id,
-        });
-        await this.updatePostCommentsCount(model, 1);
-        await this.updateUserCommentsCount(model.contentId.userId, 1);
+        const finishingPromises = [
+            this.registerForkChanges({
+                type: 'create',
+                Model: CommentModel,
+                documentId: model._id,
+            }),
+            this.updatePostCommentsCount(model, 1),
+            this.updateUserCommentsCount(model.contentId.userId, 1),
+        ];
+
         if (model.parents.comment) {
-            await this.updateChildCommentsCount(model.parents.comment, 1);
+            finishingPromises.push(this.updateChildCommentsCount(model.parents.comment, 1));
         }
+
+        Promise.all(finishingPromises).catch(error => {
+            Logger.error('Error during comment parsing:', error);
+            throw error;
+        });
     }
 
     async handleUpdate(content, { blockNum }) {
@@ -107,7 +116,9 @@ class Comment extends Abstract {
         const updateFields = {};
 
         try {
-            updateFields.document = await processContent(this, content, ['comment']);
+            const { document } = await processContent(this, content, ['comment']);
+
+            updateFields.document = document;
         } catch (err) {
             updateFields.document = null;
             Logger.warn(`Invalid comment content, block num: ${blockNum}`, contentId, err);

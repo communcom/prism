@@ -171,6 +171,7 @@ class Connector extends BasicConnector {
                                     'topComments',
                                     'topRewards',
                                     'hot',
+                                    'voted',
                                 ],
                                 default: 'community',
                             },
@@ -549,6 +550,9 @@ class Connector extends BasicConnector {
                             userId: {
                                 type: 'string',
                             },
+                            search: {
+                                type: 'string',
+                            },
                         },
                     },
                 },
@@ -702,6 +706,7 @@ class Connector extends BasicConnector {
             },
             requiredClients: {
                 facade: env.GLS_FACADE_CONNECT,
+                embedsCache: env.GLS_EMBEDS_CACHE_CONNECT,
                 meta: env.GLS_META_CONNECT,
             },
         });

@@ -35,13 +35,13 @@ module.exports = MongoDB.makeModel(
             metadata: {
                 type: Object,
             },
-            tags: {
-                type: [String],
-            },
             textLength: {
                 type: Number,
                 default: 0,
             },
+        },
+        tags: {
+            type: [String],
         },
         votes: {
             upVotes: {
@@ -142,7 +142,7 @@ module.exports = MongoDB.makeModel(
             {
                 fields: {
                     'contentId.userId': 1,
-                    'document.tags': 1,
+                    tags: 1,
                     'meta.creationTime': 1,
                 },
             },

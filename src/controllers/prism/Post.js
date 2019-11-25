@@ -37,7 +37,7 @@ class Post extends Abstract {
         }
     }
 
-    async handleCreate(content, { blockNum, blockTime }) {
+    async handleCreate(content, meta) {
         const contentId = extractContentId(content);
         const { communityId, userId, permlink } = contentId;
 
@@ -50,22 +50,17 @@ class Post extends Abstract {
             return;
         }
 
-        let processedContent = null;
-
-        try {
-            processedContent = await processContent(this, content, ALLOWED_POST_TYPES);
-        } catch (err) {
-            Logger.warn(`Invalid post content, block num: ${blockNum}`, contentId, err);
-        }
+        const { document, tags } = await this._processPost(contentId, content, meta);
 
         const tracery = calculateTracery(userId, permlink);
 
         const model = await PostModel.create({
             communityId,
             contentId,
-            document: processedContent,
+            document,
+            tags,
             meta: {
-                creationTime: blockTime,
+                creationTime: meta.blockTime,
             },
             payout: {
                 meta: {
@@ -83,16 +78,10 @@ class Post extends Abstract {
         await this.updateCommunityPostsCount(contentId.communityId, 1);
     }
 
-    async handleUpdate(content, { blockNum }) {
+    async handleUpdate(content, meta) {
         const contentId = extractContentId(content);
 
-        let updatedContent = null;
-
-        try {
-            updatedContent = await processContent(this, content, ALLOWED_POST_TYPES);
-        } catch (err) {
-            Logger.warn(`Invalid post content, block num: ${blockNum}`, contentId, err);
-        }
+        const { document, tags } = await this._processPost(contentId, content, meta);
 
         const previousModel = await PostModel.findOneAndUpdate(
             {
@@ -102,7 +91,8 @@ class Post extends Abstract {
             },
             {
                 $set: {
-                    document: updatedContent,
+                    document,
+                    tags,
                 },
             }
         );
@@ -115,10 +105,34 @@ class Post extends Abstract {
                 data: {
                     $set: {
                         document: previousModel.document.toObject(),
+                        tags: previousModel.tags.toObject(),
                     },
                 },
             });
         }
+    }
+
+    async _processPost(contentId, content, meta) {
+        const { communityId } = contentId;
+        let document = null;
+        let tags = [];
+
+        try {
+            ({ document, tags } = await processContent(this, content, ALLOWED_POST_TYPES));
+        } catch (err) {
+            Logger.warn(`Invalid post content, block num: ${meta.blockNum}`, contentId, err);
+        }
+
+        if (communityId === 'NSFW' || communityId === 'PORN') {
+            if (!tags.includes('nsfw')) {
+                tags.unshift('nsfw');
+            }
+        }
+
+        return {
+            document,
+            tags,
+        };
     }
 
     async handleDelete(content) {

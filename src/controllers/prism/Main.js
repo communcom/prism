@@ -1,21 +1,15 @@
-const core = require('cyberway-core-service');
-const { Logger, metrics } = core.utils;
 const Post = require('./Post');
 const Comment = require('./Comment');
 const Profile = require('./Profile');
 const Report = require('./Report');
 const Vote = require('./Vote');
 const Subscribe = require('./Subscribe');
-const HashTag = require('./HashTag');
 const Leader = require('./Leader');
 const LeaderProposals = require('./LeaderProposals');
 const Community = require('./Community');
-const CommunitySettings = require('./CommunitySettings');
 const CommunityPoints = require('./CommunityPoints');
-const Gallery = require('./Gallery');
 const { isPost } = require('../../utils/content');
-
-const ACTION_PROCESSING_WARNING_LIMIT = 1000;
+const hny = require('../../utils/libhoney');
 
 const ALLOWED_CONTRACTS = [
     'cyber',
@@ -36,52 +30,84 @@ class Main {
         this._vote = new Vote({ connector, forkService });
         this._report = new Report({ connector, forkService });
         this._subscribe = new Subscribe({ connector, forkService });
-        // this._hashTag = new HashTag({ connector, forkService });
         this._leader = new Leader({ connector, forkService });
         this._leaderProposals = new LeaderProposals({ connector, forkService });
-        this._communitySettings = new CommunitySettings({ connector, forkService });
         this._communityPoints = new CommunityPoints({ connector, forkService });
         this._community = new Community({ connector, forkService });
-        this._gallery = new Gallery({ connector, forkService });
+
+        this._clearActions();
     }
 
     async disperse({ transactions, blockNum, blockTime }) {
-        const end = metrics.startTimer('block_dispersing_time');
+        const newBlockEvent = hny.newEvent();
+        newBlockEvent.addField('blockNum', blockNum);
+        newBlockEvent.send();
 
-        for (const transaction of transactions) {
-            let previous;
+        const startTime = Date.now();
+        const blockHandleHoneyEvent = hny.newEvent();
 
-            if (!transaction || !transaction.actions) {
-                return;
-            }
+        blockHandleHoneyEvent.metadata = { blockNum, blockTime };
+        blockHandleHoneyEvent.addField('startTime', startTime);
 
-            for (const action of transaction.actions) {
-                const start = Date.now();
-                await this._disperseAction(action, previous, { blockNum, blockTime });
-                const delta = Date.now() - start;
-
-                if (delta > ACTION_PROCESSING_WARNING_LIMIT) {
-                    Logger.warn(
-                        `Slow transaction action processing (>${ACTION_PROCESSING_WARNING_LIMIT}ms),`,
-                        `blockNum: ${blockNum}, trxId: ${transaction.id},`,
-                        `action: ${action.code}->${action.action}`
-                    );
+        for (let { actions } of transactions) {
+            actions = actions.filter(action => {
+                if (
+                    ALLOWED_CONTRACTS.includes(action.code) &&
+                    ALLOWED_CONTRACTS.includes(action.receiver)
+                ) {
+                    return action;
                 }
-                previous = action;
-            }
+            });
+            this.actions.push(...actions);
         }
 
-        end();
+        for (const action of this.actions) {
+            await this._disperseAction(action, { blockNum, blockTime });
+        }
+
+        const flow = {
+            usernamesPoints: [...this._newUsernameActions, ...this._pointActions],
+            communityAndSocial: [...this._communityCreateActions, ...this._socialActions],
+            postsCommunitiesCtrl: [
+                ...this._postCreateActions,
+                ...this._communityActions,
+                ...this._ctrlActions,
+            ],
+            comments: [...this._commentCreateActions],
+            gallery: [...this._galleryActions],
+        };
+
+        for (const stageKey of Object.keys(flow)) {
+            const start = Date.now();
+            await Promise.all(flow[stageKey].map(wrappedAction => wrappedAction()));
+
+            const delta = Date.now() - start;
+            const newBlockEvent = hny.newEvent();
+            newBlockEvent.addField('stageKey', stageKey);
+            newBlockEvent.addField('stageDelta', delta);
+            newBlockEvent.send();
+        }
+
+        const votePromises = [];
+        for (const voterActions of Object.values(this._voteActions)) {
+            votePromises.push(async () => {
+                for (const action of voterActions) {
+                    await action();
+                }
+            });
+        }
+
+        await Promise.all(votePromises.map(wrappedAction => wrappedAction()));
+
+        this._clearActions();
+
+        const endTime = Date.now();
+        blockHandleHoneyEvent.addField('endTime', endTime);
+        blockHandleHoneyEvent.addField('deltaTime', endTime - startTime);
+        blockHandleHoneyEvent.send();
     }
 
-    async _disperseAction(action, previous = { args: {} }, { blockNum, blockTime }) {
-        if (
-            !ALLOWED_CONTRACTS.includes(action.code) ||
-            !ALLOWED_CONTRACTS.includes(action.receiver)
-        ) {
-            return;
-        }
-
+    async _disperseAction(action, { blockNum, blockTime }) {
         const pathName = [action.code, action.action].join('->');
         const communityId = this._extractCommunityId(action);
         const actionArgs = action.args;
@@ -96,63 +122,87 @@ class Main {
 
         switch (pathName) {
             case 'c.list->create':
-                await this._community.handleCreate(actionArgs, meta);
+                this._communityCreateActions.push(() => {
+                    return this._community.handleCreate(actionArgs, meta);
+                });
                 break;
 
             case 'c.list->setinfo':
-                await this._community.handleAddInfo(actionArgs);
+                this._communityActions.push(() => {
+                    return this._community.handleAddInfo(actionArgs);
+                });
                 break;
 
             case 'c.list->follow':
-                await this._community.handleFollowUnfollow(actionArgs, 'follow');
+                this._communityActions.push(() => {
+                    return this._community.handleFollowUnfollow(actionArgs, 'follow');
+                });
                 break;
 
             case 'c.list->unfollow':
-                await this._community.handleFollowUnfollow(actionArgs, 'unfollow');
+                this._communityActions.push(() => {
+                    return this._community.handleFollowUnfollow(actionArgs, 'unfollow');
+                });
                 break;
 
             case 'c.list->hide':
                 // add community into user's blacklist
-                await this._community.handleHideUnhide(actionArgs, 'hide');
+                this._communityActions.push(() => {
+                    return this._community.handleHideUnhide(actionArgs, 'hide');
+                });
                 break;
 
             case 'c.list->unhide':
                 // remove community from user's blacklist
-                await this._community.handleHideUnhide(actionArgs, 'hide');
+                this._communityActions.push(() => {
+                    return this._community.handleHideUnhide(actionArgs, 'hide');
+                });
                 break;
 
             case 'c.list->setappparams':
                 // community settings
                 // leaders of commun can change them
-                await this._community.handleSettings(actionArgs);
+                this._communityActions.push(() => {
+                    return this._community.handleSettings(actionArgs);
+                });
                 break;
 
             case 'c.list->setsysparams':
                 // community settings
                 // can be changed by commun.com
-                await this._community.handleSettings(actionArgs);
+                this._communityActions.push(() => {
+                    return this._community.handleSettings(actionArgs);
+                });
 
                 break;
 
             case 'c.list->setparams':
                 // community settings
                 // leaders can change these
-                await this._community.handleSettings(actionArgs);
+                this._communityActions.push(() => {
+                    return this._community.handleSettings(actionArgs);
+                });
 
                 break;
 
             case 'c.list->ban':
                 // ban user in community
-                await this._community.handleBanUnban(actionArgs, 'ban');
+                this._communityActions.push(() => {
+                    return this._community.handleBanUnban(actionArgs, 'ban');
+                });
                 break;
 
             case 'c.list->unban':
                 // unban user in community
-                await this._community.handleBanUnban(actionArgs, 'unban');
+                this._communityActions.push(() => {
+                    return this._community.handleBanUnban(actionArgs, 'unban');
+                });
                 break;
 
             case `cyber.domain->newusername`:
-                await this._profile.handleUsername(actionArgs, meta);
+                this._newUsernameActions.push(() => {
+                    return this._profile.handleUsername(actionArgs, meta);
+                });
                 break;
 
             // В данный момент не обрабатывается
@@ -162,9 +212,13 @@ class Main {
 
             case 'c.gallery->create':
                 if (actionArgs.parent_id && actionArgs.parent_id.permlink) {
-                    await this._comment.handleCreate(actionArgs, meta);
+                    this._commentCreateActions.push(() => {
+                        return this._comment.handleCreate(actionArgs, meta);
+                    });
                 } else {
-                    await this._post.handleCreate(actionArgs, meta);
+                    this._postCreateActions.push(() => {
+                        return this._post.handleCreate(actionArgs, meta);
+                    });
                     // Временно не обрабатываем
                     // await this._hashTag.handleCreate(actionArgs, meta);
                 }
@@ -172,46 +226,67 @@ class Main {
 
             case 'c.gallery->update':
                 if (await isPost(actionArgs)) {
-                    await this._post.handleUpdate(actionArgs, meta);
+                    this._galleryActions.push(() => {
+                        return this._post.handleUpdate(actionArgs, meta);
+                    });
                     // Временно не обрабатываем
                     // await this._hashTag.handleUpdate(actionArgs, meta);
                 } else {
-                    await this._comment.handleUpdate(actionArgs, meta);
+                    this._galleryActions.push(() => {
+                        return this._comment.handleUpdate(actionArgs, meta);
+                    });
                 }
                 break;
 
             case 'c.gallery->remove':
                 // Warning - do not change ordering
                 // await this._hashTag.handleDelete(actionArgs, meta);
-                await this._post.handleDelete(actionArgs, meta);
-                await this._comment.handleDelete(actionArgs, meta);
+                this._galleryActions.push(() => {
+                    return this._post.handleDelete(actionArgs, meta);
+                });
+                this._galleryActions.push(() => {
+                    return this._comment.handleDelete(actionArgs, meta);
+                });
                 break;
 
             case 'c.gallery->report':
-                await this._report.handleReport(actionArgs);
-                break;
-
-            case `${communityId}.social->updatemeta`:
-                await this._profile.handleMeta(actionArgs, meta);
+                this._galleryActions.push(() => {
+                    return this._report.handleReport(actionArgs);
+                });
                 break;
 
             case 'c.gallery->upvote':
-                await this._vote.handleUpVote(actionArgs, meta);
+                this._voteActions[actionArgs.voter] = this._voteActions[actionArgs.voter] || [];
+                this._voteActions[actionArgs.voter].push(() => {
+                    return this._vote.handleUpVote(actionArgs, meta);
+                });
                 break;
 
             case 'c.gallery->downvote':
-                await this._vote.handleDownVote(actionArgs, meta);
+                this._voteActions[actionArgs.voter] = this._voteActions[actionArgs.voter] || [];
+                this._voteActions[actionArgs.voter].push(() => {
+                    return this._vote.handleDownVote(actionArgs, meta);
+                });
                 break;
 
             case 'c.gallery->unvote':
-                await this._vote.handleUnVote(actionArgs, meta);
+                this._voteActions[actionArgs.voter] = this._voteActions[actionArgs.voter] || [];
+                this._voteActions[actionArgs.voter].push(() => {
+                    return this._vote.handleUnVote(actionArgs, meta);
+                });
                 break;
 
             case 'c.gallery->ban':
                 // message payout ban
-                await this._report.handleBan(actionArgs);
-                await this._comment.handleBan(actionArgs);
-                await this._post.handleBan(actionArgs);
+                this._galleryActions.push(() => {
+                    return this._report.handleBan(actionArgs);
+                });
+                this._galleryActions.push(() => {
+                    return this._comment.handleBan(actionArgs);
+                });
+                this._galleryActions.push(() => {
+                    return this._post.handleBan(actionArgs);
+                });
                 break;
 
             case 'c.gallery->mosaicchop':
@@ -238,58 +313,54 @@ class Main {
                 // todo: handle this
                 break;
 
+            case 'c.social->updatemeta':
+                this._socialActions.push(() => {
+                    return this._profile.handleMeta(actionArgs, meta);
+                });
+                break;
+
             case 'c.social->pin':
-                await this._subscribe.pin(actionArgs, meta);
+                this._socialActions.push(() => {
+                    return this._subscribe.pin(actionArgs, meta);
+                });
                 break;
 
             case 'c.social->unpin':
-                await this._subscribe.unpin(actionArgs, meta);
+                this._socialActions.push(() => {
+                    return this._subscribe.unpin(actionArgs);
+                });
                 break;
 
             case 'c.social->block':
-                await this._subscribe.block(actionArgs);
+                this._socialActions.push(() => {
+                    return this._subscribe.block(actionArgs);
+                });
                 break;
 
             case 'c.social->unblock':
-                await this._subscribe.unblock(actionArgs);
+                this._socialActions.push(() => {
+                    return this._subscribe.unblock(actionArgs);
+                });
                 break;
 
-            // case `${communityId}.publish->erasereblog`:
-            //     await this._post.handleRemoveRepost(actionArgs, meta);
-            //     break;
+            case 'c.point->create':
+                this._pointActions.push(() => {
+                    return this._communityPoints.createPoint(actionArgs, meta);
+                });
+                break;
 
             default:
             // unknown action, do nothing
         }
 
         switch (action.code) {
-            case 'c.point':
-                await this._processPoint(action.action, actionArgs, meta);
-                break;
-
             case 'c.ctrl':
-                await this._leader.processAction(action.action, actionArgs, meta);
-                await this._leaderProposals.processAction(action.action, actionArgs, meta);
-                break;
-        }
-
-        for (const event of events) {
-            const path = [event.code, event.event].join('->');
-            const eventArgs = event.args;
-
-            switch (path) {
-                case 'c.gallery->mosaicstate':
-                    // info about all rewards for post in sum
-                    await this._gallery.handleMosaicState(eventArgs);
-                    break;
-            }
-        }
-    }
-
-    async _processPoint(action, params, meta) {
-        switch (action) {
-            case 'create':
-                await this._communityPoints.createPoint(params);
+                this._ctrlActions.push(() => {
+                    return this._leader.processAction(action.action, actionArgs, meta);
+                });
+                this._ctrlActions.push(() => {
+                    return this._leaderProposals.processAction(action.action, actionArgs, meta);
+                });
                 break;
         }
     }
@@ -298,6 +369,25 @@ class Main {
         const calledCodeName = action.code;
 
         return calledCodeName.split('.')[0];
+    }
+
+    _clearActions() {
+        this.actions = [];
+
+        this._newUsernameActions = [];
+        this._pointActions = [];
+
+        this._communityCreateActions = [];
+        this._socialActions = [];
+
+        this._postCreateActions = [];
+        this._communityActions = [];
+        this._ctrlActions = [];
+
+        this._commentCreateActions = [];
+
+        this._galleryActions = [];
+        this._voteActions = {};
     }
 }
 

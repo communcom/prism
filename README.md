@@ -95,6 +95,7 @@ getPosts:                          // Получение ленты по опр�
         | topComments              // Лента топ постов по количеству комментариев
         | topRewards               // Лента топ постов по размеру наград
         | hot                      // Лента постов, отсортированных по убыванию hot-рейтинга (за 24 часа)
+        | voted                    // Лента постов, за которые пользователь проголосовал лайком
         ]
     sortBy <string>('time')        // Тип ленты
         [
@@ -216,6 +217,11 @@ getProposals:                    // Получить список предлаг
     limit <number>(10)           // Количество элементов
 
 getCommunities:
+    type <string>(all)
+            all                  // Все сообщества
+        |   user                 // Сообщества пользователя
+    userId <string/null>         // userId пользователя
+    search <string/null>         // Поиск по имени сообщества
     offset <number>              // Сдвиг пагинации
     limit <number>               // Количество элементов
 
@@ -691,7 +697,10 @@ waitForTransaction               // Дождаться и получить от�
         "coverUrl": "https://elearning.unipd.it/cur/pluginfile.php/35531/course/overviewfiles/matrix_animated_60.gif",
         "description": "WREK comunity description",
         "language": "eng",
-        "rules": "WREK comunity rules ",
+        "rules": [
+            {"id": "1", "title": "rule1", "text": "fasdf"},
+            {"id": "2", "title": "rule2", "text": "fasdfasdf"}
+        ],
         "isSubscribed": true,
         "isBlocked": false,
         "postsCount": 1,
