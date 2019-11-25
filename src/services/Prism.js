@@ -8,11 +8,7 @@ const MainPrismController = require('../controllers/prism/Main');
 const GenesisController = require('../controllers/prism/GenesisContent');
 const ServiceMetaModel = require('../models/ServiceMeta');
 
-const Libhoney = require('libhoney');
-const hny = new Libhoney({
-    writeKey: env.GLS_HONEYCOMB_KEY,
-    dataset: env.GLS_HONEYCOMB_DATASET,
-});
+const hny = require('../utils/libhoney');
 
 class Prism extends BasicService {
     constructor(...args) {
@@ -117,65 +113,14 @@ class Prism extends BasicService {
 
     async _handleBlock(block) {
         try {
-            // this._blocksHandled = this._blocksHandled || block.blockNum;
-            // this._prevLoggedStatsBlockNum = this._prevLoggedStatsBlockNum || block.blockNum;
-            // const start = Date.now();
             await this._forkService.initBlock(block);
             await this._mainPrismController.disperse(block);
 
             this._emitHandled(block);
-            // const delta = Date.now() - start;
-            //
-            // this._blocksHandled++;
-            // this._totalHandleTime += delta;
-            // this._totalTrxAmount += block.transactions.length;
 
             const blockHandleHoneyEvent = hny.newEvent();
             blockHandleHoneyEvent.addField('transactionsCount', block.transactions.length);
             blockHandleHoneyEvent.send();
-
-            // if (this._blocksHandled - this._prevLoggedStatsBlockNum >= 250) {
-            //     const now = Date.now();
-            //     const totalTime = now - this._totalTimeStart;
-            //     this._totalTimeStart = now;
-            //     console.log(
-            //         'Stats for block',
-            //         this._blocksHandled,
-            //         ':\n',
-            //         totalTime,
-            //         'ms taken',
-            //         totalTime - this._totalHandleTime,
-            //         'ms idle',
-            //         '\n',
-            //         this._totalHandleTime.toFixed(0),
-            //         'ms',
-            //         '\n',
-            //         this._totalTrxAmount.toFixed(0),
-            //         'trx',
-            //         (this._totalHandleTime / 250).toFixed(0),
-            //         'ms/block',
-            //         '\n',
-            //         (this._totalTrxAmount / 250).toFixed(0),
-            //         'trx/block'
-            //     );
-            //     this._prevLoggedStatsBlockNum = this._blocksHandled;
-            //     this._totalHandleTime = 0;
-            //     this._totalTrxAmount = 0;
-            // }
-            //
-            // if (delta > 1500) {
-            //     console.warn('WAKE UP NEO, YOU FUCKED UP', block.blockNum, 'delta', delta);
-            //     const actions = {};
-            //
-            //     for (const transaction of block.transactions) {
-            //         for (const action of transaction.actions) {
-            //             const name = `${action.code}->${action.action}`;
-            //             actions[name] = actions[name] ? ++actions[name] : 1;
-            //         }
-            //     }
-            //
-            //     console.log(JSON.stringify(actions, null, 4));
-            // }
         } catch (error) {
             Logger.error(`Cant disperse block, num: ${block.blockNum}, id: ${block.id}`, error);
             process.exit(1);

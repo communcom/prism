@@ -1,6 +1,5 @@
 const core = require('cyberway-core-service');
 const BasicMain = core.services.BasicMain;
-const { Logger } = core.utils;
 const env = require('./data/env');
 const Prism = require('./services/Prism');
 const Connector = require('./services/Connector');
@@ -8,7 +7,6 @@ const SearchSync = require('./services/SearchSync');
 const Fork = require('./services/Fork');
 const Hot = require('./services/Hot');
 const ServiceMetaModel = require('./models/ServiceMeta');
-const Post = require('./models/Post');
 
 class Main extends BasicMain {
     constructor() {

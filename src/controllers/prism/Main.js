@@ -1,5 +1,3 @@
-const core = require('cyberway-core-service');
-const { Logger, metrics } = core.utils;
 const Post = require('./Post');
 const Comment = require('./Comment');
 const Profile = require('./Profile');
@@ -11,13 +9,7 @@ const LeaderProposals = require('./LeaderProposals');
 const Community = require('./Community');
 const CommunityPoints = require('./CommunityPoints');
 const { isPost } = require('../../utils/content');
-const env = require('../../data/env');
-
-const Libhoney = require('libhoney');
-const hny = new Libhoney({
-    writeKey: env.GLS_HONEYCOMB_KEY,
-    dataset: env.GLS_HONEYCOMB_DATASET,
-});
+const hny = require('../../utils/libhoney');
 
 const ALLOWED_CONTRACTS = [
     'cyber',
@@ -43,26 +35,12 @@ class Main {
         this._communityPoints = new CommunityPoints({ connector, forkService });
         this._community = new Community({ connector, forkService });
 
-        this.actions = [];
-
-        this._newUsernameActions = [];
-        this._pointActions = [];
-
-        this._communityCreateActions = [];
-        this._socialActions = [];
-
-        this._postCreateActions = [];
-        this._communityActions = [];
-        this._ctrlActions = [];
-
-        this._commentCreateActions = [];
-
-        this._galleryActions = [];
-        this._voteActions = {};
+        this._clearActions();
     }
 
     async disperse({ transactions, blockNum, blockTime }) {
-        const newBlockEvent = hny.newEvent().addField('blockNum', blockNum);
+        const newBlockEvent = hny.newEvent();
+        newBlockEvent.addField('blockNum', blockNum);
         newBlockEvent.send();
 
         const startTime = Date.now();
@@ -121,22 +99,7 @@ class Main {
 
         await Promise.all(votePromises.map(wrappedAction => wrappedAction()));
 
-        this._newUsernameActions = [];
-        this._pointActions = [];
-
-        this._communityCreateActions = [];
-        this._socialActions = [];
-
-        this._postCreateActions = [];
-        this._communityActions = [];
-        this._ctrlActions = [];
-
-        this._commentCreateActions = [];
-
-        this._galleryActions = [];
-        this._voteActions = {};
-
-        this.actions = [];
+        this._clearActions();
 
         const endTime = Date.now();
         blockHandleHoneyEvent.addField('endTime', endTime);
@@ -386,21 +349,11 @@ class Main {
                 });
                 break;
 
-            // case `${communityId}.publish->erasereblog`:
-            //     await this._post.handleRemoveRepost(actionArgs, meta);
-            //     break;
-
             default:
             // unknown action, do nothing
         }
 
         switch (action.code) {
-            // case 'c.point':
-            //     this._pointActions.push(
-            //         ()=>{this._processPoint, action.action(actionArgs, meta)}
-            //     );
-            //     break;
-
             case 'c.ctrl':
                 this._ctrlActions.push(() => {
                     return this._leader.processAction(action.action, actionArgs, meta);
@@ -416,6 +369,25 @@ class Main {
         const calledCodeName = action.code;
 
         return calledCodeName.split('.')[0];
+    }
+
+    _clearActions() {
+        this.actions = [];
+
+        this._newUsernameActions = [];
+        this._pointActions = [];
+
+        this._communityCreateActions = [];
+        this._socialActions = [];
+
+        this._postCreateActions = [];
+        this._communityActions = [];
+        this._ctrlActions = [];
+
+        this._commentCreateActions = [];
+
+        this._galleryActions = [];
+        this._voteActions = {};
     }
 }
 
