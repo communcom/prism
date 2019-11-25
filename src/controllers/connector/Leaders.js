@@ -175,8 +175,7 @@ class Leaders extends BasicController {
             {
                 $match: {
                     userId,
-                    hasRating: true,
-                    isActive: true,
+                    inTop: true,
                 },
             },
             {
