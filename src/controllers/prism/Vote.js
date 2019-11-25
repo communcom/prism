@@ -135,13 +135,6 @@ class Vote extends Abstract {
             throw error;
         });
     }
-
-    _hasVotes({ model, userId }) {
-        return {
-            hasUpVote: model.votes.upVotes.includes({ userId }),
-            hasDownVote: model.votes.downVotes.includes({ userId }),
-        };
-    }
 }
 
 module.exports = Vote;

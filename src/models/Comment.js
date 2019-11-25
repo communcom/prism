@@ -149,14 +149,6 @@ module.exports = MongoDB.makeModel(
                     unique: true,
                 },
             },
-            {
-                fields: {
-                    contentId: 1,
-                },
-                options: {
-                    unique: true,
-                },
-            },
             // Post comments, sorted by time
             {
                 fields: {

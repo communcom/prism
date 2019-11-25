@@ -15,7 +15,11 @@ class Report extends Abstract {
         };
 
         const previousReportModel = await ReportModel.findOneAndUpdate(
-            { contentId },
+            {
+                'contentId.communityId': contentId.communityId,
+                'contentId.permlink': contentId.permlink,
+                'contentId.userId': contentId.userId,
+            },
             { $set: { status: 'closed' } }
         );
 
@@ -43,7 +47,11 @@ class Report extends Abstract {
 
         await this._checkNsftReport(contentId, reason);
 
-        const oldReportObject = await ReportModel.findOne({ contentId });
+        const oldReportObject = await ReportModel.findOne({
+            'contentId.communityId': contentId.communityId,
+            'contentId.permlink': contentId.permlink,
+            'contentId.userId': contentId.userId,
+        });
 
         if (oldReportObject) {
             return await this._appendReport({
@@ -111,7 +119,9 @@ class Report extends Abstract {
 
         const previousContentModel = await Model.findOneAndUpdate(
             {
-                contentId,
+                'contentId.communityId': contentId.communityId,
+                'contentId.permlink': contentId.permlink,
+                'contentId.userId': contentId.userId,
             },
             { $addToSet: { 'reports.userIds': reporter }, $inc: { 'reports.reportsCount': 1 } }
         );
@@ -127,7 +137,11 @@ class Report extends Abstract {
         });
 
         const previousReportModel = await ReportModel.findOneAndUpdate(
-            { contentId },
+            {
+                'contentId.communityId': contentId.communityId,
+                'contentId.permlink': contentId.permlink,
+                'contentId.userId': contentId.userId,
+            },
             { $addToSet: { reports: { reporter, reason } }, $inc: { reportsCount: 1 } }
         );
 
@@ -148,7 +162,9 @@ class Report extends Abstract {
 
         const previousContentModel = await Model.findOneAndUpdate(
             {
-                contentId,
+                'contentId.communityId': contentId.communityId,
+                'contentId.permlink': contentId.permlink,
+                'contentId.userId': contentId.userId,
             },
             {
                 $addToSet: { 'reports.userIds': reporter },
