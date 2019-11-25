@@ -321,12 +321,11 @@ class Profile extends BasicController {
                     username: '$subscriber.username',
                     avatarUrl: '$subscriber.avatarUrl',
                     isSubscribed: '$isSubscribed',
-                    subscribersCount: '$subscriber.subscribers.usersCount',
-                    postsCount: '$subscriber.stats.postsCount',
+                    subscribersCount: '$subscriber.subscribersCount',
+                    postsCount: '$subscriber.postsCount',
                 },
             },
         });
-
         const items = await ProfileModel.aggregate(aggregation);
 
         return { items };
@@ -555,7 +554,6 @@ class Profile extends BasicController {
         }
 
         aggregation.push(finalRoot);
-
         return { items: await ProfileModel.aggregate(aggregation) };
     }
 
