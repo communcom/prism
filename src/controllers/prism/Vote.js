@@ -1,8 +1,8 @@
-const lodash = require('lodash');
 const Abstract = require('./Abstract');
 const PostModel = require('../../models/Post');
 const CommentModel = require('../../models/Comment');
-const { extractContentId } = require('../../utils/content');
+const contentUtils = require('../../utils/content');
+const { addFieldIsIncludes } = require('../../utils/mongodb');
 
 class Vote extends Abstract {
     async handleUpVote(content) {
@@ -18,91 +18,121 @@ class Vote extends Abstract {
     }
 
     async _handle(content, { up, down }) {
-        const model = await this._getModel(content);
+        const isPost = await contentUtils.isPost(content);
+        const contentId = contentUtils.extractContentId(content);
 
-        if (!model) {
-            return;
+        let Model;
+        if (isPost) {
+            Model = PostModel;
+        } else {
+            Model = CommentModel;
         }
 
-        const vote = {
-            userId: content.voter,
-            weight: content.weight,
-        };
+        const { voter: userId } = content;
 
-        await this._manageVotes({ model, vote, type: 'up', action: up });
-        await this._manageVotes({ model, vote, type: 'down', action: down });
-    }
-
-    async _getModel(content) {
-        const contentId = extractContentId(content);
-
-        const query = {
-            'contentId.userId': contentId.userId,
-            'contentId.permlink': contentId.permlink,
-            'contentId.communityId': contentId.communityId,
-        };
-
-        const post = await PostModel.findOne(query, { _id: true });
-
-        if (post) {
-            return post;
-        }
-
-        const comment = await CommentModel.findOne(query, { _id: true });
-
-        if (comment) {
-            return comment;
-        }
-
-        return null;
-    }
-
-    async _manageVotes({ model, vote, type, action }) {
-        const [addAction, removeAction, increment] = this._getArrayEntityCommands(action);
-        const Model = model.constructor;
-        const votesArrayPath = `votes.${type}Votes`;
-        const votesCountPath = `votes.${type}Count`;
-        let updateVoteObject = vote;
-
-        if (addAction === '$pull') {
-            updateVoteObject = { userId: vote.userId };
-        }
-
-        const previousModel = await Model.findOneAndUpdate(
-            { _id: model._id },
-            { [addAction]: { [votesArrayPath]: updateVoteObject } }
-        );
+        const [previousModel] = await Model.aggregate([
+            { $match: { contentId } },
+            { $project: { votes: 1 } },
+            addFieldIsIncludes({
+                newField: 'votes.hasUpVote',
+                arrayPath: '$votes.upVotes.userId',
+                value: userId,
+            }),
+            addFieldIsIncludes({
+                newField: 'votes.hasDownVote',
+                arrayPath: '$votes.downVotes.userId',
+                value: userId,
+            }),
+        ]);
 
         if (!previousModel) {
             return;
         }
 
-        const previousVotes = lodash.get(previousModel, votesArrayPath);
-        const inPreviousVotes = previousVotes.some(recentVote => recentVote.userId === vote.userId);
+        const { hasUpVote, hasDownVote } = previousModel.votes;
 
-        if (
-            (addAction === '$addToSet' && inPreviousVotes) ||
-            (addAction === '$pull' && !inPreviousVotes)
-        ) {
+        const upVoteActions = {};
+        const downVoteActions = {};
+
+        if (up === 'add') {
+            if (!hasUpVote) {
+                upVoteActions.inc = 1;
+                upVoteActions.action = '$addToSet';
+                upVoteActions.fork = '$pull';
+            }
+        } else {
+            if (hasUpVote) {
+                upVoteActions.inc = -1;
+                upVoteActions.action = '$pull';
+                upVoteActions.fork = '$addToSet';
+            }
+        }
+
+        if (down === 'add') {
+            if (!hasDownVote) {
+                downVoteActions.inc = 1;
+                downVoteActions.action = '$addToSet';
+                downVoteActions.fork = '$pull';
+            }
+        } else {
+            if (hasDownVote) {
+                downVoteActions.inc = -1;
+                downVoteActions.action = '$pull';
+                downVoteActions.fork = '$addToSet';
+            }
+        }
+
+        const updateQuery = {};
+
+        if (upVoteActions.action) {
+            updateQuery[upVoteActions.action] = {
+                'votes.upVotes': { userId },
+            };
+        }
+
+        if (downVoteActions.action) {
+            updateQuery[downVoteActions.action] = {
+                'votes.downVotes': { userId },
+            };
+        }
+
+        if (upVoteActions.inc) {
+            updateQuery.$inc = updateQuery.$inc || {};
+            updateQuery.$inc['votes.upCount'] = upVoteActions.inc;
+        }
+
+        if (downVoteActions.inc) {
+            updateQuery.$inc = updateQuery.$inc || {};
+            updateQuery.$inc['votes.downCount'] = downVoteActions.inc;
+        }
+
+        await Model.update({ contentId }, updateQuery);
+
+        if (!previousModel) {
             return;
         }
 
-        await Model.updateOne({ _id: model._id }, { $inc: { [votesCountPath]: increment } });
-
-        let removeVoteObject = vote;
-
-        if (removeAction === '$pull') {
-            removeVoteObject = { userId: vote.userId };
-        }
-
-        await this.registerForkChanges({
+        this.registerForkChanges({
             type: 'update',
             Model,
-            documentId: previousVotes._id,
+            documentId: previousModel._id,
             data: {
-                [removeAction]: { [votesArrayPath]: removeVoteObject },
-                $inc: { [votesCountPath]: -increment },
+                $set: {
+                    [upVoteActions.fork]: {
+                        'votes.upVotes': { userId },
+                    },
+                    [downVoteActions.fork]: {
+                        'votes.downVotes': { userId },
+                    },
+                },
+                $inc: {
+                    'votes.upCount': -upVoteActions.inc,
+                    'votes.downCount': -downVoteActions.inc,
+                },
             },
+        }).catch(error => {
+            console.error('Error during fork register', error);
+            throw error;
         });
     }
 }

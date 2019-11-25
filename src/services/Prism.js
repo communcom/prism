@@ -5,8 +5,9 @@ const { Logger, GenesisProcessor } = core.utils;
 
 const env = require('../data/env');
 const MainPrismController = require('../controllers/prism/Main');
-const GenesisController = require('../controllers/prism/GenesisContent');
 const ServiceMetaModel = require('../models/ServiceMeta');
+
+const hny = require('../utils/libhoney');
 
 class Prism extends BasicService {
     constructor(...args) {
@@ -27,7 +28,6 @@ class Prism extends BasicService {
         const meta = await this._getMeta();
 
         if (!meta.isGenesisApplied && env.GLS_USE_GENESIS) {
-            await this._processGenesis();
             await this._updateMeta({ isGenesisApplied: true });
         }
 
@@ -115,6 +115,10 @@ class Prism extends BasicService {
             await this._mainPrismController.disperse(block);
 
             this._emitHandled(block);
+
+            const blockHandleHoneyEvent = hny.newEvent();
+            blockHandleHoneyEvent.addField('transactionsCount', block.transactions.length);
+            blockHandleHoneyEvent.send();
         } catch (error) {
             Logger.error(`Cant disperse block, num: ${block.blockNum}, id: ${block.id}`, error);
             process.exit(1);
@@ -187,14 +191,6 @@ class Prism extends BasicService {
                 $set: params,
             }
         );
-    }
-
-    async _processGenesis() {
-        const genesisProcessor = new GenesisProcessor({
-            genesisController: new GenesisController(),
-        });
-
-        await genesisProcessor.process();
     }
 }
 

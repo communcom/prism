@@ -160,6 +160,15 @@ module.exports = MongoDB.makeModel(
                     sparse: true,
                 },
             },
+            {
+                fields: {
+                    'parents.post': 1,
+                    'ordering.byTime': 1,
+                },
+                options: {
+                    sparse: true,
+                },
+            },
             // User comments, sorted by time
             {
                 fields: {
