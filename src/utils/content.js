@@ -4,8 +4,8 @@ const core = require('cyberway-core-service');
 const { Logger } = core.utils;
 const PostModel = require('../models/Post');
 
-const EMBED_TYPES = ['image', 'video', 'website'];
-const IFRAMELY_TYPES = ['video', 'website'];
+const EMBED_TYPES = ['image', 'video', 'embed', 'website'];
+const IFRAMELY_TYPES = ['video', 'embed', 'website'];
 
 function extractContentId(content) {
     const { author, permlink } = content.message_id;
@@ -168,7 +168,6 @@ async function processEmbeds(connector, originalItems) {
                 id: item.id,
                 type: 'website',
                 content: item.content,
-                attributes: {},
             };
         }
     });
