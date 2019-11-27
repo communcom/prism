@@ -150,7 +150,7 @@ class Community {
     }
 
     async handleCreate({ community_name: name, commun_code: communityId }, { blockTime }) {
-        const alias = `id${this._extractAlias(communityId)}`;
+        const alias = this._extractAlias(name);
 
         const point = await CommunityPointModel.findOne(
             {
@@ -311,12 +311,27 @@ class Community {
         }
     }
 
-    _extractAlias(code) {
-        return crypto
-            .createHash('sha1')
-            .update(`${SALT}${code.toLowerCase()}`)
-            .digest()
-            .readUInt32LE(16);
+    _extractAlias(communityName) {
+        // TODO: Temporary fix duplication
+        if (communityName === 'cats') {
+            return 'cats1';
+        }
+
+        const permlink = communityName
+            .trim()
+            .toLowerCase()
+            .replace(/[\s_-]+/g, '-')
+            .replace(/[^a-z0-9-]+/g, '')
+            .replace(/-+/g, '-')
+            .replace(/^-+/, '')
+            .replace(/-+$/, '');
+
+        if (permlink.length === 0) {
+            console.error(`Invalid community name (empty resulting permlink): "${communityName}"`);
+            throw new Error('Invalid community name');
+        }
+
+        return permlink;
     }
 
     async _tryToApplyPatchOrSet(communityId, rawRules) {

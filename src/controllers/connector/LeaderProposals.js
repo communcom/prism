@@ -4,6 +4,7 @@ const { Logger } = core.utils;
 const BasicController = core.controllers.Basic;
 
 const ProfileModel = require('../../models/Profile');
+const LeaderModel = require('../../models/Leader');
 const LeaderProposalModel = require('../../models/LeaderProposal');
 const { isIncludes } = require('../../utils/mongodb');
 
@@ -42,9 +43,7 @@ class LeaderProposals extends BasicController {
             blockTime: true,
             expiration: true,
             data: true,
-            approvesCount: {
-                $size: '$approves',
-            },
+            approves: true,
             proposerProfile: {
                 $let: {
                     vars: {
@@ -120,7 +119,28 @@ class LeaderProposals extends BasicController {
             },
         ]);
 
+        const leaderIds = new Set();
+
         for (const item of items) {
+            for (const leaderId of item.approves) {
+                leaderIds.add(leaderId);
+            }
+        }
+
+        const leaders = await LeaderModel.find(
+            { userId: { $in: [...leaderIds], inTop: true } },
+            { _id: false, userId: true },
+            { lean: true }
+        );
+
+        const leadersInTop = new Set(leaders.map(leader => leader.userId));
+
+        for (const item of items) {
+            item.approvesCount = item.approves.filter(leaderIn =>
+                leadersInTop.has(leaderIn)
+            ).length;
+            delete item.approves;
+
             if (item.proposerProfile.userId) {
                 item.proposer = item.proposerProfile;
             } else {
