@@ -239,13 +239,13 @@ class Comment extends BasicController {
                 break;
             case 'timeDesc':
                 sorting.$sort = {
-                    'meta.creationTime': 1,
+                    'meta.creationTime': -1,
                 };
                 break;
             case 'time':
             default:
                 sorting.$sort = {
-                    'meta.creationTime': -1,
+                    'meta.creationTime': 1,
                 };
         }
 
