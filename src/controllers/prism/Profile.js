@@ -69,11 +69,11 @@ class Profile extends Abstract {
 
             switch (key) {
                 case 'avatar_url':
-                    query['personal.avatarUrl'] = value;
+                    query.avatarUrl = value;
                     break;
 
                 case 'cover_url':
-                    query['personal.coverUrl'] = value;
+                    query.coverUrl = value;
                     break;
 
                 case 'biography':

@@ -11,14 +11,15 @@ const ProfileModel = MongoDB.makeModel(
         },
         username: {
             type: String,
+            required: true,
+        },
+        avatarUrl: {
+            type: String,
+        },
+        coverUrl: {
+            type: String,
         },
         personal: {
-            avatarUrl: {
-                type: String,
-            },
-            coverUrl: {
-                type: String,
-            },
             biography: {
                 type: String,
             },

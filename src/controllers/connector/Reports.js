@@ -24,7 +24,7 @@ const basePostProjection = {
                 in: {
                     userId: '$$profile.userId',
                     username: '$$profile.username',
-                    avatarUrl: '$$profile.personal.avatarUrl',
+                    avatarUrl: '$$profile.avatarUrl',
                 },
             },
         },
@@ -67,7 +67,7 @@ const baseCommentProjection = {
                 in: {
                     userId: '$$profile.userId',
                     username: '$$profile.username',
-                    avatarUrl: '$$profile.personal.avatarUrl',
+                    avatarUrl: '$$profile.avatarUrl',
                 },
             },
         },
@@ -232,7 +232,7 @@ class Reports extends BasicController {
                         in: {
                             userId: '$$reporter.userId',
                             username: '$$reporter.username',
-                            avatarUrl: '$$reporter.personal.avatarUrl',
+                            avatarUrl: '$$reporter.avatarUrl',
                         },
                     },
                 },

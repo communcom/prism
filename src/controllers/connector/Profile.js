@@ -100,7 +100,7 @@ class Profile extends BasicController {
                     subscribers: '$blacklist.subscribers',
                     userId: '$blacklist.userId',
                     username: '$blacklist.username',
-                    avatarUrl: '$blacklist.personal.avatarUrl',
+                    avatarUrl: '$blacklist.avatarUrl',
                     postsCount: '$blacklist.stats.postsCount',
                     subscribersCount: '$blacklist.subscribers.usersCount',
                 },
@@ -170,6 +170,8 @@ class Profile extends BasicController {
             leaderIn: true,
             userId: true,
             username: true,
+            avatarUrl: true,
+            coverUrl: true,
             registration: true,
             personal: true,
             'subscriptions.communitiesCount': true,
@@ -219,6 +221,11 @@ class Profile extends BasicController {
         } else {
             resultUser = result[0];
         }
+
+        // TODO: Temporary fix for backward compatible
+        resultUser.personal = resultUser.personal || {};
+        resultUser.personal.avatarUrl = resultUser.avatarUrl;
+        resultUser.personal.coverUrl = resultUser.coverUrl;
 
         resultUser.highlightCommunities = [];
         resultUser.highlightCommunitiesCount = 0;
@@ -283,7 +290,7 @@ class Profile extends BasicController {
                     in: {
                         userId: '$$subscriber.userId',
                         username: '$$subscriber.username',
-                        avatarUrl: '$$subscriber.personal.avatarUrl',
+                        avatarUrl: '$$subscriber.avatarUrl',
                         subscribers: '$$subscriber.subscribers.userIds',
                         subscribersCount: '$$subscriber.subscribers.usersCount',
                         postsCount: '$$subscriber.stats.postsCount',
@@ -361,7 +368,7 @@ class Profile extends BasicController {
                     in: {
                         userId: '$$subscriber.userId',
                         username: '$$subscriber.username',
-                        avatarUrl: '$$subscriber.personal.avatarUrl',
+                        avatarUrl: '$$subscriber.avatarUrl',
                         subscribers: '$$subscriber.subscribers.userIds',
                     },
                 },
@@ -461,7 +468,7 @@ class Profile extends BasicController {
                             in: {
                                 userId: '$$profile.userId',
                                 username: '$$profile.username',
-                                avatarUrl: '$$profile.personal.avatarUrl',
+                                avatarUrl: '$$profile.avatarUrl',
                                 subscribers: '$$profile.subscribers.userIds',
                                 subscribersCount: '$$profile.subscribers.usersCount',
                                 postsCount: '$$profile.stats.postsCount',
@@ -563,9 +570,10 @@ class Profile extends BasicController {
                 username,
             },
             {
+                _id: false,
                 userId: true,
                 username: true,
-                'personal.avatarUrl': true,
+                avatarUrl: true,
             },
             {
                 lean: true,
@@ -579,11 +587,7 @@ class Profile extends BasicController {
             };
         }
 
-        return {
-            userId: profile.userId,
-            username: profile.username,
-            avatarUrl: (profile.personal && profile.personal.avatarUrl) || null,
-        };
+        return profile;
     }
 
     async _getHighlightCommunities({ hostUserId, guestUserId, maxCommonCommunities }) {

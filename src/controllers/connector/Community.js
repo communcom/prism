@@ -126,7 +126,7 @@ class Community extends BasicController {
             $project: {
                 userId: true,
                 username: '$profile.username',
-                avatarUrl: '$profile.personal.avatarUrl',
+                avatarUrl: '$profile.avatarUrl',
             },
         };
 
@@ -235,7 +235,7 @@ class Community extends BasicController {
                             {
                                 userId: true,
                                 username: true,
-                                'personal.avatarUrl': true,
+                                avatarUrl: true,
                                 _id: false,
                             },
                             { lean: true }
@@ -243,11 +243,7 @@ class Community extends BasicController {
                     );
                 }
 
-                community.friends = (await Promise.all(resolveSubscribersPromises)).map(user => ({
-                    ...user,
-                    avatarUrl: user.personal ? user.personal.avatarUrl : null,
-                    personal: undefined,
-                }));
+                community.friends = await Promise.all(resolveSubscribersPromises);
             }
 
             community.isLeader = Boolean(authLeader);

@@ -114,7 +114,7 @@ class Leaders extends BasicController {
                 isVoted: true,
                 isSubscribed: true,
                 username: '$profile.username',
-                avatarUrl: '$profile.personal.avatarUrl',
+                avatarUrl: '$profile.avatarUrl',
             },
         });
 

@@ -50,7 +50,7 @@ const baseProjection = {
                 in: {
                     userId: '$$profile.userId',
                     username: '$$profile.username',
-                    avatarUrl: '$$profile.personal.avatarUrl',
+                    avatarUrl: '$$profile.avatarUrl',
                     subscribers: '$$profile.subscribers.userIds',
                     postsCount: '$$profile.stats.postsCount',
                     subscribersCount: '$$profile.subscribers.usersCount',

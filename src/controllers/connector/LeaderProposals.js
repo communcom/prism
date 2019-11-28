@@ -52,7 +52,7 @@ class LeaderProposals extends BasicController {
                     in: {
                         userId: '$$proposer.userId',
                         username: '$$proposer.username',
-                        avatarUrl: '$$proposer.personal.avatarUrl',
+                        avatarUrl: '$$proposer.avatarUrl',
                     },
                 },
             },
