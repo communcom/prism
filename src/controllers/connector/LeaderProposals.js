@@ -128,7 +128,10 @@ class LeaderProposals extends BasicController {
         }
 
         const leaders = await LeaderModel.find(
-            { userId: { $in: [...leaderIds], inTop: true } },
+            {
+                userId: { $in: [...leaderIds] },
+                inTop: true,
+            },
             { _id: false, userId: true },
             { lean: true }
         );
