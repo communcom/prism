@@ -4,13 +4,9 @@ const env = require('../data/env');
 const Comment = require('../controllers/connector/Comment');
 const Posts = require('../controllers/connector/Posts');
 const Profile = require('../controllers/connector/Profile');
-const Notify = require('../controllers/connector/Notify');
-const HashTag = require('../controllers/connector/HashTag');
 const Leaders = require('../controllers/connector/Leaders');
 const LeaderProposals = require('../controllers/connector/LeaderProposals');
 const Block = require('../controllers/connector/Block');
-const Search = require('../controllers/connector/Search');
-const Vote = require('../controllers/connector/Vote');
 const Community = require('../controllers/connector/Community');
 const Reports = require('../controllers/connector/Reports');
 
@@ -31,24 +27,16 @@ class Connector extends BasicConnector {
             this._posts = new Posts(linking);
             this._comment = new Comment(linking);
             this._profile = new Profile(linking);
-            this._notify = new Notify(linking);
-            this._hashTag = new HashTag(linking);
             this._leaders = new Leaders(linking);
             this._leaderProposals = new LeaderProposals(linking);
-            this._search = new Search(linking);
-            this._vote = new Vote(linking);
             this._community = new Community(linking);
             this._reports = new Reports(linking);
         } else {
             this._posts = empty;
             this._comment = empty;
             this._profile = empty;
-            this._notify = empty;
-            this._hashTag = empty;
             this._leaders = empty;
             this._leaderProposals = empty;
-            this._search = empty;
-            this._vote = empty;
             this._community = empty;
             this._reports = empty;
         }
@@ -57,42 +45,6 @@ class Connector extends BasicConnector {
     async start() {
         await super.start({
             serverRoutes: {
-                search: {
-                    handler: this._search.search,
-                    scope: this._search,
-                    inherits: ['onlyWhenPublicApiEnabled'],
-                    validation: {
-                        required: ['text'],
-                        properties: {
-                            type: {
-                                type: 'string',
-                                enum: ['matchPrefix', 'match'],
-                                default: 'matchPrefix',
-                            },
-                            where: {
-                                type: 'string',
-                                enum: ['all', 'post', 'comment'],
-                                default: 'all',
-                            },
-                            text: {
-                                type: 'string',
-                            },
-                            field: {
-                                type: 'string',
-                                enum: ['all', 'title', 'raw', 'full', 'preview', 'permlink'],
-                                default: 'all',
-                            },
-                            limit: {
-                                type: 'number',
-                                default: 10,
-                            },
-                            offset: {
-                                type: 'number',
-                                default: 0,
-                            },
-                        },
-                    },
-                },
                 getPost: {
                     handler: this._posts.getPost,
                     scope: this._posts,
@@ -302,43 +254,6 @@ class Connector extends BasicConnector {
                         },
                     },
                 },
-                getNotifyMeta: {
-                    handler: this._notify.getMeta,
-                    scope: this._notify,
-                    inherits: ['username', 'onlyWhenPublicApiEnabled'],
-                    validation: {
-                        properties: {
-                            userId: {
-                                type: 'string',
-                            },
-                            communityId: {
-                                type: 'string',
-                            },
-                            postId: {
-                                type: 'object',
-                            },
-                            commentId: {
-                                type: 'object',
-                            },
-                            contentId: {
-                                type: 'object',
-                            },
-                        },
-                    },
-                },
-                getHashTagTop: {
-                    handler: this._hashTag.getTop,
-                    scope: this._hashTag,
-                    inherits: ['feedPaging', 'onlyWhenPublicApiEnabled'],
-                    validation: {
-                        required: ['communityId'],
-                        properties: {
-                            communityId: {
-                                type: 'string',
-                            },
-                        },
-                    },
-                },
                 getLeaders: {
                     handler: this._leaders.getLeaders,
                     scope: this._leaders,
@@ -403,34 +318,7 @@ class Connector extends BasicConnector {
                         },
                     },
                 },
-                getPostVotes: {
-                    handler: this._vote.getPostVotes,
-                    scope: this._vote,
-                    inherits: ['contentId', 'feedPaging', 'onlyWhenPublicApiEnabled'],
-                    validation: {
-                        required: ['userId', 'permlink', 'type'],
-                        properties: {
-                            type: {
-                                type: 'string',
-                                enum: ['like', 'dislike'],
-                            },
-                        },
-                    },
-                },
-                getCommentVotes: {
-                    handler: this._vote.getCommentVotes,
-                    scope: this._vote,
-                    inherits: ['contentId', 'feedPaging', 'onlyWhenPublicApiEnabled'],
-                    validation: {
-                        required: ['userId', 'permlink', 'type'],
-                        properties: {
-                            type: {
-                                type: 'string',
-                                enum: ['like', 'dislike'],
-                            },
-                        },
-                    },
-                },
+
                 resolveProfile: {
                     handler: this._profile.resolveProfile,
                     scope: this._profile,

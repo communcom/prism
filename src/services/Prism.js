@@ -1,11 +1,10 @@
 const core = require('cyberway-core-service');
 const BasicService = core.services.Basic;
 const BlockSubscribe = core.services.BlockSubscribe;
-const { Logger, GenesisProcessor } = core.utils;
+const { Logger } = core.utils;
 
 const env = require('../data/env');
 const MainPrismController = require('../controllers/prism/Main');
-const ServiceMetaModel = require('../models/ServiceMeta');
 
 const hny = require('../utils/libhoney');
 
@@ -25,12 +24,6 @@ class Prism extends BasicService {
     }
 
     async start() {
-        const meta = await this._getMeta();
-
-        if (!meta.isGenesisApplied && env.GLS_USE_GENESIS) {
-            await this._updateMeta({ isGenesisApplied: true });
-        }
-
         this._blockInProcessing = false;
         this._blockQueue = [];
         this._recentTransactions = new Set();
@@ -172,25 +165,6 @@ class Prism extends BasicService {
         } catch (error) {
             Logger.error('Cant revert last block, but continue:', error);
         }
-    }
-
-    async _getMeta() {
-        return await ServiceMetaModel.findOne(
-            {},
-            {},
-            {
-                lean: true,
-            }
-        );
-    }
-
-    async _updateMeta(params) {
-        return await ServiceMetaModel.updateOne(
-            {},
-            {
-                $set: params,
-            }
-        );
     }
 }
 
