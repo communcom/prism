@@ -25,11 +25,10 @@ class Main extends BasicMain {
 
         if (env.GLS_ENABLE_BLOCK_HANDLE) {
             prism.setConnector(connector);
+            this.addNested(new Hot());
         }
 
         this.startMongoBeforeBoot(null, { poolSize: env.GLS_MONGO_POOL_SIZE });
-
-        this.addNested(new Hot());
 
         this.addNested(connector);
     }
