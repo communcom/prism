@@ -75,7 +75,7 @@ class Comment extends Abstract {
             },
             votes: {
                 upCount: 1,
-                upVotes: [userId],
+                upVotes: [{ userId }],
             },
         };
 
