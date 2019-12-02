@@ -24,6 +24,7 @@ const baseProjection = {
     isSubscribedCommunity: true,
     parents: true,
     meta: true,
+    isDeleted: true,
     author: {
         $let: {
             vars: {

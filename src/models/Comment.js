@@ -106,6 +106,10 @@ module.exports = MongoDB.makeModel(
             enum: ['clean', 'locked', 'banned'],
             default: 'clean',
         },
+        isDeleted: {
+            type: Boolean,
+            default: false,
+        },
         mosaicState: {
             tracery: {
                 type: String,

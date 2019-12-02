@@ -157,30 +157,32 @@ class Comment extends Abstract {
 
     async handleDelete(content) {
         const contentId = extractContentId(content);
-        const model = await CommentModel.findOne({
-            'contentId.userId': contentId.userId,
-            'contentId.permlink': contentId.permlink,
-            'contentId.communityId': contentId.communityId,
-        });
 
-        if (!model) {
+        const previousModel = await CommentModel.findOneAndUpdate(
+            {
+                'contentId.communityId': contentId.communityId,
+                'contentId.userId': contentId.userId,
+                'contentId.permlink': contentId.permlink,
+            },
+            {
+                $set: { isDeleted: true, document: null },
+            }
+        );
+
+        if (!previousModel) {
             return;
         }
 
-        await this.updatePostCommentsCount(model, -1);
-        await this.updateUserCommentsCount(model.contentId.userId, -1);
-
-        if (model.parents.comment) {
-            await this.updateChildCommentsCount(model.parents.comment, -1);
-        }
-
-        const removed = await model.remove();
-
         await this.registerForkChanges({
-            type: 'remove',
+            type: 'update',
             Model: CommentModel,
-            documentId: removed._id,
-            data: removed.toObject(),
+            documentId: previousModel._id,
+            data: {
+                $set: {
+                    isDeleted: previousModel.isDeleted,
+                    document: previousModel.document,
+                },
+            },
         });
     }
 
