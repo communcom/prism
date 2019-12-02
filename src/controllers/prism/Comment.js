@@ -73,6 +73,10 @@ class Comment extends Abstract {
             mosaicState: {
                 tracery,
             },
+            votes: {
+                upCount: 1,
+                upVotes: [userId],
+            },
         };
 
         if (!(await this.applyParentById(modelData, content))) {

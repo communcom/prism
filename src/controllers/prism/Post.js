@@ -71,6 +71,10 @@ class Post extends Abstract {
             mosaicState: {
                 tracery,
             },
+            votes: {
+                upCount: 1,
+                upVotes: [userId],
+            },
         });
 
         await this.registerForkChanges({ type: 'create', Model: PostModel, documentId: model._id });
