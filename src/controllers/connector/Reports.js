@@ -12,6 +12,7 @@ const basePostProjection = {
         contentId: true,
         'document.type': true,
         'document.body': true,
+        'document.textLength': true,
         votes: true,
         stats: true,
         meta: true,
@@ -267,6 +268,10 @@ class Reports extends BasicController {
         document.type = type;
 
         if (document.document) {
+            if (typeof document.document.textLength === 'number') {
+                document.textLength = document.document.textLength;
+            }
+
             document.document = document.document.body;
         }
     }
