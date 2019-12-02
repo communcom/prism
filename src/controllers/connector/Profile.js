@@ -6,6 +6,7 @@ const { addFieldIsIncludes } = require('../../utils/mongodb');
 const escape = require('escape-string-regexp');
 
 const COMMON_COMMUNITIES_COUNT = 10;
+const COMMON_FRIENDS_COUNT = 5;
 
 class Profile extends BasicController {
     async isInUserBlacklist({ userId, targetUserId }) {
@@ -231,6 +232,15 @@ class Profile extends BasicController {
         resultUser.highlightCommunitiesCount = 0;
 
         if (authUserId) {
+            const { commonFriends, commonFriendsCount } = await this._getCommonFriends({
+                hostUserId: resultUser.userId,
+                guestUserId: authUserId,
+                maxCommonFriendsCount: COMMON_FRIENDS_COUNT,
+            });
+
+            resultUser.commonFriends = commonFriends;
+            resultUser.commonFriendsCount = commonFriendsCount;
+
             resultUser.highlightCommunities = await this._getHighlightCommunities({
                 hostUserId: resultUser.userId,
                 guestUserId: authUserId,
@@ -588,6 +598,83 @@ class Profile extends BasicController {
         }
 
         return profile;
+    }
+
+    async _getCommonFriends({ hostUserId, guestUserId, maxCommonFriendsCount }) {
+        if (
+            !hostUserId ||
+            !guestUserId ||
+            (hostUserId === guestUserId || guestUserId === hostUserId)
+        ) {
+            return { commonFriends: [], commonFriendsCount: 0 };
+        }
+
+        const friends = await ProfileModel.aggregate([
+            { $match: { userId: hostUserId } },
+            { $project: { _id: false, subscribers: '$subscriptions.userIds' } },
+            {
+                $lookup: {
+                    from: 'profiles',
+                    localField: 'subscribers',
+                    foreignField: 'userId',
+                    as: 'friends',
+                },
+            },
+            {
+                $unwind: {
+                    path: '$friends',
+                },
+            },
+            {
+                $project: {
+                    userId: '$friends.userId',
+                    username: '$friends.username',
+                    avatarUrl: '$friends.avatarUrl',
+                    subscribersCount: '$friends.subscribers.usersCount',
+                    subscribers: '$friends.subscribers.userIds',
+                },
+            },
+            addFieldIsIncludes({
+                newField: 'isSubscribed',
+                arrayPath: '$subscribers',
+                value: guestUserId,
+            }),
+            {
+                $group: {
+                    _id: '$isSubscribed',
+                    friends: {
+                        $push: {
+                            userId: '$userId',
+                            username: '$username',
+                            avatarUrl: '$avatarUrl',
+                            subscribersCount: '$subscribersCount',
+                        },
+                    },
+                },
+            },
+            {
+                $match: { _id: true },
+            },
+            {
+                $unwind: {
+                    path: '$friends',
+                },
+            },
+            {
+                $project: {
+                    _id: false,
+                    userId: '$friends.userId',
+                    username: '$friends.username',
+                    avatarUrl: '$friends.avatarUrl',
+                    subscribersCount: '$friends.subscribersCount',
+                },
+            },
+        ]);
+
+        return {
+            commonFriends: friends.slice(0, maxCommonFriendsCount),
+            commonFriendsCount: friends.length,
+        };
     }
 
     async _getHighlightCommunities({ hostUserId, guestUserId, maxCommonCommunities }) {

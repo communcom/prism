@@ -42,7 +42,7 @@ getProfile:                                           // Получение пр
     username <string/null>                            // Имя пользователя
     user <string/null>                                // userId либо username
     maxCommonCommunities <number/null>(2)             // максимальное количество общих сообществ в списке highlightCommunities
-    
+
 suggestNames:                      // Поиск пользователя по началу username:
     text <string>                  // Текст поиска
 
@@ -587,7 +587,16 @@ waitForTransaction               // Дождаться и получить от�
                 "subscribersCount": 1
             }
         ],
-        "highlightCommunitiesCount": 9
+        "highlightCommunitiesCount": 9,
+        "commonFriends": [
+            {
+                "userId": "tst5xqqazypc",
+                "username": "nickshtefan",
+                "avatarUrl": "https://img.golos.io/images/2EH9AXqDsxbLbV5QLy9qmN3zssFn.png",
+                "subscribersCount": 3
+            }
+        ],
+        "commonFriendsCount": 1
     }
 }
 ```
@@ -698,8 +707,8 @@ waitForTransaction               // Дождаться и получить от�
         "description": "WREK comunity description",
         "language": "eng",
         "rules": [
-            {"id": "1", "title": "rule1", "text": "fasdf"},
-            {"id": "2", "title": "rule2", "text": "fasdfasdf"}
+            { "id": "1", "title": "rule1", "text": "fasdf" },
+            { "id": "2", "title": "rule2", "text": "fasdfasdf" }
         ],
         "isSubscribed": true,
         "isBlocked": false,
