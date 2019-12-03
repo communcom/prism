@@ -194,22 +194,24 @@ class Fork extends BasicService {
             data = data.toObject();
         }
 
-        const specialKeys = [];
+        if (data) {
+            const specialKeys = [];
 
-        for (const key of Object.keys(data)) {
-            if (key.indexOf('$') === 0) {
-                specialKeys.push(key);
+            for (const key of Object.keys(data)) {
+                if (key.indexOf('$') === 0) {
+                    specialKeys.push(key);
+                }
+
+                if (data[key] && typeof data[key] === 'object') {
+                    this._packDataIteration(data[key], iteration + 1);
+                }
             }
 
-            if (data[key] && typeof data[key] === 'object') {
-                this._packDataIteration(data[key], iteration + 1);
+            for (const key of specialKeys) {
+                data[`@${key}`] = data[key];
+
+                delete data[key];
             }
-        }
-
-        for (const key of specialKeys) {
-            data[`@${key}`] = data[key];
-
-            delete data[key];
         }
 
         return data;
