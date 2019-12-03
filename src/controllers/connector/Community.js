@@ -255,8 +255,16 @@ class Community extends BasicController {
         return community;
     }
 
-    async getCommunities({ type, userId, search, limit, offset }, { userId: authUserId }) {
+    async getCommunities(
+        { type, userId, search, limit, offset },
+        { userId: authUserId },
+        { clientType }
+    ) {
         const query = {};
+
+        if (clientType !== 'web') {
+            query.$and = [{ communityId: { $ne: 'PORN' } }, { communityId: { $ne: 'NSFW' } }];
+        }
 
         if (search) {
             query.communityName = { $regex: `^${escape(search.trim())}` };
