@@ -266,6 +266,9 @@ class Community extends BasicController {
             query.$and = [{ communityId: { $ne: 'PORN' } }, { communityId: { $ne: 'NSFW' } }];
         }
 
+        query.$and = query.$and || [];
+        query.$and.push({ communityId: { $ne: 'BOOKS' } });
+
         if (search) {
             query.communityName = { $regex: `^${escape(search.trim())}` };
         }
