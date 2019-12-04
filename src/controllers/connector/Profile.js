@@ -523,6 +523,7 @@ class Profile extends BasicController {
                                 coverUrl: '$$community.coverUrl',
                                 postsCount: '$$community.postsCount',
                                 subscribers: '$$community.subscribers',
+                                subscribersCount: '$$community.subscribersCount',
                             },
                         },
                     },
@@ -534,6 +535,8 @@ class Profile extends BasicController {
                         name: '$community.name',
                         avatarUrl: '$community.avatarUrl',
                         isSubscribed: '$isSubscribed',
+                        postsCount: '$community.postsCount',
+                        subscribersCount: '$community.subscribersCount',
                     },
                 };
                 break;
