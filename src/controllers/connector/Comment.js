@@ -255,9 +255,9 @@ class Comment extends BasicController {
 
         aggregation.push(profileLookup);
         aggregation.push(communityLookup);
-        aggregation.push({ $project: projection });
-
         aggregation.push(...this._addCurrentUserFields(authUserId));
+
+        aggregation.push({ $project: projection });
 
         aggregation.push({
             $project: { 'author.subscribers': false, 'community.subscribers': false },
