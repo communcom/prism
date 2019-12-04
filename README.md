@@ -596,7 +596,8 @@ waitForTransaction               // Дождаться и получить от�
                 "subscribersCount": 3
             }
         ],
-        "commonFriendsCount": 1
+        "commonFriendsCount": 1,
+        "isInBlacklist": false
     }
 }
 ```

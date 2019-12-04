@@ -247,6 +247,10 @@ class Profile extends BasicController {
                 maxCommonCommunities,
             });
             resultUser.highlightCommunitiesCount = resultUser.highlightCommunities.length;
+            resultUser.isInBlacklist = await this._isInBlacklist({
+                blockerUserId: authUserId,
+                blockingUserId: userId,
+            });
         }
 
         return resultUser;
@@ -268,6 +272,28 @@ class Profile extends BasicController {
                 },
             ]),
         };
+    }
+
+    async _isInBlacklist({ blockingUserId, blockerUserId }) {
+        const blockerBlacklist = await Profile.aggregate([
+            { $match: { userId: blockerUserId } },
+            {
+                $project: {
+                    _id: false,
+                    blocked: '$blacklist.userIds',
+                },
+            },
+            {
+                $unwind: {
+                    path: '$blocked',
+                },
+            },
+            {
+                $match: { blocked: blockingUserId },
+            },
+        ]);
+
+        return blockerBlacklist.length > 0;
     }
 
     async _getUserSubscribers({ userId, limit, offset }, { userId: authUserId }) {
