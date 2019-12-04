@@ -1,3 +1,5 @@
+const { Logger } = require('cyberway-core-service').utils;
+
 const Post = require('./Post');
 const Comment = require('./Comment');
 const Profile = require('./Profile');
@@ -79,7 +81,13 @@ class Main {
 
         for (const stageKey of Object.keys(flow)) {
             const start = Date.now();
-            await Promise.all(flow[stageKey].map(wrappedAction => wrappedAction()));
+            await Promise.all(
+                flow[stageKey].map(wrappedAction =>
+                    wrappedAction().catch(error => {
+                        Logger.warn(error);
+                    })
+                )
+            );
 
             const delta = Date.now() - start;
             const newBlockEvent = hny.newEvent();
@@ -97,7 +105,13 @@ class Main {
             });
         }
 
-        await Promise.all(votePromises.map(wrappedAction => wrappedAction()));
+        await Promise.all(
+            votePromises.map(wrappedAction =>
+                wrappedAction().catch(error => {
+                    Logger.warn(error);
+                })
+            )
+        );
 
         this._clearActions();
 
