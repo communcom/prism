@@ -175,8 +175,8 @@ class Comment extends BasicController {
             sorting,
             profileLookup,
             communityLookup,
-            { $project: baseProjection },
             ...this._addCurrentUserFields(authUserId),
+            { $project: baseProjection },
             {
                 $project: { 'author.subscribers': false, 'community.subscribers': false },
             },
