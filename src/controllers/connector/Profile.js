@@ -249,7 +249,7 @@ class Profile extends BasicController {
             resultUser.highlightCommunitiesCount = resultUser.highlightCommunities.length;
             resultUser.isInBlacklist = await this._isInBlacklist({
                 blockerUserId: authUserId,
-                blockingUserId: userId,
+                blockingUserId: resultUser.userId,
             });
         }
 
