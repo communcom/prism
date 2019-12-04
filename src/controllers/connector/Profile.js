@@ -275,7 +275,7 @@ class Profile extends BasicController {
     }
 
     async _isInBlacklist({ blockingUserId, blockerUserId }) {
-        const blockerBlacklist = await Profile.aggregate([
+        const blockerBlacklist = await ProfileModel.aggregate([
             { $match: { userId: blockerUserId } },
             {
                 $project: {
