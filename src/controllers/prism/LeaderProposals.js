@@ -51,6 +51,10 @@ class LeaderProposals extends Abstract {
                 await this.handleProposalExec(params, meta);
                 break;
 
+            case 'cancel':
+                await this.handleProposalCancel(params);
+                break;
+
             default:
             // Do nothing
         }
@@ -222,6 +226,24 @@ class LeaderProposals extends Abstract {
                     executedBlockTime: updatedModel.executedBlockTime,
                 },
             },
+        });
+    }
+
+    async handleProposalCancel({ proposer, proposal_name: proposalId }) {
+        const deletedModel = await ProposalModel.findOneAndDelete({
+            proposer,
+            proposalId,
+        });
+
+        if (!deletedModel) {
+            return;
+        }
+
+        await this.registerForkChanges({
+            type: 'remove',
+            Model: ProposalModel,
+            documentId: deletedModel._id,
+            data: deletedModel.toObject(),
         });
     }
 
