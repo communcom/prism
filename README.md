@@ -871,7 +871,8 @@ waitForTransaction               // Дождаться и получить от�
         "community": {
             "communityId": "LLUILA",
             "name": "LLUILA comunity"
-        }
+        },
+        "viewsCount": 12
     }
 }
 ```
