@@ -560,6 +560,7 @@ class Profile extends BasicController {
                         alias: '$community.alias',
                         name: '$community.name',
                         avatarUrl: '$community.avatarUrl',
+                        coverUrl: '$community.coverUrl',
                         isSubscribed: '$isSubscribed',
                         postsCount: '$community.postsCount',
                         subscribersCount: '$community.subscribersCount',
