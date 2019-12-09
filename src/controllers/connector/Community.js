@@ -267,7 +267,7 @@ class Community extends BasicController {
         }
 
         if (search) {
-            query.communityName = { $regex: `^${escape(search.trim())}` };
+            query.name = { $regex: `^${escape(search.trim())}` };
         }
         let isQuerySubscriptions = false;
 
