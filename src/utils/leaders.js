@@ -1,3 +1,5 @@
+const sleep = require('then-sleep');
+
 const LeaderModel = require('../models/Leader');
 const ProfileModel = require('../models/Profile');
 
@@ -56,6 +58,40 @@ async function reorderLeaders(communityId) {
     }
 }
 
+const interLocks = {};
+
+function reorderLeadersAsync(communityId) {
+    const callTs = Date.now();
+
+    let interLock = interLocks[communityId];
+
+    if (!interLock) {
+        interLock = interLocks[communityId] = {
+            lock: Promise.resolve(),
+            lastStart: 0,
+        };
+    }
+
+    interLock.lock = interLock.lock.then(async () => {
+        // Если кто-то уже запускал переупорядочивания после того как была вызвана наша функция то ничего делать не надо.
+        if (interLock.lastStart >= callTs) {
+            return;
+        }
+
+        // Отложенный старт для того чтобы схлопунть несколько вызовов переупорядочвания в один.
+        await sleep(1000);
+
+        interLock.lastStart = Date.now();
+
+        try {
+            await reorderLeaders(communityId);
+        } catch (err) {
+            Logger.warn('Leaders reordering failed:', err);
+        }
+    });
+}
+
 module.exports = {
     reorderLeaders,
+    reorderLeadersAsync,
 };

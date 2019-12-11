@@ -3,12 +3,12 @@ const { Logger } = core.utils;
 const Abstract = require('./Abstract');
 const LeaderModel = require('../../models/Leader');
 const CommunityModel = require('../../models/Community');
-const { reorderLeaders } = require('../../utils/leaders');
+const { reorderLeadersAsync } = require('../../utils/leaders');
 
 const LAST_LEADER_POSITION = 9999999;
 
 class Leader extends Abstract {
-    async processAction(action, params, meta) {
+    async processAction(action, params) {
         // Игнорируем все события без commun_code, потому что функционал внутри контракта ctrl
         // работает не только для сообществ.
         if (!params.commun_code) {
@@ -53,14 +53,20 @@ class Leader extends Abstract {
             // Do nothing
         }
 
-        if (meta.events && meta.events.length) {
-            if (await this._updateLeadersRating(meta.events)) {
-                isNeedReorderLeaders = true;
-            }
-        }
-
         if (isNeedReorderLeaders) {
             await this._reorderLeaders(communityId);
+        }
+    }
+
+    async processEvent(event, args) {
+        switch (event) {
+            case 'leaderstate':
+                if (await this._updateLeaderRating(args)) {
+                    await this._reorderLeaders(args.commun_code);
+                }
+                break;
+            default:
+            // Do nothing
         }
     }
 
@@ -220,7 +226,7 @@ class Leader extends Abstract {
 
     async _reorderLeaders(communityId) {
         try {
-            await reorderLeaders(communityId);
+            reorderLeadersAsync(communityId);
 
             await this.registerForkChanges({
                 type: 'reorderLeaders',
@@ -233,56 +239,48 @@ class Leader extends Abstract {
         }
     }
 
-    async _updateLeadersRating(events) {
-        let isSomebodyUpdated = false;
+    async _updateLeaderRating({
+        commun_code: communityId,
+        leader: userId,
+        weight: rating,
+        active: isActive,
+    }) {
+        const ratingNum = Number(rating) || 0;
 
-        for (const { code, event, args } of events) {
-            if (code === 'c.ctrl' && event === 'leaderstate') {
-                const {
-                    commun_code: communityId,
-                    leader: userId,
-                    weight: rating,
-                    active: isActive,
-                } = args;
-
-                const ratingNum = Number(rating) || 0;
-
-                const previous = await LeaderModel.findOneAndUpdate(
-                    {
-                        communityId,
-                        userId,
-                    },
-                    {
-                        $set: {
-                            rating,
-                            ratingNum: ratingNum,
-                            hasRating: ratingNum > 0,
-                            isActive,
-                        },
-                    }
-                );
-
-                if (previous) {
-                    await this.registerForkChanges({
-                        type: 'update',
-                        Model: LeaderModel,
-                        documentId: previous._id,
-                        data: {
-                            $set: {
-                                rating: previous.rating,
-                                ratingNum: previous.ratingNum,
-                                hasRating: previous.hasRating,
-                                isActive: previous.isActive,
-                            },
-                        },
-                    });
-
-                    isSomebodyUpdated = true;
-                }
+        const previous = await LeaderModel.findOneAndUpdate(
+            {
+                communityId,
+                userId,
+            },
+            {
+                $set: {
+                    rating,
+                    ratingNum,
+                    hasRating: ratingNum > 0,
+                    isActive,
+                },
             }
+        );
+
+        if (previous) {
+            await this.registerForkChanges({
+                type: 'update',
+                Model: LeaderModel,
+                documentId: previous._id,
+                data: {
+                    $set: {
+                        rating: previous.rating,
+                        ratingNum: previous.ratingNum,
+                        hasRating: previous.hasRating,
+                        isActive: previous.isActive,
+                    },
+                },
+            });
+
+            return true;
         }
 
-        return isSomebodyUpdated;
+        return false;
     }
 
     async _incrementLeadersCount({ communityId, inc }) {

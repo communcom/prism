@@ -24,6 +24,11 @@ const ALLOWED_CONTRACTS = [
     'c.ctrl',
     'c.point',
 ];
+
+function isAllowedAction({ code, receiver }) {
+    return ALLOWED_CONTRACTS.includes(code) && ALLOWED_CONTRACTS.includes(receiver);
+}
+
 class Main {
     constructor({ connector, forkService }) {
         this._post = new Post({ connector, forkService });
@@ -51,20 +56,12 @@ class Main {
         blockHandleHoneyEvent.metadata = { blockNum, blockTime };
         blockHandleHoneyEvent.addField('startTime', startTime);
 
-        for (let { actions } of transactions) {
-            actions = actions.filter(action => {
-                if (
-                    ALLOWED_CONTRACTS.includes(action.code) &&
-                    ALLOWED_CONTRACTS.includes(action.receiver)
-                ) {
-                    return action;
+        for (const { actions } of transactions) {
+            for (const action of actions) {
+                if (isAllowedAction(action)) {
+                    await this._disperseAction(action, { blockNum, blockTime });
                 }
-            });
-            this.actions.push(...actions);
-        }
-
-        for (const action of this.actions) {
-            await this._disperseAction(action, { blockNum, blockTime });
+            }
         }
 
         const flow = {
@@ -161,16 +158,16 @@ class Main {
 
             case 'c.list->hide':
                 // add community into user's blacklist
-                this._communityActions.push(() => {
-                    return this._community.handleHideUnhide(actionArgs, 'hide');
-                });
+                this._communityActions.push(() =>
+                    this._community.handleHideUnhide(actionArgs, 'hide')
+                );
                 break;
 
             case 'c.list->unhide':
                 // remove community from user's blacklist
-                this._communityActions.push(() => {
-                    return this._community.handleHideUnhide(actionArgs, 'hide');
-                });
+                this._communityActions.push(() =>
+                    this._community.handleHideUnhide(actionArgs, 'unhide')
+                );
                 break;
 
             case 'c.list->setappparams':
@@ -369,13 +366,25 @@ class Main {
 
         switch (action.code) {
             case 'c.ctrl':
-                this._ctrlActions.push(() => {
-                    return this._leader.processAction(action.action, actionArgs, meta);
-                });
-                this._ctrlActions.push(() => {
-                    return this._leaderProposals.processAction(action.action, actionArgs, meta);
-                });
+                this._ctrlActions.push(() => this._leader.processAction(action.action, actionArgs));
+                this._ctrlActions.push(() =>
+                    this._leaderProposals.processAction(action.action, actionArgs, meta)
+                );
                 break;
+        }
+
+        if (action.events) {
+            for (const event of action.events) {
+                switch (event.code) {
+                    case 'c.ctrl':
+                        this._ctrlActions.push(() =>
+                            this._leader.processEvent(event.event, event.args)
+                        );
+                        break;
+                    default:
+                    // Do nothing
+                }
+            }
         }
     }
 
@@ -386,8 +395,6 @@ class Main {
     }
 
     _clearActions() {
-        this.actions = [];
-
         this._newUsernameActions = [];
         this._pointActions = [];
 
