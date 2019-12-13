@@ -39,6 +39,10 @@ module.exports = MongoDB.makeModel(
                 type: Number,
                 default: 0,
             },
+            hasUnprocessedImages: {
+                type: Boolean,
+                default: false,
+            },
         },
         tags: {
             type: [String],
@@ -174,6 +178,11 @@ module.exports = MongoDB.makeModel(
                 },
                 options: {
                     sparse: true,
+                },
+            },
+            {
+                fields: {
+                    'document.hasUnprocessedImages': 1,
                 },
             },
         ],

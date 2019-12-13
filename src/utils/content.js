@@ -79,10 +79,13 @@ async function processContent(connector, data, allowedTypes) {
                 ({ type }) => type === 'paragraph' || type === 'attachments'
             );
 
+            let hasUnprocessedImages = false;
+
             const attachments = doc.content.find(({ type }) => type === 'attachments');
 
             if (attachments) {
                 attachments.content = await processEmbeds(connector, attachments.content);
+                hasUnprocessedImages = attachments.content.some(({ type }) => type === 'image');
             }
 
             return {
@@ -92,6 +95,7 @@ async function processContent(connector, data, allowedTypes) {
                     article: null,
                     metadata,
                     textLength: countSymbols(doc),
+                    hasUnprocessedImages,
                 },
                 tags,
             };
@@ -101,6 +105,8 @@ async function processContent(connector, data, allowedTypes) {
             doc.content = doc.content.filter(({ type }) => type !== 'attachments');
 
             doc.content = await processEmbeds(connector, doc.content);
+
+            const hasUnprocessedImages = doc.content.some(({ type }) => type === 'image');
 
             return {
                 document: {
@@ -112,6 +118,7 @@ async function processContent(connector, data, allowedTypes) {
                     article: doc,
                     metadata,
                     textLength: countSymbols(doc),
+                    hasUnprocessedImages,
                 },
                 tags,
             };

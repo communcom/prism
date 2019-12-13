@@ -43,6 +43,10 @@ module.exports = MongoDB.makeModel(
                 type: Number,
                 default: 0,
             },
+            hasUnprocessedImages: {
+                type: Boolean,
+                default: false,
+            },
         },
         childCommentsCount: {
             type: Number,
@@ -188,6 +192,11 @@ module.exports = MongoDB.makeModel(
             {
                 fields: {
                     'votes.upCount': -1,
+                },
+            },
+            {
+                fields: {
+                    'document.hasUnprocessedImages': 1,
                 },
             },
         ],

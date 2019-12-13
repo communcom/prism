@@ -9,8 +9,10 @@ const MainPrismController = require('../controllers/prism/Main');
 const hny = require('../utils/libhoney');
 
 class Prism extends BasicService {
-    constructor(...args) {
-        super(...args);
+    constructor({ imagesMeta, ...options } = {}) {
+        super(options);
+
+        this._imagesMeta = imagesMeta;
 
         this.getEmitter().setMaxListeners(Infinity);
     }
@@ -69,6 +71,7 @@ class Prism extends BasicService {
         switch (type) {
             case BlockSubscribe.EVENT_TYPES.BLOCK:
                 await this._registerNewBlock(data);
+                this._imagesMeta.updateAsync();
                 break;
             case BlockSubscribe.EVENT_TYPES.IRREVERSIBLE_BLOCK:
                 await this._handleIrreversibleBlock(data);

@@ -5,20 +5,23 @@ const Prism = require('./services/Prism');
 const Connector = require('./services/Connector');
 const Fork = require('./services/Fork');
 const Hot = require('./services/Hot');
+const ImagesMetaUpdater = require('./services/ImagesMetaUpdater');
 
 class Main extends BasicMain {
     constructor() {
         super(env);
 
         let prism;
+        let imagesMeta;
 
         if (env.GLS_ENABLE_BLOCK_HANDLE) {
             const fork = new Fork();
 
-            prism = new Prism();
+            imagesMeta = new ImagesMetaUpdater();
+            prism = new Prism({ imagesMeta });
             prism.setForkService(fork);
 
-            this.addNested(fork, prism);
+            this.addNested(fork, imagesMeta, prism);
         }
 
         const connector = new Connector({ prism });

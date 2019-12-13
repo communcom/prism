@@ -20,4 +20,5 @@ module.exports = {
     GLS_DONT_REVERT_LAST_BLOCK: Boolean(
         env.GLS_DONT_REVERT_LAST_BLOCK && env.GLS_DONT_REVERT_LAST_BLOCK !== 'false'
     ),
+    GLS_IMAGE_HOSTER: env.GLS_IMAGE_HOSTER,
 };
