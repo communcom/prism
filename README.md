@@ -5897,6 +5897,463 @@ waitForTransaction               // Дождаться и получить от�
 }
 ```
 
+## Search
+
+Функция поиска реализована при помощи трех API-методов: `quickSearch`, `extendedSearch`, `entitySearch`. 
+
+`quickSearch` -- для простого поиска с выдачей топ-результатов без разделения на сущности. paging отсутствует (но есть лимит на выдачу).
+
+`extendedSearch` -- для расширенного поиска с возможностью указывать настройки для каждой сущности по-отдельности
+
+`entitySearch` -- глубокий поиск по одной сущности
+
+### quickSearch
+
+=> Запрос
+
+```json
+{
+    "id": 1,
+    "method": "quickSearch",
+    "jsonrpc": "2.0",
+    "params": {
+        "queryString": "mac",
+        "entities": ["communities",  "profiles"],
+        "limit": 5
+    }
+}
+```
+
+<= Ответ
+
+```json
+{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "result": {
+        "items": [
+            {
+                "subscriptions": {
+                    "usersCount": 0,
+                    "communitiesCount": 0
+                },
+                "subscribers": {
+                    "usersCount": 0
+                },
+                "stats": {
+                    "reputation": 0,
+                    "postsCount": 0,
+                    "commentsCount": 0
+                },
+                "leaderIn": [],
+                "userId": "cmn4xgdfrncs",
+                "username": "macejkovic-anthony-ii",
+                "registration": {
+                    "time": "2019-12-02T12:08:48.000Z"
+                },
+                "personal": {}
+            },
+            {
+                "subscriptions": {
+                    "usersCount": 0,
+                    "communitiesCount": 1
+                },
+                "subscribers": {
+                    "usersCount": 1
+                },
+                "stats": {
+                    "reputation": 0,
+                    "postsCount": 0,
+                    "commentsCount": 0
+                },
+                "leaderIn": [
+                    "MEME"
+                ],
+                "userId": "tst5ripdluga",
+                "username": "machtfrei",
+                "registration": {
+                    "time": "2019-12-02T12:02:39.000Z"
+                },
+                "personal": {}
+            }
+        ],
+        "total": 2
+    }
+}
+```
+
+### extendedSearch
+
+=> Запрос
+
+```json
+{
+    "id": 1,
+    "method": "extendedSearch",
+    "jsonrpc": "2.0",
+    "params": {
+        "queryString": "mac",
+        "entities": {
+            "profiles": {
+                "limit": 5
+            },
+            "posts": {
+                "limit": 1,
+                "offset": 1
+            }
+        }
+    }
+}
+```
+
+<= Ответ
+
+```json
+{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "result": {
+        "profiles": {
+            "items": [
+                {
+                    "subscriptions": {
+                        "usersCount": 0,
+                        "communitiesCount": 0
+                    },
+                    "subscribers": {
+                        "usersCount": 0
+                    },
+                    "stats": {
+                        "reputation": 0,
+                        "postsCount": 0,
+                        "commentsCount": 0
+                    },
+                    "leaderIn": [],
+                    "userId": "cmn4xgdfrncs",
+                    "username": "macejkovic-anthony-ii",
+                    "registration": {
+                        "time": "2019-12-02T12:08:48.000Z"
+                    },
+                    "personal": {}
+                },
+                {
+                    "subscriptions": {
+                        "usersCount": 0,
+                        "communitiesCount": 1
+                    },
+                    "subscribers": {
+                        "usersCount": 1
+                    },
+                    "stats": {
+                        "reputation": 0,
+                        "postsCount": 0,
+                        "commentsCount": 0
+                    },
+                    "leaderIn": [
+                        "MEME"
+                    ],
+                    "userId": "tst5ripdluga",
+                    "username": "machtfrei",
+                    "registration": {
+                        "time": "2019-12-02T12:02:39.000Z"
+                    },
+                    "personal": {}
+                }
+            ],
+            "total": 2
+        },
+        "posts": {
+            "items": [
+                {
+                    "document": {
+                        "attributes": {
+                            "type": "basic",
+                            "version": "1.0"
+                        },
+                        "id": 1,
+                        "type": "post",
+                        "content": [
+                            {
+                                "id": 2,
+                                "type": "paragraph",
+                                "content": [
+                                    {
+                                        "id": 3,
+                                        "type": "text",
+                                        "content": "Chuck Norris's beard can type 140 wpm. at the moment he lives at Apt. 163 77463 Ayana Divide, New Lorenshire, SC 20562     and YODA said: Ow, ow, OW! On my ear you are! witcher quote: You cannot do it. You cannot do it, witcheress. In Kaer Morhen, they taught you to kill, so you kill like a machine. Instinctively. To kill yourself takes character, strength, determination and courage. But that, that they could not teach you. Rick and Morty quote: Pluto's a planet. SuperHero Illustrious Penance has power to Photographic Reflexes and Animal Oriented Powers"
+                                    }
+                                ]
+                            },
+                            {
+                                "id": 13,
+                                "type": "attachments",
+                                "content": [
+                                    {
+                                        "id": 14,
+                                        "type": "website",
+                                        "content": "https://coub.com/view/2067uz"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    "votes": {
+                        "upCount": 3,
+                        "downCount": 1
+                    },
+                    "stats": {
+                        "commentsCount": 0
+                    },
+                    "meta": {
+                        "creationTime": "2019-12-03T20:18:15.000Z"
+                    },
+                    "tags": [
+                        "furnituredesign",
+                        "addict",
+                        "dios"
+                    ],
+                    "contentId": {
+                        "communityId": "BIKE",
+                        "userId": "cmn4phsmwung",
+                        "permlink": "hera-fights-with-eleusis-against-leto-and-common-man-named-misssolomon-shieldsjr-on-volantis-1575404294164"
+                    },
+                    "author": {
+                        "userId": "cmn4phsmwung",
+                        "username": "rice-dan-iii",
+                        "postsCount": 13,
+                        "subscribersCount": 0
+                    },
+                    "community": {
+                        "communityId": "BIKE",
+                        "alias": "bikes",
+                        "name": "Bikes",
+                        "avatarUrl": "https://img.commun.com/images/3g7xqWbpPBpf9q4JSie48XpEGsNr.jpg"
+                    },
+                    "url": "/bikes/@rice-dan-iii/hera-fights-with-eleusis-against-leto-and-common-man-named-misssolomon-shieldsjr-on-volantis-1575404294164",
+                    "type": "basic",
+                    "textLength": 559
+                }
+            ],
+            "total": 9
+        }
+    }
+}
+```
+
+### extendedSearch
+
+=> Запрос
+
+```json
+{
+    "id": 1,
+    "method": "extendedSearch",
+    "jsonrpc": "2.0",
+    "params": {
+        "queryString": "mac",
+        "entities": {
+            "profiles": {
+                "limit": 5
+            },
+            "posts": {
+                "limit": 1,
+                "offset": 1
+            }
+        }
+    }
+}
+```
+
+<= Ответ
+
+```json
+{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "result": {
+        "profiles": {
+            "items": [
+                {
+                    "subscriptions": {
+                        "usersCount": 0,
+                        "communitiesCount": 0
+                    },
+                    "subscribers": {
+                        "usersCount": 0
+                    },
+                    "stats": {
+                        "reputation": 0,
+                        "postsCount": 0,
+                        "commentsCount": 0
+                    },
+                    "leaderIn": [],
+                    "userId": "cmn4xgdfrncs",
+                    "username": "macejkovic-anthony-ii",
+                    "registration": {
+                        "time": "2019-12-02T12:08:48.000Z"
+                    },
+                    "personal": {}
+                },
+                {
+                    "subscriptions": {
+                        "usersCount": 0,
+                        "communitiesCount": 1
+                    },
+                    "subscribers": {
+                        "usersCount": 1
+                    },
+                    "stats": {
+                        "reputation": 0,
+                        "postsCount": 0,
+                        "commentsCount": 0
+                    },
+                    "leaderIn": [
+                        "MEME"
+                    ],
+                    "userId": "tst5ripdluga",
+                    "username": "machtfrei",
+                    "registration": {
+                        "time": "2019-12-02T12:02:39.000Z"
+                    },
+                    "personal": {}
+                }
+            ],
+            "total": 2
+        },
+        "posts": {
+            "items": [
+                {
+                    "document": {
+                        "attributes": {
+                            "type": "basic",
+                            "version": "1.0"
+                        },
+                        "id": 1,
+                        "type": "post",
+                        "content": [
+                            {
+                                "id": 2,
+                                "type": "paragraph",
+                                "content": [
+                                    {
+                                        "id": 3,
+                                        "type": "text",
+                                        "content": "Chuck Norris's beard can type 140 wpm. at the moment he lives at Apt. 163 77463 Ayana Divide, New Lorenshire, SC 20562     and YODA said: Ow, ow, OW! On my ear you are! witcher quote: You cannot do it. You cannot do it, witcheress. In Kaer Morhen, they taught you to kill, so you kill like a machine. Instinctively. To kill yourself takes character, strength, determination and courage. But that, that they could not teach you. Rick and Morty quote: Pluto's a planet. SuperHero Illustrious Penance has power to Photographic Reflexes and Animal Oriented Powers"
+                                    }
+                                ]
+                            },
+                            {
+                                "id": 13,
+                                "type": "attachments",
+                                "content": [
+                                    {
+                                        "id": 14,
+                                        "type": "website",
+                                        "content": "https://coub.com/view/2067uz"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    "votes": {
+                        "upCount": 3,
+                        "downCount": 1
+                    },
+                    "stats": {
+                        "commentsCount": 0
+                    },
+                    "meta": {
+                        "creationTime": "2019-12-03T20:18:15.000Z"
+                    },
+                    "tags": [
+                        "furnituredesign",
+                        "addict",
+                        "dios"
+                    ],
+                    "contentId": {
+                        "communityId": "BIKE",
+                        "userId": "cmn4phsmwung",
+                        "permlink": "hera-fights-with-eleusis-against-leto-and-common-man-named-misssolomon-shieldsjr-on-volantis-1575404294164"
+                    },
+                    "author": {
+                        "userId": "cmn4phsmwung",
+                        "username": "rice-dan-iii",
+                        "postsCount": 13,
+                        "subscribersCount": 0
+                    },
+                    "community": {
+                        "communityId": "BIKE",
+                        "alias": "bikes",
+                        "name": "Bikes",
+                        "avatarUrl": "https://img.commun.com/images/3g7xqWbpPBpf9q4JSie48XpEGsNr.jpg"
+                    },
+                    "url": "/bikes/@rice-dan-iii/hera-fights-with-eleusis-against-leto-and-common-man-named-misssolomon-shieldsjr-on-volantis-1575404294164",
+                    "type": "basic",
+                    "textLength": 559
+                }
+            ],
+            "total": 9
+        }
+    }
+}
+```
+
+### entitySearch
+
+=> Запрос
+
+```json
+{
+    "id": 1,
+    "method": "entitySearch",
+    "jsonrpc": "2.0",
+    "params": {
+        "queryString": "mac",
+        "entity": "profiles",
+        "limit": 5,
+        "offset": 1
+    }
+}
+```
+
+<= Ответ
+
+```json
+{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "result": {
+        "items": [
+            {
+                "subscriptions": {
+                    "usersCount": 0,
+                    "communitiesCount": 1
+                },
+                "subscribers": {
+                    "usersCount": 1
+                },
+                "stats": {
+                    "reputation": 0,
+                    "postsCount": 0,
+                    "commentsCount": 0
+                },
+                "leaderIn": [
+                    "MEME"
+                ],
+                "userId": "tst5ripdluga",
+                "username": "machtfrei",
+                "registration": {
+                    "time": "2019-12-02T12:02:39.000Z"
+                },
+                "personal": {}
+            }
+        ],
+        "total": 2
+    }
+}
+```
+
+
 Возможные переменные окружения `ENV`:
 
 -   `GLS_CONNECTOR_HOST` _(обязательно)_ - адрес, который будет использован для входящих подключений связи микросервисов.  

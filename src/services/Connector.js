@@ -1,6 +1,7 @@
 const core = require('cyberway-core-service');
 const BasicConnector = core.services.Connector;
 const env = require('../data/env');
+const { SEARCHABLE_ENTITIES } = require('../data/constants');
 const Comment = require('../controllers/connector/Comment');
 const Posts = require('../controllers/connector/Posts');
 const Profile = require('../controllers/connector/Profile');
@@ -9,6 +10,7 @@ const LeaderProposals = require('../controllers/connector/LeaderProposals');
 const Block = require('../controllers/connector/Block');
 const Community = require('../controllers/connector/Community');
 const Reports = require('../controllers/connector/Reports');
+const Search = require('../controllers/connector/Search');
 
 class Connector extends BasicConnector {
     constructor({ prism }) {
@@ -31,6 +33,7 @@ class Connector extends BasicConnector {
             this._leaderProposals = new LeaderProposals(linking);
             this._community = new Community(linking);
             this._reports = new Reports(linking);
+            this._search = new Search(linking);
         } else {
             this._posts = empty;
             this._comment = empty;
@@ -39,12 +42,88 @@ class Connector extends BasicConnector {
             this._leaderProposals = empty;
             this._community = empty;
             this._reports = empty;
+            this._search = empty;
         }
     }
 
     async start() {
         await super.start({
             serverRoutes: {
+                quickSearch: {
+                    handler: this._search.quickSearch,
+                    scope: this._search,
+                    inherits: ['onlyWhenPublicApiEnabled'],
+                    validation: {
+                        required: ['queryString'],
+                        properties: {
+                            limit: {
+                                type: 'number',
+                                default: 5,
+                            },
+                            entities: {
+                                type: 'array',
+                                items: {
+                                    enum: [...SEARCHABLE_ENTITIES, 'all'],
+                                },
+                                default: ['all'],
+                            },
+                            queryString: {
+                                type: 'string',
+                            },
+                        },
+                    },
+                },
+                extendedSearch: {
+                    handler: this._search.extendedSearch,
+                    scope: this._search,
+                    inherits: ['onlyWhenPublicApiEnabled'],
+                    validation: {
+                        required: ['queryString', 'entities'],
+                        properties: {
+                            // will make following to be a valid request:
+                            // { entities: { posts: { limit: 20, offset: 0 }, profiles: { limit: 10, offset: 2 } } }
+                            entities: {
+                                type: 'object',
+                                properties: {
+                                    ...SEARCHABLE_ENTITIES.map(entityName => ({
+                                        [entityName]: {
+                                            properties: {
+                                                limit: {
+                                                    type: 'number',
+                                                    default: 10,
+                                                },
+                                                offset: {
+                                                    type: 'number',
+                                                    default: 0,
+                                                },
+                                            },
+                                        },
+                                    })),
+                                },
+                            },
+                            queryString: {
+                                type: 'string',
+                            },
+                        },
+                    },
+                },
+                entitySearch: {
+                    handler: this._search.entitySearch,
+                    scope: this._search,
+                    inherits: ['onlyWhenPublicApiEnabled', 'paging'],
+                    validation: {
+                        required: ['queryString', 'entity'],
+                        properties: {
+                            entity: {
+                                type: 'string',
+                                enum: SEARCHABLE_ENTITIES,
+                            },
+                            queryString: {
+                                type: 'string',
+                            },
+                        },
+                    },
+                },
                 getPost: {
                     handler: this._posts.getPost,
                     scope: this._posts,

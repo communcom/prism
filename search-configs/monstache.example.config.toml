@@ -1,0 +1,42 @@
+gzip = true
+
+mongo-url = "mongodb://slave-mongo:27017"
+
+elasticsearch-urls = ["http://elasticsearch:9200"]
+
+elasticsearch-max-conns = 10
+
+elasticsearch-max-seconds = 1
+
+elasticsearch-max-docs = 1
+
+verbose = true
+
+enable-http-server = false
+
+stats=true
+
+change-stream-namespaces = ["Commun.profiles", "Commun.communities", "Commun.posts", "Commun.comments"]
+
+file-highlighting=true
+
+replay=true
+
+resume=true
+
+
+[[script]]
+namespace = "Commun.comments"
+path="/app/parsePost.js"
+
+[[script]]
+namespace = "Commun.posts"
+path="/app/parsePost.js"
+
+[[script]]
+namespace = "Commun.profiles"
+path="/app/parseProfile.js"
+
+[[script]]
+namespace = "Commun.communities"
+path="/app/parseCommunity.js"
