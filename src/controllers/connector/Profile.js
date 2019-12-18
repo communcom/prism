@@ -40,7 +40,7 @@ class Profile extends BasicController {
         return { items };
     }
 
-    async getBlacklist({ userId, user, type }, { userId: authUserId }) {
+    async getBlacklist({ userId, user, type, offset, limit }, { userId: authUserId }) {
         let path;
         const lookup = {};
         const replaceRoot = {};
@@ -140,11 +140,14 @@ class Profile extends BasicController {
             },
         };
 
+        const paging = [{ $limit: limit, $skip: offset }];
+
         const aggregation = [
             { $match: filter },
             { $project: projection },
             lookup,
             unwind,
+            ...paging,
             replaceRoot,
             ...addFields,
             finalProjection,

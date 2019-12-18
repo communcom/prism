@@ -307,7 +307,7 @@ class Connector extends BasicConnector {
                 getBlacklist: {
                     handler: this._profile.getBlacklist,
                     scope: this._profile,
-                    inherits: ['onlyWhenPublicApiEnabled'],
+                    inherits: ['onlyWhenPublicApiEnabled', 'paging'],
                     validation: {
                         required: ['userId', 'type'],
                         properties: {
