@@ -136,24 +136,70 @@ class Report extends Abstract {
             },
         });
 
-        const previousReportModel = await ReportModel.findOneAndUpdate(
+        const previousReportModel = await ReportModel.findOne(
             {
                 'contentId.communityId': contentId.communityId,
                 'contentId.permlink': contentId.permlink,
                 'contentId.userId': contentId.userId,
             },
-            { $addToSet: { reports: { reporter, reason } }, $inc: { reportsCount: 1 } }
+            { reports: true, _id: false },
+            { lean: true }
         );
 
-        await this.registerForkChanges({
-            type: 'update',
-            Model: ReportModel,
-            documentId: previousReportModel._id,
-            data: {
-                $pull: { reports: { reporter, reason } },
-                $inc: { reportsCount: -1 },
-            },
+        const previousUserReportIndex = previousContentModel.reports.findIndex((element, index) => {
+            if (element.reporter === reporter) {
+                return index;
+            }
         });
+
+        if (previousUserReportIndex > -1) {
+            await ReportModel.update(
+                {
+                    'contentId.communityId': contentId.communityId,
+                    'contentId.permlink': contentId.permlink,
+                    'contentId.userId': contentId.userId,
+                },
+                {
+                    $set: { [`reports[${previousUserReportIndex}]`]: { reporter, reason } },
+                    $inc: { reportsCount: 1 },
+                }
+            );
+
+            await this.registerForkChanges({
+                type: 'update',
+                Model: ReportModel,
+                documentId: previousReportModel._id,
+                data: {
+                    $set: {
+                        [`reports[${previousUserReportIndex}]`]: previousReportModel.reports[
+                            previousUserReportIndex
+                        ],
+                    },
+                },
+            });
+        } else {
+            await ReportModel.update(
+                {
+                    'contentId.communityId': contentId.communityId,
+                    'contentId.permlink': contentId.permlink,
+                    'contentId.userId': contentId.userId,
+                },
+                {
+                    $addToSet: { reports: { reporter, reason } },
+                    $inc: { reportsCount: 1 },
+                }
+            );
+
+            await this.registerForkChanges({
+                type: 'update',
+                Model: ReportModel,
+                documentId: previousReportModel._id,
+                data: {
+                    $pull: { reports: { reporter, reason } },
+                    $inc: { reportsCount: -1 },
+                },
+            });
+        }
     }
 
     async _createReport({ contentId, reporter, reason }) {
