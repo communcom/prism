@@ -398,8 +398,13 @@ class Posts extends BasicController {
 
         if (authUserId) {
             const blacklist = await this._getBlacklist(authUserId);
-            match.$match['contentId.userId'] = { $nin: blacklist.userIds };
-            match.$match['contentId.communityId'] = { $nin: blacklist.communityIds };
+
+            if (blacklist.userIds.length > 0) {
+                match.$match['contentId.userId'] = { $nin: blacklist.userIds };
+            }
+            if (blacklist.communityIds.length > 0) {
+                match.$match['contentId.communityId'] = { $nin: blacklist.communityIds };
+            }
         }
 
         if (!allowNsfw) {

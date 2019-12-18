@@ -146,11 +146,9 @@ class Report extends Abstract {
             { lean: true }
         );
 
-        const previousUserReportIndex = previousContentModel.reports.findIndex((element, index) => {
-            if (element.reporter === reporter) {
-                return index;
-            }
-        });
+        const previousUserReportIndex = previousContentModel.reports.findIndex(
+            element => element.reporter === reporter
+        );
 
         if (previousUserReportIndex > -1) {
             await ReportModel.update(
