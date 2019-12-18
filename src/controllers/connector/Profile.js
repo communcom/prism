@@ -140,7 +140,7 @@ class Profile extends BasicController {
             },
         };
 
-        const paging = [{ $limit: limit, $skip: offset }];
+        const paging = [{ $limit: limit }, { $skip: offset }];
 
         const aggregation = [
             { $match: filter },
