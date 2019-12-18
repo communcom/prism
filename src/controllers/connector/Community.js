@@ -198,7 +198,7 @@ class Community extends BasicController {
                     {
                         userId: authUserId,
                     },
-                    { _id: false, subscriptions: true }
+                    { _id: false, subscriptions: true, blacklist: true }
                 ),
                 LeaderModel.findOne(
                     {
@@ -244,6 +244,8 @@ class Community extends BasicController {
                 }
 
                 community.friends = await Promise.all(resolveSubscribersPromises);
+
+                community.isInBlacklist = authUser.blacklist.communityIds.includes(communityId);
             }
 
             community.isLeader = Boolean(authLeader);
@@ -320,6 +322,22 @@ class Community extends BasicController {
         if (isQuerySubscriptions) {
             for (const community of communities) {
                 community.isSubscribed = true;
+            }
+        }
+
+        if (authUserId) {
+            const authUser = await ProfileModel.findOne(
+                { userId: authUserId },
+                { blacklist: true, _id: false },
+                { lean: true }
+            );
+
+            if (authUser) {
+                for (const community of communities) {
+                    community.isInBlacklist = authUser.blacklist.communityIds.includes(
+                        community.communityId
+                    );
+                }
             }
         }
 
