@@ -219,32 +219,35 @@ async function getEmbedsInfo(connector, items) {
     return results;
 }
 
-function countSymbols(node) {
-    switch (node.type) {
-        case 'post':
-        case 'paragraph': {
-            const list = Array.isArray(node.content) ? node.content : [node.content];
-            let symbols = 0;
+function countSymbols(document) {
+    try {
+        let symbolsCount = 0;
 
-            for (const childNode of list) {
-                symbols += countSymbols(childNode);
+        for (const block of document.content) {
+            if (block.type === 'paragraph') {
+                for (const node of block.content) {
+                    switch (node.type) {
+                        case 'text':
+                        case 'link':
+                            symbolsCount += node.content.length;
+                            break;
+
+                        case 'tag':
+                        case 'mention':
+                            // +1 because of adding symbol @ before username, and # before tag
+                            symbolsCount += node.content.length + 1;
+                            break;
+
+                        default:
+                    }
+                }
             }
-
-            return symbols;
         }
 
-        case 'text':
-        case 'link':
-            return node.content.length;
-
-        case 'tag':
-        case 'mention':
-            // + 1 because of adding symbol @ before username, and # before tag
-            return node.content.length + 1;
-
-        // Всё остальное просто игнорируем
-        default:
-            return 0;
+        return symbolsCount;
+    } catch (err) {
+        Logger.warn('countSymbols failed:', err);
+        return 0;
     }
 }
 
