@@ -2,6 +2,8 @@ const { uniq } = require('lodash');
 const urlValidator = require('valid-url');
 const core = require('cyberway-core-service');
 const { Logger } = core.utils;
+
+const { IMAGES_PROCESSING_STATUS } = require('../data/constants');
 const PostModel = require('../models/Post');
 
 const EMBED_TYPES = ['image', 'video', 'embed', 'website'];
@@ -79,13 +81,15 @@ async function processContent(connector, data, allowedTypes) {
                 ({ type }) => type === 'paragraph' || type === 'attachments'
             );
 
-            let hasUnprocessedImages = false;
+            let imagesProcessingStatus = IMAGES_PROCESSING_STATUS.OK;
 
             const attachments = doc.content.find(({ type }) => type === 'attachments');
 
             if (attachments) {
                 attachments.content = await processEmbeds(connector, attachments.content);
-                hasUnprocessedImages = attachments.content.some(({ type }) => type === 'image');
+                if (attachments.content.some(({ type }) => type === 'image')) {
+                    imagesProcessingStatus = IMAGES_PROCESSING_STATUS.NEED_PROCESSING;
+                }
             }
 
             return {
@@ -95,7 +99,7 @@ async function processContent(connector, data, allowedTypes) {
                     article: null,
                     metadata,
                     textLength: countSymbols(doc),
-                    hasUnprocessedImages,
+                    imagesProcessingStatus,
                 },
                 tags,
             };
@@ -106,7 +110,9 @@ async function processContent(connector, data, allowedTypes) {
 
             doc.content = await processEmbeds(connector, doc.content);
 
-            const hasUnprocessedImages = doc.content.some(({ type }) => type === 'image');
+            const imagesProcessingStatus = doc.content.some(({ type }) => type === 'image')
+                ? IMAGES_PROCESSING_STATUS.NEED_PROCESSING
+                : IMAGES_PROCESSING_STATUS.OK;
 
             return {
                 document: {
@@ -118,7 +124,7 @@ async function processContent(connector, data, allowedTypes) {
                     article: doc,
                     metadata,
                     textLength: countSymbols(doc),
-                    hasUnprocessedImages,
+                    imagesProcessingStatus,
                 },
                 tags,
             };

@@ -43,9 +43,9 @@ module.exports = MongoDB.makeModel(
                 type: Number,
                 default: 0,
             },
-            hasUnprocessedImages: {
-                type: Boolean,
-                default: false,
+            imagesProcessingStatus: {
+                type: Number,
+                default: 0,
             },
         },
         childCommentsCount: {
@@ -196,7 +196,7 @@ module.exports = MongoDB.makeModel(
             },
             {
                 fields: {
-                    'document.hasUnprocessedImages': 1,
+                    'document.imagesProcessingStatus': 1,
                 },
             },
         ],

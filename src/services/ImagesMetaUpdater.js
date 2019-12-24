@@ -4,6 +4,8 @@ const { get } = require('lodash');
 const core = require('cyberway-core-service');
 const BasicService = core.services.Basic;
 const { Logger } = core.utils;
+
+const { IMAGES_PROCESSING_STATUS } = require('../data/constants');
 const env = require('../data/env');
 const PostModel = require('../models/Post');
 const CommentModel = require('../models/Comment');
@@ -81,7 +83,7 @@ class ImagesMetaUpdater extends BasicService {
         const Model = type === 'post' ? PostModel : CommentModel;
 
         const posts = await Model.find(
-            { 'document.hasUnprocessedImages': true },
+            { 'document.imagesProcessingStatus': IMAGES_PROCESSING_STATUS.NEED_PROCESSING },
             {
                 contentId: true,
                 'document.body': true,
@@ -113,16 +115,27 @@ class ImagesMetaUpdater extends BasicService {
         }
 
         const doc = entry.document.article || entry.document.body;
+        let hasError = false;
 
         for (const node of doc.content) {
             switch (node.type) {
                 case 'image':
-                    await this._processImageNode(node);
+                    try {
+                        await this._processImageNode(node);
+                    } catch (err) {
+                        hasError = true;
+                        Logger.warn('Image hosting request failed:', err);
+                    }
                     break;
                 case 'attachments':
                     for (const attach of node.content) {
                         if (attach.type === 'image') {
-                            await this._processImageNode(attach);
+                            try {
+                                await this._processImageNode(attach);
+                            } catch (err) {
+                                hasError = true;
+                                Logger.warn('Image hosting request failed:', err);
+                            }
                         }
                     }
                     break;
@@ -143,7 +156,9 @@ class ImagesMetaUpdater extends BasicService {
                 $set: {
                     'document.body': entry.document.body,
                     'document.article': entry.document.article,
-                    'document.hasUnprocessedImages': false,
+                    'document.imagesProcessingStatus': hasError
+                        ? IMAGES_PROCESSING_STATUS.PROCESSING_ERROR
+                        : IMAGES_PROCESSING_STATUS.OK,
                 },
             }
         );
