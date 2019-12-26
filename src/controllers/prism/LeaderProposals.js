@@ -96,6 +96,19 @@ class LeaderProposals extends Abstract {
             return;
         }
 
+        let type;
+
+        switch (contactAction) {
+            case 'c.list->ban':
+                type = 'ban';
+                break;
+            case 'c.list->unban':
+                type = 'unban';
+                break;
+            default:
+                type = 'change';
+        }
+
         if (contactAction === 'c.list->setinfo') {
             let updatedFieldsCount = 0;
 
@@ -143,6 +156,7 @@ class LeaderProposals extends Abstract {
             isExecuted: false,
             approves: [],
             data,
+            type,
         });
 
         await this.registerForkChanges({

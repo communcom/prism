@@ -15,7 +15,7 @@ const APPROVES_THRESHOLD = {
 };
 
 class LeaderProposals extends BasicController {
-    async getProposals({ communityIds, limit, offset }, { userId }) {
+    async getProposals({ communityIds, limit, offset, types }, { userId }) {
         if (!communityIds) {
             const profile = await ProfileModel.findOne(
                 { userId },
@@ -72,20 +72,27 @@ class LeaderProposals extends BasicController {
                     },
                 },
             },
+            type: 1,
         };
 
         if (userId) {
             projection.isApproved = isIncludes('$approves', userId);
         }
 
+        const match = {
+            communityId: {
+                $in: communityIds,
+            },
+            isExecuted: false,
+        };
+
+        if (!types.includes('all')) {
+            match.type = { $in: types };
+        }
+
         const items = await LeaderProposalModel.aggregate([
             {
-                $match: {
-                    communityId: {
-                        $in: communityIds,
-                    },
-                    isExecuted: false,
-                },
+                $match: match,
             },
             {
                 $sort: {

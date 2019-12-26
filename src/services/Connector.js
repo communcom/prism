@@ -367,6 +367,12 @@ class Connector extends BasicConnector {
                                     type: 'string',
                                 },
                             },
+                            types: {
+                                items: {
+                                    enum: ['all', 'change', 'ban', 'unban'],
+                                },
+                                default: ['all'],
+                            },
                         },
                     },
                 },

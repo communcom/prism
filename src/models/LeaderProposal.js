@@ -57,6 +57,10 @@ module.exports = MongoDB.makeModel(
             ],
             required: true,
         },
+        type: {
+            type: String,
+            enum: ['change', 'ban', 'unban'],
+        },
     },
     {
         index: [

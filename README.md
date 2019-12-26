@@ -215,6 +215,7 @@ getProposals:                    // Получить список предлаг
     communityIds <[string]|null> // Идентификаторы комьюнити, если null то все где пользователь лидер
     sequenceKey <string/null>    // Идентификатор пагинации для получения следующего контента
     limit <number>(10)           // Количество элементов
+    types <[string]>(["all"])    // Типы именений (доступны: "ban", "unban", "change")
 
 getCommunities:
     type <string>(all)
