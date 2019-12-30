@@ -249,6 +249,7 @@ class Posts extends BasicController {
                     { 'contentId.userId': { $in: profile.subscriptions.userIds } },
                     { 'contentId.communityId': { $in: profile.subscriptions.communityIds } },
                 ],
+                status: 'clean',
                 $nor: [
                     { 'contentId.userId': { $in: profile.blacklist.userIds } },
                     { 'contentId.communityId': { $in: profile.blacklist.communityIds } },
@@ -388,6 +389,7 @@ class Posts extends BasicController {
                 'meta.creationTime': {
                     $gte: new Date(startDate),
                 },
+                status: 'clean',
             },
         };
 
