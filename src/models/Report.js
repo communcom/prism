@@ -1,23 +1,12 @@
 const core = require('cyberway-core-service');
 const MongoDB = core.services.MongoDB;
 
+const { contentIdType } = require('./common');
+
 module.exports = MongoDB.makeModel(
     'Report',
     {
-        contentId: {
-            userId: {
-                type: String,
-                required: true,
-            },
-            permlink: {
-                type: String,
-                required: true,
-            },
-            communityId: {
-                type: String,
-                required: true,
-            },
-        },
+        contentId: contentIdType,
         reports: [
             {
                 reporter: {
@@ -32,15 +21,18 @@ module.exports = MongoDB.makeModel(
         ],
         reportsCount: {
             type: Number,
+            required: true,
             default: 0,
         },
         contentType: {
             type: String,
             enum: ['post', 'comment'],
+            required: true,
         },
         status: {
             type: String,
             enum: ['open', 'closed'],
+            required: true,
             default: 'open',
         },
     },
@@ -50,7 +42,14 @@ module.exports = MongoDB.makeModel(
         },
         index: [
             {
-                fields: {},
+                fields: {
+                    userId: 1,
+                    permlink: 1,
+                    communityId: 1,
+                },
+                options: {
+                    unique: true,
+                },
             },
         ],
     }

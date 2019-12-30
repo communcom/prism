@@ -32,7 +32,7 @@ class Connector extends BasicConnector {
             this._leaders = new Leaders(linking);
             this._leaderProposals = new LeaderProposals(linking);
             this._community = new Community(linking);
-            this._reports = new Reports(linking);
+            this._reports = new Reports({ ...linking, leaderProposals: this._leaderProposals });
             this._search = new Search(linking);
         } else {
             this._posts = empty;
@@ -368,10 +368,38 @@ class Connector extends BasicConnector {
                                 },
                             },
                             types: {
+                                type: 'array',
                                 items: {
-                                    enum: ['all', 'change', 'ban', 'unban'],
+                                    type: 'string',
+                                    enum: ['all', 'setInfo', 'banUser', 'unbanUser', 'banPost'],
                                 },
                                 default: ['all'],
+                            },
+                        },
+                    },
+                },
+                getBanPostProposal: {
+                    handler: this._leaderProposals.getBanPostProposal,
+                    scope: this._leaderProposals,
+                    inherits: ['contentIdNew'],
+                    validation: {
+                        required: ['communityId', 'userId', 'permlink'],
+                    },
+                },
+                getProposal: {
+                    handler: this._leaderProposals.getProposal,
+                    scope: this._leaderProposals,
+                    validation: {
+                        required: ['communityId', 'proposer', 'proposalId'],
+                        properties: {
+                            communityId: {
+                                type: 'string',
+                            },
+                            proposer: {
+                                type: 'string',
+                            },
+                            proposalId: {
+                                type: 'string',
                             },
                         },
                     },

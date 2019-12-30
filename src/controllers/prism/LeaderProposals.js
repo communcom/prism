@@ -7,12 +7,31 @@ const { Logger } = core.utils;
 const Abstract = require('./Abstract');
 const env = require('../../data/env');
 const LeaderModel = require('../../models/Leader');
+const ReportModel = require('../../models/Report');
 const ProposalModel = require('../../models/LeaderProposal');
+const PostModel = require('../../models/Post');
+const CommentModel = require('../../models/Comment');
 
 const ALLOWED_ACTIONS = [
     {
-        contactAction: 'c.list->setinfo',
-        fields: ['description', 'language', 'rules', 'avatar_image', 'cover_image'],
+        contract: 'c.list',
+        action: 'setinfo',
+        type: 'setInfo',
+    },
+    {
+        contract: 'c.list',
+        action: 'ban',
+        type: 'banUser',
+    },
+    {
+        contract: 'c.list',
+        action: 'unban',
+        type: 'unbanUser',
+    },
+    {
+        contract: 'c.gallery',
+        action: 'ban',
+        type: 'banPost',
     },
 ];
 
@@ -88,59 +107,23 @@ class LeaderProposals extends Abstract {
             return;
         }
 
-        const contactAction = `${contract}->${action}`;
-
-        const actionInfo = ALLOWED_ACTIONS.find(action => action.contactAction === contactAction);
+        const actionInfo = ALLOWED_ACTIONS.find(
+            allowed => allowed.contract === contract && allowed.action === action
+        );
 
         if (!actionInfo) {
             return;
         }
 
-        let type;
-
-        switch (contactAction) {
-            case 'c.list->ban':
-                type = 'ban';
-                break;
-            case 'c.list->unban':
-                type = 'unban';
-                break;
-            default:
-                type = 'change';
-        }
-
-        if (contactAction === 'c.list->setinfo') {
-            let updatedFieldsCount = 0;
-
-            for (const [key, value] of Object.entries(data)) {
-                if (key === 'commun_code') {
-                    continue;
-                }
-
-                if (!isNil(value)) {
-                    updatedFieldsCount++;
-                }
-
-                if (!actionInfo.fields.includes(key)) {
-                    Logger.warn('Community "setinfo" proposal with unknown field (skip):', data);
-                    return;
-                }
-            }
-
-            // Обрабатываем только предложения с изменением одного поля
-            if (updatedFieldsCount !== 1) {
-                Logger.warn('Proposal "community->setinfo" with several changes (skip):', data);
+        if (contract === 'c.list' && action === 'setinfo') {
+            if (!this._validateSetInfo(data)) {
                 return;
             }
+        }
 
-            if (!isNil(data.rules)) {
-                if (!this._validateRules(data.rules)) {
-                    Logger.warn(
-                        'Proposal "community->setinfo" with invalid rules update (skip):',
-                        data.rules
-                    );
-                    return;
-                }
+        if (contract === 'c.gallery' && action === 'ban') {
+            if (!(await this._validatePublicationBan(data))) {
+                return;
             }
         }
 
@@ -148,6 +131,7 @@ class LeaderProposals extends Abstract {
             communityId,
             proposer,
             proposalId,
+            type: actionInfo.type,
             contract,
             action,
             permission,
@@ -156,7 +140,6 @@ class LeaderProposals extends Abstract {
             isExecuted: false,
             approves: [],
             data,
-            type,
         });
 
         await this.registerForkChanges({
@@ -259,6 +242,78 @@ class LeaderProposals extends Abstract {
             documentId: deletedModel._id,
             data: deletedModel.toObject(),
         });
+    }
+
+    _validateSetInfo(data) {
+        const allowedFields = ['description', 'language', 'rules', 'avatar_image', 'cover_image'];
+
+        let updatedFieldsCount = 0;
+
+        for (const [key, value] of Object.entries(data)) {
+            if (key === 'commun_code') {
+                continue;
+            }
+
+            if (!isNil(value)) {
+                updatedFieldsCount++;
+            }
+
+            if (!allowedFields.includes(key)) {
+                Logger.warn('Community "setinfo" proposal with unknown field (skip):', data);
+                return false;
+            }
+        }
+
+        // Обрабатываем только предложения с изменением одного поля
+        if (updatedFieldsCount !== 1) {
+            Logger.warn('Proposal "community->setinfo" with several changes (skip):', data);
+            return false;
+        }
+
+        if (!isNil(data.rules)) {
+            if (!this._validateRules(data.rules)) {
+                Logger.warn(
+                    'Proposal "community->setinfo" with invalid rules update (skip):',
+                    data.rules
+                );
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    async _validatePublicationBan(data) {
+        const { commun_code, message_id } = data;
+
+        const match = {
+            'contentId.communityId': commun_code,
+            'contentId.userId': message_id.author,
+            'contentId.permlink': message_id.permlink,
+        };
+
+        const [post, comment] = await Promise.all([
+            PostModel.findOne(match, { _id: true }, { lean: true }),
+            CommentModel.findOne(match, { _id: true }, { lean: true }),
+        ]);
+
+        if (!post && !comment) {
+            return false;
+        }
+
+        const model = post ? PostModel : CommentModel;
+
+        try {
+            await model.updateOne(match, {
+                $set: {
+                    'reports.status': 'open',
+                },
+            });
+        } catch (err) {
+            Logger.warn('Publication update failed:', match, err);
+        }
+
+        return true;
     }
 
     _validateRules(rulesJSON) {

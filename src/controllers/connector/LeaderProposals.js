@@ -11,10 +11,68 @@ const { isIncludes } = require('../../utils/mongodb');
 const APPROVES_THRESHOLD = {
     'lead.smajor': 3,
     'lead.major': 3,
-    'lead.minor': 1,
+    'lead.minor': 2,
 };
 
 class LeaderProposals extends BasicController {
+    async getBanPostProposal(contentId, { userId }) {
+        const [proposal] = await this._getProposals(
+            [
+                {
+                    $match: {
+                        communityId: contentId.communityId,
+                        'data.message_id.author': contentId.userId,
+                        'data.message_id.permlink': contentId.permlink,
+                    },
+                },
+                {
+                    $limit: 1,
+                },
+            ],
+            userId
+        );
+
+        if (!proposal) {
+            throw {
+                code: 404,
+                message: 'Proposal is not found',
+            };
+        }
+
+        return {
+            proposal,
+        };
+    }
+
+    async getProposal({ proposer, proposalId, communityId }, { userId }) {
+        const [proposal] = await this._getProposals(
+            [
+                {
+                    $match: {
+                        communityId,
+                        proposer,
+                        proposalId,
+                    },
+                },
+                {
+                    $limit: 1,
+                },
+            ],
+            userId
+        );
+
+        if (!proposal) {
+            throw {
+                code: 404,
+                message: 'Proposal is not found',
+            };
+        }
+
+        return {
+            proposal,
+        };
+    }
+
     async getProposals({ communityIds, limit, offset, types }, { userId }) {
         if (!communityIds) {
             const profile = await ProfileModel.findOne(
@@ -33,10 +91,48 @@ class LeaderProposals extends BasicController {
             communityIds = profile.leaderIn;
         }
 
+        const match = {
+            communityId: {
+                $in: communityIds,
+            },
+            isExecuted: false,
+        };
+
+        if (!types.includes('all')) {
+            match.type = { $in: types };
+        }
+
+        const items = await this._getProposals(
+            [
+                {
+                    $match: match,
+                },
+                {
+                    $sort: {
+                        blockTime: -1,
+                    },
+                },
+                {
+                    $skip: offset,
+                },
+                {
+                    $limit: limit,
+                },
+            ],
+            userId
+        );
+
+        return {
+            items,
+        };
+    }
+
+    async _getProposals(aggregate, userId) {
         const projection = {
             _id: false,
             proposer: true,
             proposalId: true,
+            type: true,
             contract: true,
             action: true,
             permission: true,
@@ -72,39 +168,14 @@ class LeaderProposals extends BasicController {
                     },
                 },
             },
-            type: 1,
         };
 
         if (userId) {
             projection.isApproved = isIncludes('$approves', userId);
         }
 
-        const match = {
-            communityId: {
-                $in: communityIds,
-            },
-            isExecuted: false,
-        };
-
-        if (!types.includes('all')) {
-            match.type = { $in: types };
-        }
-
         const items = await LeaderProposalModel.aggregate([
-            {
-                $match: match,
-            },
-            {
-                $sort: {
-                    blockTime: -1,
-                },
-            },
-            {
-                $skip: offset,
-            },
-            {
-                $limit: limit,
-            },
+            ...aggregate,
             {
                 $lookup: {
                     from: 'profiles',
@@ -125,6 +196,10 @@ class LeaderProposals extends BasicController {
                 $project: projection,
             },
         ]);
+
+        if (!items.length) {
+            return [];
+        }
 
         const leaderIds = new Set();
 
@@ -174,9 +249,7 @@ class LeaderProposals extends BasicController {
             };
         }
 
-        return {
-            items,
-        };
+        return items;
     }
 
     _formatChanges(proposal) {

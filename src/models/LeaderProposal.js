@@ -16,6 +16,11 @@ module.exports = MongoDB.makeModel(
             type: String,
             required: true,
         },
+        type: {
+            type: String,
+            enum: ['setInfo', 'banUser', 'unbanUser', 'banPost'],
+            required: true,
+        },
         contract: {
             type: String,
             required: true,
@@ -57,10 +62,6 @@ module.exports = MongoDB.makeModel(
             ],
             required: true,
         },
-        type: {
-            type: String,
-            enum: ['change', 'ban', 'unban'],
-        },
     },
     {
         index: [
@@ -88,6 +89,13 @@ module.exports = MongoDB.makeModel(
                 },
                 options: {
                     unique: true,
+                },
+            },
+            {
+                fields: {
+                    communityId: 1,
+                    'data.message_id.author': 1,
+                    'data.message_id.permlink': 1,
                 },
             },
         ],

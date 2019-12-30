@@ -70,9 +70,9 @@ class Main {
             postsCommunitiesCtrl: [
                 ...this._postCreateActions,
                 ...this._communityActions,
-                ...this._ctrlActions,
+                ...this._ctrlCreateActions,
             ],
-            comments: [...this._commentCreateActions],
+            commentsCtrl: [...this._commentCreateActions, ...this._ctrlUpdateActions],
             gallery: [...this._galleryActions],
         };
 
@@ -366,8 +366,14 @@ class Main {
 
         switch (action.code) {
             case 'c.ctrl':
-                this._ctrlActions.push(() => this._leader.processAction(action.action, actionArgs));
-                this._ctrlActions.push(() =>
+                let queue = this._ctrlUpdateActions;
+
+                if (action.action === 'propose') {
+                    queue = this._ctrlCreateActions;
+                }
+
+                queue.push(() => this._leader.processAction(action.action, actionArgs));
+                queue.push(() =>
                     this._leaderProposals.processAction(action.action, actionArgs, meta)
                 );
                 break;
@@ -377,7 +383,7 @@ class Main {
             for (const event of action.events) {
                 switch (event.code) {
                     case 'c.ctrl':
-                        this._ctrlActions.push(() =>
+                        this._ctrlUpdateActions.push(() =>
                             this._leader.processEvent(event.event, event.args)
                         );
                         break;
@@ -403,7 +409,9 @@ class Main {
 
         this._postCreateActions = [];
         this._communityActions = [];
-        this._ctrlActions = [];
+
+        this._ctrlCreateActions = [];
+        this._ctrlUpdateActions = [];
 
         this._commentCreateActions = [];
 

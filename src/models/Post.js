@@ -1,23 +1,12 @@
 const core = require('cyberway-core-service');
 const { MongoDB } = core.services;
 
+const { contentIdType } = require('./common');
+
 module.exports = MongoDB.makeModel(
     'Post',
     {
-        contentId: {
-            communityId: {
-                type: String,
-                required: true,
-            },
-            userId: {
-                type: String,
-                required: true,
-            },
-            permlink: {
-                type: String,
-                required: true,
-            },
-        },
+        contentId: contentIdType,
         document: {
             type: {
                 type: String,

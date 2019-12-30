@@ -1,5 +1,6 @@
 const core = require('cyberway-core-service');
-const BasicController = core.controllers.Basic;
+const { Controller } = core.controllers;
+const { Logger } = core.utils;
 
 const ReportModel = require('../../models/Report');
 const PostModel = require('../../models/Post');
@@ -48,7 +49,6 @@ const basePostProjection = {
 const baseCommentProjection = {
     $project: {
         _id: false,
-        communityId: true,
         contentId: true,
         'document.type': true,
         'document.body': true,
@@ -106,8 +106,16 @@ const communityLookup = {
     },
 };
 
-class Reports extends BasicController {
-    async getReportsList({ contentType, communityIds, status, sortBy, offset, limit }, { userId }) {
+class Reports extends Controller {
+    constructor({ leaderProposals, ...links }) {
+        super(links);
+
+        this._leaderProposals = leaderProposals;
+    }
+
+    async getReportsList({ contentType, communityIds, status, sortBy, offset, limit }, auth) {
+        const { userId } = auth;
+
         if (!communityIds) {
             const profile = await ProfileModel.findOne(
                 { userId },
@@ -154,16 +162,14 @@ class Reports extends BasicController {
 
         const match = {
             $match: {
-                'reports.reportsCount': { $gt: 0 },
                 'reports.status': status,
             },
         };
 
-        const communitiesMatch = communityIds.map(communityId => ({
-            'contentId.communityId': communityId,
-        }));
-        if (communitiesMatch.length > 0) {
-            match.$match.$or = communitiesMatch;
+        if (communityIds.length > 0) {
+            match.$match.$or = communityIds.map(communityId => ({
+                'contentId.communityId': communityId,
+            }));
         }
 
         const aggregation = [
@@ -179,6 +185,22 @@ class Reports extends BasicController {
         const items = await model.aggregate(aggregation);
 
         this._fixDocuments(items, contentType);
+
+        for (const item of items) {
+            item.proposal = null;
+
+            try {
+                const { proposal } = await this._leaderProposals.getBanPostProposal(
+                    item.contentId,
+                    auth
+                );
+                item.proposal = proposal;
+            } catch (err) {
+                if (err.code !== 404) {
+                    Logger.warn('getBanPostProposal failed:', err);
+                }
+            }
+        }
 
         return { items };
     }
