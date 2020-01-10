@@ -171,8 +171,8 @@ class Comment extends BasicController {
         };
         const aggregation = [
             filter,
-            ...paging,
             sorting,
+            ...paging,
             profileLookup,
             communityLookup,
             ...this._addCurrentUserFields(authUserId),
