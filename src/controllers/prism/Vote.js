@@ -51,7 +51,7 @@ class Vote extends Abstract {
 
         const { hasUpVote, hasDownVote } = previousModel.votes;
 
-        const upVoteActions = {};
+        const upVoteActions = { inc: 0, action: '' };
         const downVoteActions = {};
 
         if (up === 'add') {
@@ -112,24 +112,37 @@ class Vote extends Abstract {
             return;
         }
 
+        const forkData = {};
+
+        if (upVoteActions.fork) {
+            forkData[upVoteActions.fork] = {
+                'votes.upVotes': { userId },
+            };
+        }
+
+        if (downVoteActions.fork) {
+            forkData[downVoteActions.fork] = {
+                'votes.downVotes': { userId },
+            };
+        }
+
+        if (upVoteActions.inc || downVoteActions.inc) {
+            forkData.$inc = {};
+
+            if (upVoteActions.inc) {
+                forkData.$inc['votes.upCount'] = -upVoteActions.inc;
+            }
+
+            if (downVoteActions.inc) {
+                forkData.$inc['votes.downCount'] = -downVoteActions.inc;
+            }
+        }
+
         this.registerForkChanges({
             type: 'update',
             Model,
             documentId: previousModel._id,
-            data: {
-                $set: {
-                    [upVoteActions.fork]: {
-                        'votes.upVotes': { userId },
-                    },
-                    [downVoteActions.fork]: {
-                        'votes.downVotes': { userId },
-                    },
-                },
-                $inc: {
-                    'votes.upCount': -upVoteActions.inc,
-                    'votes.downCount': -downVoteActions.inc,
-                },
-            },
+            data: forkData,
         }).catch(error => {
             console.error('Error during fork register', error);
             throw error;
