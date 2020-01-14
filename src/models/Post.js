@@ -79,6 +79,10 @@ module.exports = MongoDB.makeModel(
                 type: Number,
                 default: 0,
             },
+            selfCommentsCount: {
+                type: Number,
+                default: 0,
+            },
         },
         meta: {
             creationTime: {

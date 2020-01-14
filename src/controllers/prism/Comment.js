@@ -95,13 +95,20 @@ class Comment extends Abstract {
 
         const model = await CommentModel.create(modelData);
 
+        let selfCommentsCountIncrement = 0;
+        if (model.parents.post) {
+            if (model.parents.post.userId === model.contentId.userId) {
+                selfCommentsCountIncrement = 1;
+            }
+        }
+
         const finishingPromises = [
             this.registerForkChanges({
                 type: 'create',
                 Model: CommentModel,
                 documentId: model._id,
             }),
-            this.updatePostCommentsCount(model, 1),
+            this.updatePostCommentsCount(model, 1, selfCommentsCountIncrement),
             this.updateUserCommentsCount(model.contentId.userId, 1),
         ];
 
@@ -186,7 +193,7 @@ class Comment extends Abstract {
         });
     }
 
-    async updatePostCommentsCount(model, increment) {
+    async updatePostCommentsCount(model, increment, selfCommentsIncrement) {
         const contentId = model.parents.post;
         const previousModel = await PostModel.findOneAndUpdate(
             {
@@ -194,7 +201,12 @@ class Comment extends Abstract {
                 'contentId.permlink': contentId.permlink,
                 'contentId.communityId': contentId.communityId,
             },
-            { $inc: { 'stats.commentsCount': increment } }
+            {
+                $inc: {
+                    'stats.commentsCount': increment,
+                    'stars.selfCommentsCount': selfCommentsIncrement,
+                },
+            }
         );
 
         if (previousModel) {
@@ -202,7 +214,12 @@ class Comment extends Abstract {
                 type: 'update',
                 Model: PostModel,
                 documentId: previousModel._id,
-                data: { $inc: { 'stats.commentsCount': -increment } },
+                data: {
+                    $inc: {
+                        'stats.commentsCount': -increment,
+                        'stars.selfCommentsCount': -selfCommentsIncrement,
+                    },
+                },
             });
         }
     }
