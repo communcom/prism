@@ -204,7 +204,7 @@ class Comment extends Abstract {
             {
                 $inc: {
                     'stats.commentsCount': increment,
-                    'stars.selfCommentsCount': selfCommentsIncrement,
+                    'stats.selfCommentsCount': selfCommentsIncrement,
                 },
             }
         );
@@ -217,7 +217,7 @@ class Comment extends Abstract {
                 data: {
                     $inc: {
                         'stats.commentsCount': -increment,
-                        'stars.selfCommentsCount': -selfCommentsIncrement,
+                        'stats.selfCommentsCount': -selfCommentsIncrement,
                     },
                 },
             });
