@@ -142,10 +142,6 @@ async function processEmbeds(connector, originalItems) {
     let items = originalItems;
     let lastId = 0;
 
-    for (const item of items) {
-        item._id = ++lastId;
-    }
-
     items = items.filter(item => {
         if (EMBED_TYPES.includes(item.type)) {
             if (!urlValidator.isUri(item.content)) {
@@ -156,6 +152,10 @@ async function processEmbeds(connector, originalItems) {
 
         return true;
     });
+
+    for (const item of items) {
+        item._id = ++lastId;
+    }
 
     const embeds = await getEmbedsInfo(
         connector,

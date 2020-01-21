@@ -59,16 +59,8 @@ class Leaders extends BasicController {
                 },
             },
             {
-                $project: {
-                    userId: true,
+                $addFields: {
                     profile: { $arrayElemAt: ['$profiles', 0] },
-                    url: true,
-                    position: true,
-                    rating: true,
-                    votesCount: true,
-                    isVoted: true,
-                    isActive: true,
-                    inTop: true,
                     ratingPercent: totalRating
                         ? {
                               $divide: ['$ratingNum', totalRating],
@@ -113,6 +105,7 @@ class Leaders extends BasicController {
                 isActive: true,
                 isVoted: true,
                 isSubscribed: true,
+                inTop: true,
                 username: '$profile.username',
                 avatarUrl: '$profile.avatarUrl',
             },
