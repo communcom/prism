@@ -42,6 +42,7 @@ const baseProjection = {
         votes: true,
         stats: true,
         meta: true,
+        isNsfw: { $in: ['nsfw', '$tags'] },
         author: {
             $let: {
                 vars: {
