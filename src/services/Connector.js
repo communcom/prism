@@ -554,6 +554,10 @@ class Connector extends BasicConnector {
                             search: {
                                 type: 'string',
                             },
+                            excludeMySubscriptions: {
+                                type: 'boolean',
+                                default: false,
+                            },
                         },
                     },
                 },

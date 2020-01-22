@@ -258,7 +258,7 @@ class Community extends BasicController {
     }
 
     async getCommunities(
-        { type, userId, search, limit, offset },
+        { type, userId, search, limit, offset, excludeMySubscriptions },
         { userId: authUserId },
         { clientType }
     ) {
@@ -271,11 +271,20 @@ class Community extends BasicController {
         if (search) {
             query.name = { $regex: `^${escape(search.trim())}` };
         }
-        let isQuerySubscriptions = false;
+
+        let forceIsSubscribed = null;
 
         if (type === 'user') {
             query.subscribers = userId;
-            isQuerySubscriptions = authUserId === userId;
+
+            if (authUserId === userId) {
+                forceIsSubscribed = true;
+            }
+        } else if (excludeMySubscriptions && authUserId) {
+            query.subscribers = {
+                $ne: authUserId,
+            };
+            forceIsSubscribed = false;
         }
 
         const aggregation = [
@@ -293,8 +302,8 @@ class Community extends BasicController {
             },
         ];
 
-        if (authUserId && !isQuerySubscriptions) {
-            if (!isQuerySubscriptions) {
+        if (authUserId) {
+            if (forceIsSubscribed === null) {
                 aggregation.push(
                     addFieldIsIncludes({
                         newField: 'isSubscribed',
@@ -319,9 +328,9 @@ class Community extends BasicController {
 
         const communities = await CommunityModel.aggregate(aggregation);
 
-        if (isQuerySubscriptions) {
+        if (forceIsSubscribed !== null) {
             for (const community of communities) {
-                community.isSubscribed = true;
+                community.isSubscribed = forceIsSubscribed;
             }
         }
 

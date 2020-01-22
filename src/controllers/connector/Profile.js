@@ -1,9 +1,9 @@
+const escape = require('escape-string-regexp');
 const core = require('cyberway-core-service');
 const BasicController = core.controllers.Basic;
 const ProfileModel = require('../../models/Profile');
 const CommunityModel = require('../../models/Community');
 const { addFieldIsIncludes } = require('../../utils/mongodb');
-const escape = require('escape-string-regexp');
 
 const COMMON_COMMUNITIES_COUNT = 10;
 const COMMON_FRIENDS_COUNT = 5;
