@@ -61,11 +61,6 @@ class Fork extends BasicService {
             },
         });
 
-        await subscriber.setLastBlockMetaData({
-            lastBlockNum: newBase.blockNum,
-            lastBlockSequence: newBase.blockSequence,
-        });
-
         Logger.info('Revert on fork done!');
     }
 
