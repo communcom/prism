@@ -40,7 +40,7 @@ const baseProjection = {
         'document.body': true,
         'document.textLength': true,
         votes: true,
-        stats: true,
+        'stats.commentsCount': true,
         meta: true,
         isNsfw: { $in: ['nsfw', '$tags'] },
         author: {
