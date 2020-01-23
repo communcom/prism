@@ -42,27 +42,46 @@ class Search extends BasicController {
         for (const item of results) {
             const [, entityType] = item._index.split('.');
 
+            let promise;
+            let type;
+
             switch (entityType) {
                 case 'posts':
-                    resolvePromises.push(getPost(item._id, { userId }));
+                    type = 'post';
+                    promise = getPost(item._id, { userId });
                     break;
                 case 'comments':
-                    resolvePromises.push(getComment(item._id, { userId }));
+                    type = 'comment';
+                    promise = getComment(item._id, { userId });
                     break;
                 case 'communities':
-                    resolvePromises.push(getCommunity(item._id, { userId }));
+                    type = 'community';
+                    promise = getCommunity(item._id, { userId });
                     break;
                 case 'profiles':
-                    resolvePromises.push(getProfile(item._id, { userId }));
+                    type = 'profile';
+                    promise = getProfile(item._id, { userId });
                     break;
                 default:
                     Logger.warn(`Entity type ${entityType} is not supported`);
+            }
+
+            if (promise) {
+                resolvePromises.push(
+                    promise.then(data => {
+                        data.type = type;
+                        return data;
+                    })
+                );
             }
         }
 
         const items = await Promise.all(resolvePromises);
 
-        return { items, total: found.hits.total.value };
+        return {
+            items,
+            total: found.hits.total.value,
+        };
     }
 
     async quickSearch({ queryString, limit, entities }, { userId }) {
