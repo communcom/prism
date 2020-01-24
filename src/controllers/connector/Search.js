@@ -89,15 +89,31 @@ class Search extends BasicController {
     }
 
     async extendedSearch({ queryString, entities }, { userId }) {
+        const entitiesList = [...Object.entries(entities)];
         const result = {};
-        for (const entity of Object.keys(entities)) {
-            const { limit, offset } = entities[entity];
 
-            result[entity] = await this._find(
-                { queryString, limit, offset, entities: [entity] },
-                { userId }
-            );
+        if (entitiesList.length === 0) {
+            throw {
+                code: 500,
+                message: 'No search entities is found',
+            };
         }
+
+        await Promise.all(
+            entitiesList.map(([entityName, params]) =>
+                this._find(
+                    {
+                        queryString,
+                        limit: params.limit,
+                        offset: params.offset,
+                        entities: [entityName],
+                    },
+                    { userId }
+                ).then(results => {
+                    result[entityName] = results;
+                })
+            )
+        );
 
         return result;
     }

@@ -84,22 +84,22 @@ class Connector extends BasicConnector {
                             // { entities: { posts: { limit: 20, offset: 0 }, profiles: { limit: 10, offset: 2 } } }
                             entities: {
                                 type: 'object',
-                                properties: {
-                                    ...SEARCHABLE_ENTITIES.map(entityName => ({
-                                        [entityName]: {
-                                            properties: {
-                                                limit: {
-                                                    type: 'number',
-                                                    default: 10,
-                                                },
-                                                offset: {
-                                                    type: 'number',
-                                                    default: 0,
-                                                },
+                                properties: SEARCHABLE_ENTITIES.reduce((entities, entityName) => {
+                                    entities[entityName] = {
+                                        properties: {
+                                            limit: {
+                                                type: 'number',
+                                                default: 10,
+                                            },
+                                            offset: {
+                                                type: 'number',
+                                                default: 0,
                                             },
                                         },
-                                    })),
-                                },
+                                    };
+
+                                    return entities;
+                                }, {}),
                             },
                             queryString: {
                                 type: 'string',
