@@ -6,6 +6,7 @@ const ReportModel = require('../../models/Report');
 const PostModel = require('../../models/Post');
 const CommentModel = require('../../models/Comment');
 const ProfileModel = require('../../models/Profile');
+const { appendViewsCount } = require('../../utils/viewsCount');
 
 const basePostProjection = {
     $project: {
@@ -200,6 +201,10 @@ class Reports extends Controller {
                     Logger.warn('getBanPostProposal failed:', err);
                 }
             }
+        }
+
+        if (contentType === 'post') {
+            await appendViewsCount(items, this);
         }
 
         return { items };
