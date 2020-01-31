@@ -140,13 +140,13 @@ module.exports = MongoDB.makeModel(
                 fields: {
                     'contentId.userId': 1,
                     tags: 1,
-                    'meta.creationTime': 1,
+                    'meta.creationTime': -1,
                 },
             },
             {
                 fields: {
                     'contentId.userId': 1,
-                    'meta.creationTime': 1,
+                    'meta.creationTime': -1,
                 },
             },
             {
@@ -176,6 +176,11 @@ module.exports = MongoDB.makeModel(
             {
                 fields: {
                     'document.imagesProcessingStatus': 1,
+                },
+            },
+            {
+                fields: {
+                    'meta.creationTime': -1,
                 },
             },
         ],
