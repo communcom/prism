@@ -146,7 +146,7 @@ class Report extends Abstract {
             { lean: true }
         );
 
-        const previousUserReportIndex = previousContentModel.reports.findIndex(
+        const previousUserReportIndex = previousReportModel.reports.findIndex(
             element => element.reporter === reporter
         );
 
@@ -158,7 +158,7 @@ class Report extends Abstract {
                     'contentId.userId': contentId.userId,
                 },
                 {
-                    $set: { [`reports[${previousUserReportIndex}]`]: { reporter, reason } },
+                    $set: { [`reports.${previousUserReportIndex}`]: { reporter, reason } },
                     $inc: { reportsCount: 1 },
                 }
             );
@@ -169,7 +169,7 @@ class Report extends Abstract {
                 documentId: previousReportModel._id,
                 data: {
                     $set: {
-                        [`reports[${previousUserReportIndex}]`]: previousReportModel.reports[
+                        [`reports.${previousUserReportIndex}`]: previousReportModel.reports[
                             previousUserReportIndex
                         ],
                     },
