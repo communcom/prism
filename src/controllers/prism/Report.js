@@ -201,7 +201,7 @@ class Report extends Abstract {
     }
 
     async _createReport({ contentId, reporter, reason }) {
-        const type = PostModel.findOne({ contentId }) ? 'post' : 'comment';
+        const type = (await PostModel.findOne({ contentId })) ? 'post' : 'comment';
         const Model = type === 'post' ? PostModel : CommentModel;
 
         const previousContentModel = await Model.findOneAndUpdate(
