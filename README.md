@@ -320,7 +320,8 @@ waitForTransaction               // Дождаться и получить от�
                     "commentsCount": 0
                 },
                 "meta": {
-                    "creationTime": "2019-10-25T15:52:09.000Z"
+                    "creationTime": "2019-10-25T15:52:09.000Z",
+                    "updateTime": "2019-10-25T15:52:09.000Z"
                 },
                 "contentId": {
                     "communityId": "IDDQD",
@@ -389,7 +390,8 @@ waitForTransaction               // Дождаться и получить от�
                     "commentsCount": 0
                 },
                 "meta": {
-                    "creationTime": "2019-10-25T14:36:21.000Z"
+                    "creationTime": "2019-10-25T14:36:21.000Z",
+                    "updateTime": "2019-10-25T14:36:21.000Z"
                 },
                 "contentId": {
                     "communityId": "IDDQD",
@@ -860,7 +862,8 @@ waitForTransaction               // Дождаться и получить от�
             "hasDownVote": false
         },
         "meta": {
-            "creationTime": "2019-10-03T14:45:42.000Z"
+            "creationTime": "2019-10-03T14:45:42.000Z",
+            "updateTime": "2019-10-03T14:45:42.000Z"
         },
         "contentId": {
             "userId": "tst5mwwhngaf",
@@ -947,7 +950,8 @@ waitForTransaction               // Дождаться и получить от�
                     "commentsCount": 0
                 },
                 "meta": {
-                    "creationTime": "2019-10-18T09:20:36.000Z"
+                    "creationTime": "2019-10-18T09:20:36.000Z",
+                    "updateTime": "2019-10-18T09:20:36.000Z"
                 },
                 "contentId": {
                     "communityId": "KSUJE",
@@ -1009,7 +1013,8 @@ waitForTransaction               // Дождаться и получить от�
                     "commentsCount": 0
                 },
                 "meta": {
-                    "creationTime": "2019-10-18T09:22:12.000Z"
+                    "creationTime": "2019-10-18T09:22:12.000Z",
+                    "updateTime": "2019-10-18T09:22:12.000Z"
                 },
                 "contentId": {
                     "communityId": "KEKLO",
@@ -1071,7 +1076,8 @@ waitForTransaction               // Дождаться и получить от�
                     "commentsCount": 0
                 },
                 "meta": {
-                    "creationTime": "2019-10-18T09:44:45.000Z"
+                    "creationTime": "2019-10-18T09:44:45.000Z",
+                    "updateTime": "2019-10-18T09:44:45.000Z"
                 },
                 "contentId": {
                     "communityId": "NFHR",
@@ -1133,7 +1139,8 @@ waitForTransaction               // Дождаться и получить от�
                     "commentsCount": 0
                 },
                 "meta": {
-                    "creationTime": "2019-10-18T09:46:09.000Z"
+                    "creationTime": "2019-10-18T09:46:09.000Z",
+                    "updateTime": "2019-10-18T09:46:09.000Z"
                 },
                 "contentId": {
                     "communityId": "WWAPEPA",
@@ -1195,7 +1202,8 @@ waitForTransaction               // Дождаться и получить от�
                     "commentsCount": 0
                 },
                 "meta": {
-                    "creationTime": "2019-10-18T09:47:54.000Z"
+                    "creationTime": "2019-10-18T09:47:54.000Z",
+                    "updateTime": "2019-10-18T09:47:54.000Z"
                 },
                 "contentId": {
                     "communityId": "KEKLO",
@@ -1256,7 +1264,8 @@ waitForTransaction               // Дождаться и получить от�
                     "commentsCount": 0
                 },
                 "meta": {
-                    "creationTime": "2019-10-15T16:25:57.000Z"
+                    "creationTime": "2019-10-15T16:25:57.000Z",
+                    "updateTime": "2019-10-15T16:25:57.000Z"
                 },
                 "contentId": {
                     "communityId": "CATS",
@@ -1316,7 +1325,8 @@ waitForTransaction               // Дождаться и получить от�
                     "commentsCount": 0
                 },
                 "meta": {
-                    "creationTime": "2019-10-17T08:44:33.000Z"
+                    "creationTime": "2019-10-17T08:44:33.000Z",
+                    "updateTime": "2019-10-17T08:44:33.000Z"
                 },
                 "contentId": {
                     "communityId": "CATS",
@@ -1365,7 +1375,8 @@ waitForTransaction               // Дождаться и получить от�
                     "commentsCount": 1
                 },
                 "meta": {
-                    "creationTime": "2019-10-17T13:45:09.000Z"
+                    "creationTime": "2019-10-17T13:45:09.000Z",
+                    "updateTime": "2019-10-17T13:45:09.000Z"
                 },
                 "contentId": {
                     "communityId": "CATS",
@@ -1426,7 +1437,8 @@ waitForTransaction               // Дождаться и получить от�
                     "commentsCount": 6
                 },
                 "meta": {
-                    "creationTime": "2019-10-14T11:04:18.000Z"
+                    "creationTime": "2019-10-14T11:04:18.000Z",
+                    "updateTime": "2019-10-14T11:04:18.000Z"
                 },
                 "contentId": {
                     "communityId": "WWAPUPO",
@@ -1476,7 +1488,8 @@ waitForTransaction               // Дождаться и получить от�
                     "commentsCount": 0
                 },
                 "meta": {
-                    "creationTime": "2019-10-15T14:31:42.000Z"
+                    "creationTime": "2019-10-15T14:31:42.000Z",
+                    "updateTime": "2019-10-15T14:31:42.000Z"
                 },
                 "contentId": {
                     "communityId": "CATS",
@@ -1530,7 +1543,8 @@ waitForTransaction               // Дождаться и получить от�
                     "commentsCount": 0
                 },
                 "meta": {
-                    "creationTime": "2019-10-15T14:33:09.000Z"
+                    "creationTime": "2019-10-15T14:33:09.000Z",
+                    "updateTime": "2019-10-15T14:33:09.000Z"
                 },
                 "contentId": {
                     "communityId": "CATS",
@@ -1590,7 +1604,8 @@ waitForTransaction               // Дождаться и получить от�
                     "commentsCount": 0
                 },
                 "meta": {
-                    "creationTime": "2019-10-15T14:36:06.000Z"
+                    "creationTime": "2019-10-15T14:36:06.000Z",
+                    "updateTime": "2019-10-15T14:36:06.000Z"
                 },
                 "contentId": {
                     "communityId": "CATS",
@@ -1650,7 +1665,8 @@ waitForTransaction               // Дождаться и получить от�
                     "commentsCount": 0
                 },
                 "meta": {
-                    "creationTime": "2019-10-15T14:38:00.000Z"
+                    "creationTime": "2019-10-15T14:38:00.000Z",
+                    "updateTime": "2019-10-15T14:38:00.000Z"
                 },
                 "contentId": {
                     "communityId": "CATS",
@@ -1699,7 +1715,8 @@ waitForTransaction               // Дождаться и получить от�
                     "commentsCount": 8
                 },
                 "meta": {
-                    "creationTime": "2019-10-16T09:08:48.000Z"
+                    "creationTime": "2019-10-16T09:08:48.000Z",
+                    "updateTime": "2019-10-16T09:08:48.000Z"
                 },
                 "contentId": {
                     "communityId": "CATS",
@@ -1759,7 +1776,8 @@ waitForTransaction               // Дождаться и получить от�
                     "commentsCount": 0
                 },
                 "meta": {
-                    "creationTime": "2019-10-17T14:30:30.000Z"
+                    "creationTime": "2019-10-17T14:30:30.000Z",
+                    "updateTime": "2019-10-17T14:30:30.000Z"
                 },
                 "contentId": {
                     "communityId": "CATS",
@@ -1820,7 +1838,8 @@ waitForTransaction               // Дождаться и получить от�
                     "commentsCount": 4
                 },
                 "meta": {
-                    "creationTime": "2019-10-18T09:23:03.000Z"
+                    "creationTime": "2019-10-18T09:23:03.000Z",
+                    "updateTime": "2019-10-18T09:23:03.000Z"
                 },
                 "contentId": {
                     "communityId": "WWAPEPA",
@@ -1870,7 +1889,8 @@ waitForTransaction               // Дождаться и получить от�
                     "commentsCount": 0
                 },
                 "meta": {
-                    "creationTime": "2019-10-18T10:00:18.000Z"
+                    "creationTime": "2019-10-18T10:00:18.000Z",
+                    "updateTime": "2019-10-18T10:00:18.000Z"
                 },
                 "contentId": {
                     "communityId": "CATS",
@@ -1962,7 +1982,8 @@ waitForTransaction               // Дождаться и получить от�
                     "commentsCount": 63
                 },
                 "meta": {
-                    "creationTime": "2019-10-09T11:53:30.000Z"
+                    "creationTime": "2019-10-09T11:53:30.000Z",
+                    "updateTime": "2019-10-09T11:53:30.000Z"
                 },
                 "contentId": {
                     "communityId": "WWAPUPO",
@@ -2024,7 +2045,8 @@ waitForTransaction               // Дождаться и получить от�
                     "commentsCount": 20
                 },
                 "meta": {
-                    "creationTime": "2019-10-09T11:59:12.000Z"
+                    "creationTime": "2019-10-09T11:59:12.000Z",
+                    "updateTime": "2019-10-09T11:59:12.000Z"
                 },
                 "contentId": {
                     "communityId": "WWALUPA",
@@ -2086,7 +2108,8 @@ waitForTransaction               // Дождаться и получить от�
                     "commentsCount": 12
                 },
                 "meta": {
-                    "creationTime": "2019-10-09T12:20:21.000Z"
+                    "creationTime": "2019-10-09T12:06:09.000Z",
+                    "updateTime": "2019-10-09T12:06:09.000Z"
                 },
                 "contentId": {
                     "communityId": "WWALUPA",
@@ -2148,7 +2171,8 @@ waitForTransaction               // Дождаться и получить от�
                     "commentsCount": 11
                 },
                 "meta": {
-                    "creationTime": "2019-10-09T12:21:03.000Z"
+                    "creationTime": "2019-10-09T12:06:09.000Z",
+                    "updateTime": "2019-10-09T12:06:09.000Z"
                 },
                 "contentId": {
                     "communityId": "WREK",
@@ -2210,7 +2234,8 @@ waitForTransaction               // Дождаться и получить от�
                     "commentsCount": 9
                 },
                 "meta": {
-                    "creationTime": "2019-10-09T11:52:30.000Z"
+                    "creationTime": "2019-10-09T12:06:09.000Z",
+                    "updateTime": "2019-10-09T12:06:09.000Z"
                 },
                 "contentId": {
                     "communityId": "WWAPUPO",
@@ -2260,7 +2285,8 @@ waitForTransaction               // Дождаться и получить от�
                     "commentsCount": 8
                 },
                 "meta": {
-                    "creationTime": "2019-10-16T09:08:48.000Z"
+                    "creationTime": "2019-10-09T12:06:09.000Z",
+                    "updateTime": "2019-10-09T12:06:09.000Z"
                 },
                 "contentId": {
                     "communityId": "CATS",
@@ -2321,7 +2347,8 @@ waitForTransaction               // Дождаться и получить от�
                     "commentsCount": 6
                 },
                 "meta": {
-                    "creationTime": "2019-10-14T11:04:18.000Z"
+                    "creationTime": "2019-10-09T12:06:09.000Z",
+                    "updateTime": "2019-10-09T12:06:09.000Z"
                 },
                 "contentId": {
                     "communityId": "WWAPUPO",
@@ -2371,7 +2398,8 @@ waitForTransaction               // Дождаться и получить от�
                     "commentsCount": 6
                 },
                 "meta": {
-                    "creationTime": "2019-10-09T15:17:24.000Z"
+                    "creationTime": "2019-10-09T12:06:09.000Z",
+                    "updateTime": "2019-10-09T12:06:09.000Z"
                 },
                 "contentId": {
                     "communityId": "CATS",
@@ -2432,7 +2460,8 @@ waitForTransaction               // Дождаться и получить от�
                     "commentsCount": 4
                 },
                 "meta": {
-                    "creationTime": "2019-10-09T12:01:09.000Z"
+                    "creationTime": "2019-10-09T12:06:09.000Z",
+                    "updateTime": "2019-10-09T12:06:09.000Z"
                 },
                 "contentId": {
                     "communityId": "WWAPEPA",
@@ -2494,7 +2523,8 @@ waitForTransaction               // Дождаться и получить от�
                     "commentsCount": 4
                 },
                 "meta": {
-                    "creationTime": "2019-10-09T12:06:09.000Z"
+                    "creationTime": "2019-10-09T12:06:09.000Z",
+                    "updateTime": "2019-10-09T12:06:09.000Z"
                 },
                 "contentId": {
                     "communityId": "WWAPUPO",
@@ -2556,7 +2586,8 @@ waitForTransaction               // Дождаться и получить от�
                     "commentsCount": 4
                 },
                 "meta": {
-                    "creationTime": "2019-10-18T09:23:03.000Z"
+                    "creationTime": "2019-10-09T12:06:09.000Z",
+                    "updateTime": "2019-10-09T12:06:09.000Z"
                 },
                 "contentId": {
                     "communityId": "WWAPEPA",
@@ -2618,7 +2649,8 @@ waitForTransaction               // Дождаться и получить от�
                     "commentsCount": 4
                 },
                 "meta": {
-                    "creationTime": "2019-10-09T12:06:09.000Z"
+                    "creationTime": "2019-10-09T12:06:09.000Z",
+                    "updateTime": "2019-10-09T12:06:09.000Z"
                 },
                 "contentId": {
                     "communityId": "WWAPUPO",
@@ -2680,7 +2712,8 @@ waitForTransaction               // Дождаться и получить от�
                     "commentsCount": 4
                 },
                 "meta": {
-                    "creationTime": "2019-10-11T14:04:09.000Z"
+                    "creationTime": "2019-10-09T12:06:09.000Z",
+                    "updateTime": "2019-10-09T12:06:09.000Z"
                 },
                 "contentId": {
                     "communityId": "KADJ",
@@ -2730,7 +2763,8 @@ waitForTransaction               // Дождаться и получить от�
                     "commentsCount": 1
                 },
                 "meta": {
-                    "creationTime": "2019-10-17T13:45:09.000Z"
+                    "creationTime": "2019-10-09T12:06:09.000Z",
+                    "updateTime": "2019-10-09T12:06:09.000Z"
                 },
                 "contentId": {
                     "communityId": "CATS",
@@ -2779,7 +2813,8 @@ waitForTransaction               // Дождаться и получить от�
                     "commentsCount": 0
                 },
                 "meta": {
-                    "creationTime": "2019-10-11T17:41:33.000Z"
+                    "creationTime": "2019-10-09T12:06:09.000Z",
+                    "updateTime": "2019-10-09T12:06:09.000Z"
                 },
                 "contentId": {
                     "communityId": "CATS",
@@ -2828,7 +2863,8 @@ waitForTransaction               // Дождаться и получить от�
                     "commentsCount": 0
                 },
                 "meta": {
-                    "creationTime": "2019-10-11T17:45:45.000Z"
+                    "creationTime": "2019-10-09T12:06:09.000Z",
+                    "updateTime": "2019-10-09T12:06:09.000Z"
                 },
                 "contentId": {
                     "communityId": "CATS",
@@ -2889,7 +2925,8 @@ waitForTransaction               // Дождаться и получить от�
                     "commentsCount": 0
                 },
                 "meta": {
-                    "creationTime": "2019-10-09T11:55:27.000Z"
+                    "creationTime": "2019-10-09T12:06:09.000Z",
+                    "updateTime": "2019-10-09T12:06:09.000Z"
                 },
                 "contentId": {
                     "communityId": "WWAPEPA",
@@ -2939,7 +2976,8 @@ waitForTransaction               // Дождаться и получить от�
                     "commentsCount": 0
                 },
                 "meta": {
-                    "creationTime": "2019-10-11T17:48:54.000Z"
+                    "creationTime": "2019-10-09T12:06:09.000Z",
+                    "updateTime": "2019-10-09T12:06:09.000Z"
                 },
                 "contentId": {
                     "communityId": "CATS",
@@ -3000,7 +3038,8 @@ waitForTransaction               // Дождаться и получить от�
                     "commentsCount": 0
                 },
                 "meta": {
-                    "creationTime": "2019-10-09T11:53:21.000Z"
+                    "creationTime": "2019-10-09T12:06:09.000Z",
+                    "updateTime": "2019-10-09T12:06:09.000Z"
                 },
                 "contentId": {
                     "communityId": "WWAPEPA",
@@ -3062,7 +3101,8 @@ waitForTransaction               // Дождаться и получить от�
                     "commentsCount": 0
                 },
                 "meta": {
-                    "creationTime": "2019-10-09T11:56:36.000Z"
+                    "creationTime": "2019-10-09T12:06:09.000Z",
+                    "updateTime": "2019-10-09T12:06:09.000Z"
                 },
                 "contentId": {
                     "communityId": "WWALUPA",
@@ -3155,7 +3195,8 @@ waitForTransaction               // Дождаться и получить от�
                     "commentsCount": 0
                 },
                 "meta": {
-                    "creationTime": "2019-10-09T11:53:30.000Z"
+                    "creationTime": "2019-10-09T12:06:09.000Z",
+                    "updateTime": "2019-10-09T12:06:09.000Z"
                 },
                 "contentId": {
                     "communityId": "WWAPUPO",
@@ -3221,7 +3262,8 @@ waitForTransaction               // Дождаться и получить от�
                     "commentsCount": 0
                 },
                 "meta": {
-                    "creationTime": "2019-10-09T11:55:27.000Z"
+                    "creationTime": "2019-10-09T12:06:09.000Z",
+                    "updateTime": "2019-10-09T12:06:09.000Z"
                 },
                 "contentId": {
                     "communityId": "WWAPEPA",
@@ -3287,7 +3329,8 @@ waitForTransaction               // Дождаться и получить от�
                     "commentsCount": 2
                 },
                 "meta": {
-                    "creationTime": "2019-10-09T11:59:12.000Z"
+                    "creationTime": "2019-10-09T12:06:09.000Z",
+                    "updateTime": "2019-10-09T12:06:09.000Z"
                 },
                 "contentId": {
                     "communityId": "WWALUPA",
@@ -3353,7 +3396,8 @@ waitForTransaction               // Дождаться и получить от�
                     "commentsCount": 6
                 },
                 "meta": {
-                    "creationTime": "2019-10-09T12:20:21.000Z"
+                    "creationTime": "2019-10-09T12:06:09.000Z",
+                    "updateTime": "2019-10-09T12:06:09.000Z"
                 },
                 "contentId": {
                     "communityId": "WWALUPA",
@@ -3419,7 +3463,8 @@ waitForTransaction               // Дождаться и получить от�
                     "commentsCount": 4
                 },
                 "meta": {
-                    "creationTime": "2019-10-09T12:21:03.000Z"
+                    "creationTime": "2019-10-09T12:06:09.000Z",
+                    "updateTime": "2019-10-09T12:06:09.000Z"
                 },
                 "contentId": {
                     "communityId": "WREK",
@@ -3473,7 +3518,8 @@ waitForTransaction               // Дождаться и получить от�
                     "commentsCount": 0
                 },
                 "meta": {
-                    "creationTime": "2019-10-09T15:17:24.000Z"
+                    "creationTime": "2019-10-09T12:06:09.000Z",
+                    "updateTime": "2019-10-09T12:06:09.000Z"
                 },
                 "contentId": {
                     "communityId": "CATS",
@@ -3538,7 +3584,8 @@ waitForTransaction               // Дождаться и получить от�
                     "commentsCount": 4
                 },
                 "meta": {
-                    "creationTime": "2019-10-11T14:04:09.000Z"
+                    "creationTime": "2019-10-09T12:06:09.000Z",
+                    "updateTime": "2019-10-09T12:06:09.000Z"
                 },
                 "contentId": {
                     "communityId": "KADJ",
@@ -3592,7 +3639,8 @@ waitForTransaction               // Дождаться и получить от�
                     "commentsCount": 0
                 },
                 "meta": {
-                    "creationTime": "2019-10-11T17:41:33.000Z"
+                    "creationTime": "2019-10-09T12:06:09.000Z",
+                    "updateTime": "2019-10-09T12:06:09.000Z"
                 },
                 "contentId": {
                     "communityId": "CATS",
@@ -3645,7 +3693,8 @@ waitForTransaction               // Дождаться и получить от�
                     "commentsCount": 0
                 },
                 "meta": {
-                    "creationTime": "2019-10-11T17:45:45.000Z"
+                    "creationTime": "2019-10-09T12:06:09.000Z",
+                    "updateTime": "2019-10-09T12:06:09.000Z"
                 },
                 "contentId": {
                     "communityId": "CATS",
@@ -3698,7 +3747,8 @@ waitForTransaction               // Дождаться и получить от�
                     "commentsCount": 0
                 },
                 "meta": {
-                    "creationTime": "2019-10-11T17:48:54.000Z"
+                    "creationTime": "2019-10-09T12:06:09.000Z",
+                    "updateTime": "2019-10-09T12:06:09.000Z"
                 },
                 "contentId": {
                     "communityId": "CATS",
@@ -3790,7 +3840,8 @@ waitForTransaction               // Дождаться и получить от�
                     "commentsCount": 0
                 },
                 "meta": {
-                    "creationTime": "2019-10-09T11:55:27.000Z"
+                    "creationTime": "2019-10-09T12:06:09.000Z",
+                    "updateTime": "2019-10-09T12:06:09.000Z"
                 },
                 "contentId": {
                     "communityId": "WWAPEPA",
@@ -3871,7 +3922,8 @@ waitForTransaction               // Дождаться и получить от�
             "downCount": 0
         },
         "meta": {
-            "creationTime": "2019-10-05T11:40:18.000Z"
+            "creationTime": "2019-10-09T12:06:09.000Z",
+            "updateTime": "2019-10-09T12:06:09.000Z"
         },
         "communityId": "ETE",
         "contentId": {
@@ -3997,7 +4049,8 @@ waitForTransaction               // Дождаться и получить от�
                     "commentsCount": 0
                 },
                 "meta": {
-                    "creationTime": "2019-10-09T11:52:30.000Z"
+                    "creationTime": "2019-10-09T12:06:09.000Z",
+                    "updateTime": "2019-10-09T12:06:09.000Z"
                 },
                 "contentId": {
                     "userId": "tst1koocxwbz",
@@ -4116,7 +4169,8 @@ waitForTransaction               // Дождаться и получить от�
                     "commentsCount": 6
                 },
                 "meta": {
-                    "creationTime": "2019-10-24T01:02:18.000Z"
+                    "creationTime": "2019-10-09T12:06:09.000Z",
+                    "updateTime": "2019-10-09T12:06:09.000Z"
                 },
                 "contentId": {
                     "communityId": "DUZKBN",
@@ -4166,7 +4220,8 @@ waitForTransaction               // Дождаться и получить от�
                     "commentsCount": 0
                 },
                 "meta": {
-                    "creationTime": "2019-10-24T01:01:03.000Z"
+                    "creationTime": "2019-10-09T12:06:09.000Z",
+                    "updateTime": "2019-10-09T12:06:09.000Z"
                 },
                 "contentId": {
                     "communityId": "DUZKBN",
@@ -4272,7 +4327,8 @@ waitForTransaction               // Дождаться и получить от�
                     "commentsCount": 0
                 },
                 "meta": {
-                    "creationTime": "2019-10-24T00:48:03.000Z"
+                    "creationTime": "2019-10-09T12:06:09.000Z",
+                    "updateTime": "2019-10-09T12:06:09.000Z"
                 },
                 "contentId": {
                     "communityId": "DUZKBN",
@@ -4325,7 +4381,8 @@ waitForTransaction               // Дождаться и получить от�
                     "commentsCount": 0
                 },
                 "meta": {
-                    "creationTime": "2019-10-24T00:43:03.000Z"
+                    "creationTime": "2019-10-09T12:06:09.000Z",
+                    "updateTime": "2019-10-09T12:06:09.000Z"
                 },
                 "contentId": {
                     "communityId": "DUZKBN",
@@ -4375,7 +4432,8 @@ waitForTransaction               // Дождаться и получить от�
                     "commentsCount": 0
                 },
                 "meta": {
-                    "creationTime": "2019-10-24T00:39:57.000Z"
+                    "creationTime": "2019-10-09T12:06:09.000Z",
+                    "updateTime": "2019-10-09T12:06:09.000Z"
                 },
                 "contentId": {
                     "communityId": "DUZKBN",
@@ -4425,7 +4483,8 @@ waitForTransaction               // Дождаться и получить от�
                     "commentsCount": 0
                 },
                 "meta": {
-                    "creationTime": "2019-10-24T00:39:21.000Z"
+                    "creationTime": "2019-10-09T12:06:09.000Z",
+                    "updateTime": "2019-10-09T12:06:09.000Z"
                 },
                 "contentId": {
                     "communityId": "DUZKBN",
@@ -4463,7 +4522,8 @@ waitForTransaction               // Дождаться и получить от�
                     "commentsCount": 0
                 },
                 "meta": {
-                    "creationTime": "2019-10-24T00:35:51.000Z"
+                    "creationTime": "2019-10-09T12:06:09.000Z",
+                    "updateTime": "2019-10-09T12:06:09.000Z"
                 },
                 "contentId": {
                     "communityId": "DUZKBN",
@@ -4513,7 +4573,8 @@ waitForTransaction               // Дождаться и получить от�
                     "commentsCount": 0
                 },
                 "meta": {
-                    "creationTime": "2019-10-24T00:35:00.000Z"
+                    "creationTime": "2019-10-09T12:06:09.000Z",
+                    "updateTime": "2019-10-09T12:06:09.000Z"
                 },
                 "contentId": {
                     "communityId": "DUZKBN",
@@ -4563,7 +4624,8 @@ waitForTransaction               // Дождаться и получить от�
                     "commentsCount": 1
                 },
                 "meta": {
-                    "creationTime": "2019-10-23T12:34:09.000Z"
+                    "creationTime": "2019-10-09T12:06:09.000Z",
+                    "updateTime": "2019-10-09T12:06:09.000Z"
                 },
                 "contentId": {
                     "communityId": "DUZKBN",
@@ -4625,7 +4687,8 @@ waitForTransaction               // Дождаться и получить от�
             "hasDownVote": false
         },
         "meta": {
-            "creationTime": "2019-10-05T11:40:18.000Z"
+            "creationTime": "2019-10-09T12:06:09.000Z",
+            "updateTime": "2019-10-09T12:06:09.000Z"
         },
         "communityId": "ETE",
         "contentId": {
@@ -4946,7 +5009,8 @@ waitForTransaction               // Дождаться и получить от�
                     "downCount": 0
                 },
                 "meta": {
-                    "creationTime": "2019-10-09T12:01:09.000Z"
+                    "creationTime": "2019-10-09T12:06:09.000Z",
+                    "updateTime": "2019-10-09T12:06:09.000Z"
                 },
                 "childCommentsCount": 0,
                 "contentId": {
@@ -5014,7 +5078,8 @@ waitForTransaction               // Дождаться и получить от�
                     "downCount": 0
                 },
                 "meta": {
-                    "creationTime": "2019-10-09T12:01:12.000Z"
+                    "creationTime": "2019-10-09T12:06:09.000Z",
+                    "updateTime": "2019-10-09T12:06:09.000Z"
                 },
                 "childCommentsCount": 1,
                 "contentId": {
@@ -5112,7 +5177,8 @@ waitForTransaction               // Дождаться и получить от�
                     "downCount": 0
                 },
                 "meta": {
-                    "creationTime": "2019-10-09T12:01:09.000Z"
+                    "creationTime": "2019-10-09T12:06:09.000Z",
+                    "updateTime": "2019-10-09T12:06:09.000Z"
                 },
                 "childCommentsCount": 0,
                 "contentId": {
@@ -5180,7 +5246,8 @@ waitForTransaction               // Дождаться и получить от�
                     "downCount": 0
                 },
                 "meta": {
-                    "creationTime": "2019-10-09T12:01:12.000Z"
+                    "creationTime": "2019-10-09T12:06:09.000Z",
+                    "updateTime": "2019-10-09T12:06:09.000Z"
                 },
                 "childCommentsCount": 1,
                 "contentId": {
@@ -5247,7 +5314,8 @@ waitForTransaction               // Дождаться и получить от�
                             "downCount": 0
                         },
                         "meta": {
-                            "creationTime": "2019-10-09T12:01:12.000Z"
+                            "creationTime": "2019-10-09T12:06:09.000Z",
+                            "updateTime": "2019-10-09T12:06:09.000Z"
                         },
                         "childCommentsCount": 1,
                         "contentId": {
@@ -5356,7 +5424,8 @@ waitForTransaction               // Дождаться и получить от�
                     "hasDownVote": false
                 },
                 "meta": {
-                    "creationTime": "2019-10-09T12:01:12.000Z"
+                    "creationTime": "2019-10-09T12:06:09.000Z",
+                    "updateTime": "2019-10-09T12:06:09.000Z"
                 },
                 "childCommentsCount": 1,
                 "contentId": {
@@ -5457,7 +5526,8 @@ waitForTransaction               // Дождаться и получить от�
                     "downCount": 0
                 },
                 "meta": {
-                    "creationTime": "2019-10-09T12:06:09.000Z"
+                    "creationTime": "2019-10-09T12:06:09.000Z",
+                    "updateTime": "2019-10-09T12:06:09.000Z"
                 },
                 "childCommentsCount": 1,
                 "contentId": {
@@ -5524,7 +5594,8 @@ waitForTransaction               // Дождаться и получить от�
                     "downCount": 0
                 },
                 "meta": {
-                    "creationTime": "2019-10-09T12:06:12.000Z"
+                    "creationTime": "2019-10-09T12:06:09.000Z",
+                    "updateTime": "2019-10-09T12:06:09.000Z"
                 },
                 "childCommentsCount": 1,
                 "contentId": {
@@ -5623,7 +5694,8 @@ waitForTransaction               // Дождаться и получить от�
                     "downCount": 0
                 },
                 "meta": {
-                    "creationTime": "2019-10-09T12:06:09.000Z"
+                    "creationTime": "2019-10-09T12:06:09.000Z",
+                    "updateTime": "2019-10-09T12:06:09.000Z"
                 },
                 "childCommentsCount": 0,
                 "contentId": {
@@ -5690,7 +5762,8 @@ waitForTransaction               // Дождаться и получить от�
                     "downCount": 0
                 },
                 "meta": {
-                    "creationTime": "2019-10-09T12:06:09.000Z"
+                    "creationTime": "2019-10-09T12:06:09.000Z",
+                    "updateTime": "2019-10-09T12:06:09.000Z"
                 },
                 "childCommentsCount": 1,
                 "contentId": {
@@ -5757,7 +5830,8 @@ waitForTransaction               // Дождаться и получить от�
                     "downCount": 0
                 },
                 "meta": {
-                    "creationTime": "2019-10-09T12:06:12.000Z"
+                    "creationTime": "2019-10-09T12:06:12.000Z",
+                    "updateTime": "2019-10-09T12:06:12.000Z"
                 },
                 "childCommentsCount": 1,
                 "contentId": {
@@ -5828,7 +5902,8 @@ waitForTransaction               // Дождаться и получить от�
                     "downCount": 0
                 },
                 "meta": {
-                    "creationTime": "2019-10-09T12:06:12.000Z"
+                    "creationTime": "2019-10-09T12:06:12.000Z",
+                    "updateTime": "2019-10-09T12:06:12.000Z"
                 },
                 "childCommentsCount": 0,
                 "contentId": {
@@ -5900,7 +5975,7 @@ waitForTransaction               // Дождаться и получить от�
 
 ## Search
 
-Функция поиска реализована при помощи трех API-методов: `quickSearch`, `extendedSearch`, `entitySearch`. 
+Функция поиска реализована при помощи трех API-методов: `quickSearch`, `extendedSearch`, `entitySearch`.
 
 `quickSearch` -- для простого поиска с выдачей топ-результатов без разделения на сущности. paging отсутствует (но есть лимит на выдачу).
 
@@ -5919,7 +5994,7 @@ waitForTransaction               // Дождаться и получить от�
     "jsonrpc": "2.0",
     "params": {
         "queryString": "mac",
-        "entities": ["communities",  "profiles"],
+        "entities": ["communities", "profiles"],
         "limit": 5
     }
 }
@@ -5967,9 +6042,7 @@ waitForTransaction               // Дождаться и получить от�
                     "postsCount": 0,
                     "commentsCount": 0
                 },
-                "leaderIn": [
-                    "MEME"
-                ],
+                "leaderIn": ["MEME"],
                 "userId": "tst5ripdluga",
                 "username": "machtfrei",
                 "registration": {
@@ -6050,9 +6123,7 @@ waitForTransaction               // Дождаться и получить от�
                         "postsCount": 0,
                         "commentsCount": 0
                     },
-                    "leaderIn": [
-                        "MEME"
-                    ],
+                    "leaderIn": ["MEME"],
                     "userId": "tst5ripdluga",
                     "username": "machtfrei",
                     "registration": {
@@ -6106,13 +6177,10 @@ waitForTransaction               // Дождаться и получить от�
                         "commentsCount": 0
                     },
                     "meta": {
-                        "creationTime": "2019-12-03T20:18:15.000Z"
+                        "creationTime": "2019-12-03T20:18:15.000Z",
+                        "updateTime": "2019-12-03T20:18:15.000Z"
                     },
-                    "tags": [
-                        "furnituredesign",
-                        "addict",
-                        "dios"
-                    ],
+                    "tags": ["furnituredesign", "addict", "dios"],
                     "contentId": {
                         "communityId": "BIKE",
                         "userId": "cmn4phsmwung",
@@ -6208,9 +6276,7 @@ waitForTransaction               // Дождаться и получить от�
                         "postsCount": 0,
                         "commentsCount": 0
                     },
-                    "leaderIn": [
-                        "MEME"
-                    ],
+                    "leaderIn": ["MEME"],
                     "userId": "tst5ripdluga",
                     "username": "machtfrei",
                     "registration": {
@@ -6266,11 +6332,7 @@ waitForTransaction               // Дождаться и получить от�
                     "meta": {
                         "creationTime": "2019-12-03T20:18:15.000Z"
                     },
-                    "tags": [
-                        "furnituredesign",
-                        "addict",
-                        "dios"
-                    ],
+                    "tags": ["furnituredesign", "addict", "dios"],
                     "contentId": {
                         "communityId": "BIKE",
                         "userId": "cmn4phsmwung",
@@ -6338,9 +6400,7 @@ waitForTransaction               // Дождаться и получить от�
                     "postsCount": 0,
                     "commentsCount": 0
                 },
-                "leaderIn": [
-                    "MEME"
-                ],
+                "leaderIn": ["MEME"],
                 "userId": "tst5ripdluga",
                 "username": "machtfrei",
                 "registration": {
@@ -6353,7 +6413,6 @@ waitForTransaction               // Дождаться и получить от�
     }
 }
 ```
-
 
 Возможные переменные окружения `ENV`:
 

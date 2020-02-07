@@ -61,6 +61,7 @@ class Post extends Abstract {
             tags,
             meta: {
                 creationTime: meta.blockTime,
+                updateTime: meta.blockTime,
             },
             payout: {
                 meta: {
@@ -97,6 +98,7 @@ class Post extends Abstract {
                 $set: {
                     document,
                     tags,
+                    'meta.updateTime': meta.blockTime,
                 },
             }
         );
@@ -110,6 +112,7 @@ class Post extends Abstract {
                     $set: {
                         document: previousModel.document.toObject(),
                         tags: previousModel.tags.toObject(),
+                        'meta.updateTime': previousModel.meta.updateTime,
                     },
                 },
             });

@@ -82,6 +82,10 @@ module.exports = MongoDB.makeModel(
                 type: Date,
                 default: null,
             },
+            updateTime: {
+                type: Date,
+                default: null,
+            },
         },
         nestedLevel: {
             type: Number,

@@ -89,6 +89,10 @@ module.exports = MongoDB.makeModel(
                 type: Date,
                 default: null,
             },
+            updateTime: {
+                type: Date,
+                default: null,
+            },
         },
         status: {
             type: String,
@@ -181,6 +185,14 @@ module.exports = MongoDB.makeModel(
             {
                 fields: {
                     'meta.creationTime': -1,
+                },
+            },
+            // sitemap
+            {
+                fields: {
+                    'status': 1,
+                    'meta.updateTime': 1,
+                    'meta.creationTime': 1,
                 },
             },
         ],

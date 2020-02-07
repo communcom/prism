@@ -63,6 +63,7 @@ class Comment extends Abstract {
             parents: {},
             meta: {
                 creationTime: blockTime,
+                updateTime: blockTime,
             },
             payout: {
                 meta: {
@@ -122,9 +123,11 @@ class Comment extends Abstract {
         });
     }
 
-    async handleUpdate(content, { blockNum }) {
+    async handleUpdate(content, { blockNum, blockTime }) {
         const contentId = extractContentId(content);
-        const updateFields = {};
+        const updateFields = {
+            'meta.updateTime': blockTime,
+        };
 
         try {
             const { document } = await processContent(this, content, ['comment']);
@@ -157,6 +160,7 @@ class Comment extends Abstract {
             data: {
                 $set: {
                     document: previousModel.document.toObject(),
+                    'meta.updateTime': previousModel.meta.updateTime,
                 },
             },
         });
