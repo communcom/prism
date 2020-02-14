@@ -190,7 +190,7 @@ module.exports = MongoDB.makeModel(
             // sitemap
             {
                 fields: {
-                    'status': 1,
+                    status: 1,
                     'meta.updateTime': 1,
                     'meta.creationTime': 1,
                 },

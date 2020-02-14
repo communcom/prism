@@ -3,6 +3,7 @@ const BasicController = core.controllers.Basic;
 
 const { addFieldIsIncludes } = require('../../utils/mongodb');
 const { resolveCommunityId } = require('../../utils/lookup');
+const { KAVA_SPECIAL_SORTED_COMMUNITIES } = require('../../data/constants');
 const CommunityModel = require('../../models/Community');
 const ProfileModel = require('../../models/Profile');
 const LeaderModel = require('../../models/Leader');
@@ -258,33 +259,54 @@ class Community extends BasicController {
     }
 
     async getCommunities(
-        { type, userId, search, limit, offset, excludeMySubscriptions },
+        { type, userId, search, limit, offset, excludeMySubscriptions, sortingToken, forceQuery },
         { userId: authUserId },
         { clientType }
     ) {
-        const query = {};
+        let specialSortedCommunities = [];
+        if (sortingToken && offset === 0) {
+            specialSortedCommunities = (await this.getCommunities(
+                {
+                    type,
+                    userId,
+                    search,
+                    limit,
+                    offset,
+                    forceQuery: this._getSortingTokenQuery(sortingToken),
+                },
+                { userId: authUserId },
+                { clientType }
+            )).items;
 
-        if (clientType !== 'web') {
-            query.$and = [{ communityId: { $ne: 'PORN' } }, { communityId: { $ne: 'NSFW' } }];
+            offset = specialSortedCommunities.length;
         }
 
-        if (search) {
-            query.name = { $regex: `^${escape(search.trim())}` };
-        }
-
+        let query = {};
         let forceIsSubscribed = null;
 
-        if (type === 'user') {
-            query.subscribers = userId;
-
-            if (authUserId === userId) {
-                forceIsSubscribed = true;
+        if (forceQuery) {
+            query = forceQuery;
+        } else {
+            if (clientType !== 'web') {
+                query.$and = [{ communityId: { $ne: 'PORN' } }, { communityId: { $ne: 'NSFW' } }];
             }
-        } else if (excludeMySubscriptions && authUserId) {
-            query.subscribers = {
-                $ne: authUserId,
-            };
-            forceIsSubscribed = false;
+
+            if (search) {
+                query.name = { $regex: `^${escape(search.trim())}` };
+            }
+
+            if (type === 'user') {
+                query.subscribers = userId;
+
+                if (authUserId === userId) {
+                    forceIsSubscribed = true;
+                }
+            } else if (excludeMySubscriptions && authUserId) {
+                query.subscribers = {
+                    $ne: authUserId,
+                };
+                forceIsSubscribed = false;
+            }
         }
 
         const aggregation = [
@@ -326,7 +348,7 @@ class Community extends BasicController {
             $project: baseProjection,
         });
 
-        const communities = await CommunityModel.aggregate(aggregation);
+        let communities = await CommunityModel.aggregate(aggregation);
 
         if (forceIsSubscribed !== null) {
             for (const community of communities) {
@@ -350,9 +372,65 @@ class Community extends BasicController {
             }
         }
 
+        communities = [
+            ...this._finalizeSortingByToken({
+                sortingToken,
+                communities: specialSortedCommunities,
+            }),
+            ...communities,
+        ];
+
         return {
-            items: communities,
+            items: this._excludeDuplicates(communities),
         };
+    }
+
+    _getSortingTokenQuery(sortingToken) {
+        switch (sortingToken) {
+            case 'kava':
+                return { communityId: { $in: KAVA_SPECIAL_SORTED_COMMUNITIES } };
+            default:
+                return {};
+        }
+    }
+
+    _finalizeSortingByToken({ sortingToken, communities }) {
+        switch (sortingToken) {
+            case 'kava':
+                return communities.sort((communityOne, communityTwo) => {
+                    const kavaIndexOne = KAVA_SPECIAL_SORTED_COMMUNITIES.indexOf(
+                        communityOne.communityId
+                    );
+                    const kavaIndexTwo = KAVA_SPECIAL_SORTED_COMMUNITIES.indexOf(
+                        communityTwo.communityId
+                    );
+
+                    if (kavaIndexOne < 0) {
+                        return -1;
+                    }
+                    if (kavaIndexTwo < 0) {
+                        return -1;
+                    }
+
+                    return kavaIndexOne - kavaIndexTwo;
+                });
+                break;
+            default:
+                return communities;
+        }
+    }
+
+    _excludeDuplicates(communities) {
+        const nonDuplicates = [];
+        const nonDuplicatesIds = [];
+        for (const community of communities) {
+            if (!nonDuplicatesIds.includes(community.communityId)) {
+                nonDuplicates.push(community);
+                nonDuplicatesIds.push(community.communityId);
+            }
+        }
+
+        return nonDuplicates;
     }
 }
 

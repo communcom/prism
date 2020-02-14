@@ -6,4 +6,6 @@ module.exports = {
         NEED_PROCESSING: 1,
         PROCESSING_ERROR: 2,
     },
+    COMMUNITY_SORTING_TOKENS: ['kava'],
+    KAVA_SPECIAL_SORTED_COMMUNITIES: ['KAVA', 'CRYPTOC', 'BITCOIN', 'ACOMMUN'],
 };

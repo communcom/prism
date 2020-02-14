@@ -558,6 +558,9 @@ class Connector extends BasicConnector {
                                 type: 'boolean',
                                 default: false,
                             },
+                            sortingToken: {
+                                type: 'string',
+                            },
                         },
                     },
                 },
