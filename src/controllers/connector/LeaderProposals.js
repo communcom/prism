@@ -140,6 +140,7 @@ class LeaderProposals extends BasicController {
             expiration: true,
             data: true,
             approves: true,
+            contentType: true,
             proposerProfile: {
                 $let: {
                     vars: {
