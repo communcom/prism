@@ -62,6 +62,9 @@ module.exports = MongoDB.makeModel(
             ],
             required: true,
         },
+        contentType: {
+            type: String,
+        },
     },
     {
         index: [

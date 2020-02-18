@@ -121,8 +121,10 @@ class LeaderProposals extends Abstract {
             }
         }
 
+        let contentType;
         if (contract === 'c.gallery' && action === 'ban') {
-            if (!(await this._validatePublicationBan(data))) {
+            contentType = await this._getBannedPublicationType(data);
+            if (!contentType) {
                 return;
             }
         }
@@ -140,6 +142,7 @@ class LeaderProposals extends Abstract {
             isExecuted: false,
             approves: [],
             data,
+            contentType,
         });
 
         await this.registerForkChanges({
@@ -283,7 +286,7 @@ class LeaderProposals extends Abstract {
         return true;
     }
 
-    async _validatePublicationBan(data) {
+    async _getBannedPublicationType(data) {
         const { commun_code, message_id } = data;
 
         const match = {
@@ -298,10 +301,17 @@ class LeaderProposals extends Abstract {
         ]);
 
         if (!post && !comment) {
-            return false;
+            return null;
         }
 
-        const model = post ? PostModel : CommentModel;
+        let model, type;
+        if (post) {
+            model = PostModel;
+            type = 'post';
+        } else {
+            model = CommentModel;
+            type = 'comment';
+        }
 
         try {
             await model.updateOne(match, {
@@ -313,7 +323,7 @@ class LeaderProposals extends Abstract {
             Logger.warn('Publication update failed:', match, err);
         }
 
-        return true;
+        return type;
     }
 
     _validateRules(rulesJSON) {
