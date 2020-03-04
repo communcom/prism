@@ -409,6 +409,8 @@ class Profile extends BasicController {
                         username: '$$subscriber.username',
                         avatarUrl: '$$subscriber.avatarUrl',
                         subscribers: '$$subscriber.subscribers.userIds',
+                        subscribersCount: '$$subscriber.subscribers.usersCount',
+                        postsCount: '$$subscriber.stats.postsCount',
                     },
                 },
             },
@@ -441,6 +443,8 @@ class Profile extends BasicController {
                     username: '$subscriber.username',
                     avatarUrl: '$subscriber.avatarUrl',
                     isSubscribed: '$isSubscribed',
+                    postsCount: '$subscriber.postsCount',
+                    subscribersCount: '$subscriber.subscribersCount',
                 },
             },
         });
