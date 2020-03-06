@@ -353,6 +353,13 @@ class Connector extends BasicConnector {
                     handler: this._leaders.getLeaderCommunities,
                     scope: this._leaders,
                     inherits: ['paging', 'onlyWhenPublicApiEnabled'],
+                    validation: {
+                        properties: {
+                            userId: {
+                                type: 'string',
+                            },
+                        },
+                    },
                 },
                 getProposals: {
                     handler: this._leaderProposals.getProposals,

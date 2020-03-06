@@ -156,11 +156,13 @@ class Leaders extends BasicController {
         return result.totalRating;
     }
 
-    async getLeaderCommunities({ offset, limit }, { userId }) {
+    async getLeaderCommunities({ userId, offset, limit }, { userId: authUserId }) {
+        userId = userId || authUserId;
+
         if (!userId) {
             throw {
-                code: 401,
-                message: 'Unauthorized',
+                code: 500,
+                message: 'No user id',
             };
         }
 
