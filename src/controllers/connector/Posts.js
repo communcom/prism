@@ -427,6 +427,7 @@ class Posts extends BasicController {
 
         if (env.GLS_HOT_DEBUG_ENABLED) {
             projection.$project.hotMeta = 1;
+            projection.$project.hot = 1;
         }
 
         const aggregation = [
