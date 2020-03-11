@@ -16,6 +16,10 @@ module.exports = MongoDB.makeModel(
             type: Number,
             required: true,
         },
+        finalized: {
+            type: Boolean,
+            required: true,
+        },
         stack: {
             type: [
                 {
@@ -41,13 +45,13 @@ module.exports = MongoDB.makeModel(
         },
     },
     {
-        schema: {
-            strict: false,
-        },
         index: [
             {
                 fields: {
                     blockNum: -1,
+                },
+                options: {
+                    unique: true,
                 },
             },
         ],

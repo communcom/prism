@@ -1,12 +1,50 @@
 const core = require('cyberway-core-service');
-const BasicService = core.services.Basic;
+const { Service } = core.services;
 const { Logger } = core.utils;
 const ForkModel = require('../models/Fork');
 const { reorderLeaders } = require('../utils/leaders');
 
-class Fork extends BasicService {
-    async initBlock({ blockNum, blockTime, sequence }) {
-        await ForkModel.create({ blockNum, blockTime, blockSequence: sequence });
+class Fork extends Service {
+    constructor() {
+        super();
+
+        this._running = false;
+    }
+
+    async wrapBlock(block, callback) {
+        if (this._running) {
+            throw new Error('Parallel block processing tried to start');
+        }
+
+        this._running = true;
+
+        try {
+            await this._initBlock(block);
+            await callback(block);
+            await this._finalizeBlock(block);
+        } finally {
+            this._running = false;
+        }
+    }
+
+    async _initBlock({ blockNum, blockTime, sequence }) {
+        await ForkModel.create({
+            blockNum,
+            blockTime,
+            blockSequence: sequence,
+            finalized: false,
+        });
+    }
+
+    async _finalizeBlock({ blockNum }) {
+        await ForkModel.updateOne(
+            { blockNum },
+            {
+                $set: {
+                    finalized: true,
+                },
+            }
+        );
     }
 
     async registerChanges({ type, Model, documentId, data, meta }) {
@@ -42,8 +80,13 @@ class Fork extends BasicService {
                     $gte: baseBlockNum,
                 },
             },
-            {},
-            { sort: { blockNum: -1 } }
+            {
+                _id: true,
+                blockNum: true,
+                blockSequence: true,
+                stack: true,
+            },
+            { sort: { blockNum: -1 }, lean: true }
         );
 
         const newBase = documents.pop();
@@ -53,7 +96,7 @@ class Fork extends BasicService {
             process.exit(1);
         }
 
-        await this._revertStacks(documents);
+        await this._revertBlocks(documents);
 
         await ForkModel.deleteMany({
             blockNum: {
@@ -64,13 +107,16 @@ class Fork extends BasicService {
         Logger.info('Revert on fork done!');
     }
 
-    async _revertStacks(documents) {
+    async _revertBlocks(blocks) {
         const reorderLeadersInCommunities = new Set();
 
-        for (const document of documents) {
-            Logger.info(`Reverting block num: ${document.blockNum}`);
-            await this._restoreBy(document.toObject(), reorderLeadersInCommunities);
-            await document.remove();
+        for (const block of blocks) {
+            if (block.stack.length) {
+                Logger.info(`Reverting block num: ${block.blockNum}`);
+                await this._revertStack(block.stack, reorderLeadersInCommunities);
+            }
+
+            await ForkModel.deleteOne({ _id: block._id });
         }
 
         if (reorderLeadersInCommunities.size) {
@@ -98,38 +144,61 @@ class Fork extends BasicService {
         }
     }
 
-    async revertLastBlock(subscriber) {
-        Logger.info('Revert last block...');
+    async revertUnfinalizedBlocks(subscriber) {
+        Logger.info('Revert unfinalized blocks...');
 
-        const [current, previous] = await ForkModel.find(
+        const items = await ForkModel.find(
             {},
-            {},
-            { sort: { blockNum: -1 }, limit: 2 }
+            {
+                _id: true,
+                blockNum: true,
+                blockSequence: true,
+                finalized: true,
+                stack: true,
+            },
+            {
+                sort: {
+                    blockNum: -1,
+                },
+                limit: 10,
+                lean: true,
+            }
         );
 
-        if (!current) {
-            Logger.warn('Empty restore data.');
+        let lastFinalized = null;
+        const unfinalized = [];
+
+        for (const item of items) {
+            if (item.finalized) {
+                lastFinalized = item;
+                break;
+            }
+
+            unfinalized.push(item);
+        }
+
+        if (!lastFinalized) {
+            Logger.error('Fatal Error: Finalized block is not found');
+            process.exit(1);
             return;
         }
 
-        await this._revertStacks([current]);
-        await current.remove();
-
-        if (!previous) {
-            Logger.warn('No previous block, resetting block num to 0');
+        if (!unfinalized.length) {
+            return;
         }
 
+        await this._revertBlocks(unfinalized);
+
         await subscriber.setLastBlockMetaData({
-            lastBlockNum: (previous && previous.blockNum) || 0,
-            lastBlockSequence: (previous && previous.blockSequence) || 0,
+            lastBlockNum: lastFinalized.blockNum,
+            lastBlockSequence: lastFinalized.blockSequence,
         });
     }
 
-    async _restoreBy(document, reorderLeadersInCommunities) {
-        const stack = document.stack;
-        let stackItem;
+    async _revertStack(stack, reorderLeadersInCommunities) {
+        for (let i = stack.length - 1; i >= 0; i--) {
+            const stackItem = stack[i];
 
-        while ((stackItem = stack.pop())) {
             const { type, className, documentId, meta } = stackItem;
 
             if (type === 'reorderLeaders') {
@@ -142,30 +211,18 @@ class Fork extends BasicService {
 
             switch (type) {
                 case 'create':
-                    await this._removeDocument(Model, documentId);
+                    await Model.deleteOne({ _id: documentId });
                     break;
 
                 case 'update':
-                    await this._restoreDocument(Model, documentId, data);
+                    await Model.updateOne({ _id: documentId }, data);
                     break;
 
                 case 'remove':
-                    await this._recreateDocument(Model, documentId, data);
+                    await Model.create({ _id: documentId, ...data });
                     break;
             }
         }
-    }
-
-    async _removeDocument(Model, documentId) {
-        await Model.deleteOne({ _id: documentId });
-    }
-
-    async _restoreDocument(Model, documentId, data) {
-        await Model.updateOne({ _id: documentId }, data);
-    }
-
-    async _recreateDocument(Model, documentId, data) {
-        await Model.create({ _id: documentId, ...data });
     }
 
     _packData(data) {
@@ -216,7 +273,7 @@ class Fork extends BasicService {
         const specialKeys = [];
 
         for (const key of Object.keys(data)) {
-            if (key.indexOf('@$') === 0) {
+            if (key.startsWith('@$')) {
                 specialKeys.push(key);
             }
 
@@ -226,7 +283,7 @@ class Fork extends BasicService {
         }
 
         for (const key of specialKeys) {
-            data[key.slice(1)] = data[key];
+            data[key.substr(1)] = data[key];
 
             delete data[key];
         }
