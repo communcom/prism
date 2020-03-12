@@ -178,10 +178,7 @@ class ImagesMetaUpdater extends BasicService {
         const res = await fetch(`${env.GLS_IMAGE_HOSTER}/info/proxy/${url}`);
 
         if (!res.ok) {
-            Logger.warn(
-                `ImagesMetaUpdater: request failed: ${res.status}: ${res.statusText}\n`,
-                await this._processErrorBody(res)
-            );
+            Logger.warn(`ImagesMetaUpdater: request failed: ${res.status}: ${res.statusText}`);
             throw new Error('Image hoster request failed');
         }
 
@@ -193,14 +190,6 @@ class ImagesMetaUpdater extends BasicService {
         }
 
         return info;
-    }
-
-    async _processErrorBody(res) {
-        try {
-            return (await res.text()) || 'No response';
-        } catch (err) {
-            return "Can't get response";
-        }
     }
 }
 

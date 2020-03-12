@@ -1,3 +1,4 @@
+const { compact } = require('lodash');
 const escape = require('escape-string-regexp');
 const core = require('cyberway-core-service');
 const BasicController = core.controllers.Basic;
@@ -806,6 +807,43 @@ class Profile extends BasicController {
         }
 
         return highlightCommunities;
+    }
+
+    async getUsers({ userIds }, { userId }) {
+        const items = await ProfileModel.aggregate(
+            compact([
+                {
+                    $match: {
+                        userId: { $in: userIds },
+                    },
+                },
+                {
+                    $sort: { createdAt: 1 },
+                },
+                userId
+                    ? addFieldIsIncludes({
+                          newField: 'isSubscribed',
+                          arrayPath: '$subscribers.userIds',
+                          value: userId,
+                      })
+                    : null,
+                {
+                    $project: {
+                        _id: false,
+                        userId: true,
+                        username: true,
+                        avatarUrl: true,
+                        subscribersCount: '$subscribers.usersCount',
+                        postsCount: '$stats.postsCount',
+                        isSubscribed: true,
+                    },
+                },
+            ])
+        );
+
+        return {
+            items,
+        };
     }
 }
 
