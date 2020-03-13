@@ -3,7 +3,7 @@ const BasicMain = core.services.BasicMain;
 const env = require('./data/env');
 const Prism = require('./services/Prism');
 const Connector = require('./services/Connector');
-const Fork = require('./services/Fork');
+const { createCustomForkManager } = require('./services/ForkManager');
 const Hot = require('./services/Hot');
 const ImagesMetaUpdater = require('./services/ImagesMetaUpdater');
 
@@ -15,7 +15,7 @@ class Main extends BasicMain {
         let imagesMeta;
 
         if (env.GLS_ENABLE_BLOCK_HANDLE) {
-            const fork = new Fork();
+            const fork = createCustomForkManager();
 
             imagesMeta = new ImagesMetaUpdater();
             prism = new Prism({ imagesMeta });

@@ -167,7 +167,7 @@ class Prism extends BasicService {
         try {
             await this._forkService.revertUnfinalizedBlocks(this._subscriber);
         } catch (err) {
-            Logger.error('Cant revert last block, but continue:', err);
+            Logger.error('Cant revert unfinalized blocks, but continue:', err);
         }
     }
 }

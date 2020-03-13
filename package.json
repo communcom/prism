@@ -19,7 +19,7 @@
   "dependencies": {
     "bodybuilder": "^2.2.20",
     "bytebuffer": "^5.0.1",
-    "cyberway-core-service": "^3.56.0",
+    "cyberway-core-service": "^3.58.5",
     "cyberwayjs": "^20.0.0-beta7",
     "elasticsearch": "^15.5.0",
     "elasticsearch-sanitize": "^2.0.0",
