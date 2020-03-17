@@ -1,0 +1,11 @@
+steps:
+
+    - label: ": docker: build dev image"
+      command: ".buildkite / steps / build.sh"
+      id: commun-vault-1
+
+    - wait
+
+    - label: ": docker: release image with tag to docker hub"
+      command: .buildkite / steps / release-image.sh
+      if: build.env ("BUILDKITE_TAG")! = null && build.env ("BUILDKITE_TAG")! = ""
