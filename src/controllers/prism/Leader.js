@@ -293,16 +293,18 @@ class Leader extends Abstract {
             }
         );
 
-        await this.registerForkChanges({
-            type: 'update',
-            Model: CommunityModel,
-            documentId: previous._id,
-            data: {
-                $inc: {
-                    leadersCount: -inc,
+        if (previous) {
+            await this.registerForkChanges({
+                type: 'update',
+                Model: CommunityModel,
+                documentId: previous._id,
+                data: {
+                    $inc: {
+                        leadersCount: -inc,
+                    },
                 },
-            },
-        });
+            });
+        }
     }
 }
 

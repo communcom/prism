@@ -43,7 +43,7 @@ class Prism extends BasicService {
         Logger.info('Last block info:', lastBlockInfo);
 
         if (lastBlockInfo.lastBlockNum !== 0 && !env.GLS_DONT_REVERT_LAST_BLOCK) {
-            await this._revertLastBlock();
+            await this._revertUnfinalizedBlocks();
         }
 
         try {
@@ -107,8 +107,9 @@ class Prism extends BasicService {
 
     async _handleBlock(block) {
         try {
-            await this._forkService.initBlock(block);
-            await this._mainPrismController.disperse(block);
+            await this._forkService.wrapBlock(block, async block => {
+                await this._mainPrismController.disperse(block);
+            });
 
             this._emitHandled(block);
 
@@ -155,18 +156,18 @@ class Prism extends BasicService {
     async _handleFork(baseBlockNum) {
         try {
             await this._forkService.revert(this._subscriber, baseBlockNum);
-        } catch (error) {
+        } catch (err) {
             Logger.error('Critical error!');
-            Logger.error('Cant revert on fork:', error);
+            Logger.error('Cant revert on fork:', err);
             process.exit(1);
         }
     }
 
-    async _revertLastBlock() {
+    async _revertUnfinalizedBlocks() {
         try {
-            await this._forkService.revertLastBlock(this._subscriber);
-        } catch (error) {
-            Logger.error('Cant revert last block, but continue:', error);
+            await this._forkService.revertUnfinalizedBlocks(this._subscriber);
+        } catch (err) {
+            Logger.error('Cant revert unfinalized blocks, but continue:', err);
         }
     }
 }

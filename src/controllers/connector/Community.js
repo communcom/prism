@@ -3,7 +3,10 @@ const BasicController = core.controllers.Basic;
 
 const { addFieldIsIncludes } = require('../../utils/mongodb');
 const { resolveCommunityId } = require('../../utils/lookup');
-const { KAVA_SPECIAL_SORTED_COMMUNITIES } = require('../../data/constants');
+const {
+    KAVA_SPECIAL_SORTED_COMMUNITIES,
+    DANK_MEME_SPECIAL_SORTED_COMMUNITIES,
+} = require('../../data/constants');
 const CommunityModel = require('../../models/Community');
 const ProfileModel = require('../../models/Profile');
 const LeaderModel = require('../../models/Leader');
@@ -389,6 +392,8 @@ class Community extends BasicController {
         switch (sortingToken) {
             case 'kava':
                 return { communityId: { $in: KAVA_SPECIAL_SORTED_COMMUNITIES } };
+            case 'dankmeme':
+                return { communityId: { $in: DANK_MEME_SPECIAL_SORTED_COMMUNITIES } };
             default:
                 return {};
         }
@@ -413,6 +418,25 @@ class Community extends BasicController {
                     }
 
                     return kavaIndexOne - kavaIndexTwo;
+                });
+                break;
+            case 'dankmeme':
+                return communities.sort((communityOne, communityTwo) => {
+                    const dankmemeIndexOne = DANK_MEME_SPECIAL_SORTED_COMMUNITIES.indexOf(
+                        communityOne.communityId
+                    );
+                    const dankmemeIndexTwo = DANK_MEME_SPECIAL_SORTED_COMMUNITIES.indexOf(
+                        communityTwo.communityId
+                    );
+
+                    if (dankmemeIndexOne < 0) {
+                        return -1;
+                    }
+                    if (dankmemeIndexTwo < 0) {
+                        return -1;
+                    }
+
+                    return dankmemeIndexOne - dankmemeIndexTwo;
                 });
                 break;
             default:

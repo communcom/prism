@@ -127,6 +127,10 @@ module.exports = MongoDB.makeModel(
             type: Number,
             default: null,
         },
+        hotMeta: {
+            type: Object,
+            default: {},
+        },
     },
     {
         index: [

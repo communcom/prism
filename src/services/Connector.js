@@ -603,6 +603,22 @@ class Connector extends BasicConnector {
                         },
                     },
                 },
+                getUsers: {
+                    handler: this._profile.getUsers,
+                    scope: this._profile,
+                    inherits: ['onlyWhenPublicApiEnabled'],
+                    validation: {
+                        required: ['userIds'],
+                        properties: {
+                            userIds: {
+                                type: 'array',
+                                items: {
+                                    type: 'string',
+                                },
+                            },
+                        },
+                    },
+                },
             },
             serverDefaults: {
                 parents: {

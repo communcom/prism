@@ -22,4 +22,5 @@ module.exports = {
         env.GLS_DONT_REVERT_LAST_BLOCK && env.GLS_DONT_REVERT_LAST_BLOCK !== 'false'
     ),
     GLS_IMAGE_HOSTER: env.GLS_IMAGE_HOSTER,
+    GLS_HOT_DEBUG_ENABLED: env.GLS_HOT_DEBUG_ENABLED === 'true',
 };

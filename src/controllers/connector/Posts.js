@@ -423,12 +423,19 @@ class Posts extends BasicController {
 
         const paging = [{ $skip: offset }, { $limit: limit }];
 
+        const projection = { ...baseProjection };
+
+        if (env.GLS_HOT_DEBUG_ENABLED) {
+            projection.$project.hotMeta = 1;
+            projection.$project.hot = 1;
+        }
+
         const aggregation = [
             match,
             sorting,
             ...paging,
             ...lookups,
-            baseProjection,
+            projection,
             addUrl,
             ...this._addCurrentUserFields(authUserId),
             cleanUpProjection,

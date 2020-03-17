@@ -61,7 +61,7 @@ class HotCache extends BasicService {
 
         const promises = [];
         for (const post of relevantPosts) {
-            const hot = this.calcHot({
+            const hotMeta = {
                 upVotesPostPeriodCount: post.upVotesPostPeriodCount,
                 downVotesPostPeriodCount: post.downVotesPostPeriodCount,
                 upVotesPostTotalCount: post.votes.upCount,
@@ -71,7 +71,9 @@ class HotCache extends BasicService {
                 upVotesSystemTotalCount,
                 downVotesSystemTotalCount,
                 commentsSystemTotalCount,
-            });
+            };
+
+            const hot = this.calcHot(hotMeta);
 
             promises.push(
                 PostModel.update(
@@ -79,6 +81,7 @@ class HotCache extends BasicService {
                     {
                         $set: {
                             hot,
+                            hotMeta,
                         },
                     }
                 )
