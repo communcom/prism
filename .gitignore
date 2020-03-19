@@ -4,6 +4,9 @@ db
 .env
 .vscode
 .npmrc
+.*.swp
+.DS_Store
 docker-compose.yml
 stats.txt
 /slow blocks/
+yarn.lock
