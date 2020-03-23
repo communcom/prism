@@ -1,5 +1,5 @@
-const crypto = require('crypto');
 const { isNil } = require('lodash');
+const { community } = require('commun-utils');
 const core = require('cyberway-core-service');
 const { Logger } = core.utils;
 
@@ -150,7 +150,8 @@ class Community {
     }
 
     async handleCreate({ community_name: name, commun_code: communityId }, { blockTime }) {
-        const alias = this._extractAlias(name);
+        const normalizedName = community.normalizeName(name);
+        const alias = community.extractAlias(normalizedName);
 
         const point = await CommunityPointModel.findOne(
             {
@@ -174,7 +175,7 @@ class Community {
             issuer: point.issuer,
             alias,
             rules: [],
-            name,
+            name: normalizedName,
             registrationTime: new Date(blockTime),
         });
 
@@ -309,29 +310,6 @@ class Community {
                 },
             });
         }
-    }
-
-    _extractAlias(communityName) {
-        // TODO: Temporary fix duplication
-        if (communityName === 'cats') {
-            return 'cats1';
-        }
-
-        const permlink = communityName
-            .trim()
-            .toLowerCase()
-            .replace(/[\s_-]+/g, '-')
-            .replace(/[^a-z0-9-]+/g, '')
-            .replace(/-+/g, '-')
-            .replace(/^-+/, '')
-            .replace(/-+$/, '');
-
-        if (permlink.length === 0) {
-            console.error(`Invalid community name (empty resulting permlink): "${communityName}"`);
-            throw new Error('Invalid community name');
-        }
-
-        return permlink;
     }
 
     async _tryToApplyPatchOrSet(communityId, rawRules) {

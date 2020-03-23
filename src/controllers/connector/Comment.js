@@ -81,7 +81,7 @@ class Comment extends BasicController {
             'contentId.permlink': permlink,
             'contentId.communityId': communityId,
         };
-        const projection = { ...baseProjection };
+        const projection = { ...baseProjection, 'votes.upVotes': true, 'votes.downVotes': true };
         const aggregation = [{ $match: filter }];
 
         aggregation.push(profileLookup);
@@ -125,7 +125,12 @@ class Comment extends BasicController {
         }
 
         aggregation.push({
-            $project: { 'author.subscribers': false, 'community.subscribers': false },
+            $project: {
+                'author.subscribers': false,
+                'community.subscribers': false,
+                'votes.upVotes': false,
+                'votes.downVotes': false,
+            },
         });
 
         const [comment] = await CommentModel.aggregate(aggregation);
