@@ -308,7 +308,7 @@ class Community extends BasicController {
                 query.nameLower = { $regex: `^${escape(search.trim().toLowerCase())}` };
             }
 
-            if (allowedLanguages.length > 0) {
+            if (allowedLanguages.length > 0 && !allowedLanguages.includes('all')) {
                 query.$and = query.$and || [];
                 query.$and.push({ language: { $in: allowedLanguages } });
             }
