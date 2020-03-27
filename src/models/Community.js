@@ -20,6 +20,10 @@ module.exports = MongoDB.makeModel(
             type: String,
             required: true,
         },
+        nameLower: {
+            type: String,
+            required: true,
+        },
         avatarUrl: {
             type: String,
         },
@@ -103,6 +107,11 @@ module.exports = MongoDB.makeModel(
                 },
                 options: {
                     unique: true,
+                },
+            },
+            {
+                fields: {
+                    nameLower: 1,
                 },
             },
             {

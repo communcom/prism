@@ -295,7 +295,7 @@ class Community extends BasicController {
             }
 
             if (search) {
-                query.name = { $regex: `^${escape(search.trim())}` };
+                query.nameLower = { $regex: `^${escape(search.trim().toLowerCase())}` };
             }
 
             if (type === 'user') {
