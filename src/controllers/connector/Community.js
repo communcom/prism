@@ -310,7 +310,7 @@ class Community extends BasicController {
 
             if (allowedLanguages.length > 0) {
                 query.$and = query.$and || [];
-                query.$and.push({ language: { $in: [allowedLanguages] } });
+                query.$and.push({ language: { $in: allowedLanguages } });
             }
 
             if (type === 'user') {
