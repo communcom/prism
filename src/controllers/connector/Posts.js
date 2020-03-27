@@ -321,7 +321,7 @@ class Posts extends BasicController {
     }
 
     async _getFeedNew({ allowNsfw, limit, offset }, authUserId) {
-        const filter = { $match: { status: 'clean', language: 'eng' } };
+        const filter = { $match: { status: 'clean', language: 'en' } };
 
         if (!allowNsfw) {
             filter.$match.tags = { $ne: 'nsfw' };
@@ -393,7 +393,7 @@ class Posts extends BasicController {
                     $gte: new Date(startDate),
                 },
                 status: 'clean',
-                language: 'eng',
+                language: 'en',
             },
         };
 
@@ -454,7 +454,7 @@ class Posts extends BasicController {
     ) {
         // make default sorting, so nothing breaks
         const sortBy = { $sort: { _id: -1 } };
-        const filter = { $match: { status: 'clean', language: 'eng' } };
+        const filter = { $match: { status: 'clean', language: 'en' } };
         let addSortingField;
 
         if (!allowNsfw) {

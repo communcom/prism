@@ -573,7 +573,7 @@ class Connector extends BasicConnector {
                                 items: {
                                     type: 'string',
                                 },
-                                default: ['eng'],
+                                default: ['en'],
                             },
                         },
                     },
