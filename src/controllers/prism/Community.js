@@ -199,7 +199,7 @@ class Community {
         let hasUpdate = false;
 
         if (!isNil(language)) {
-            updates.language = language;
+            updates.language = language === 'eng' ? 'en' : language;
             hasUpdate = true;
         }
 
