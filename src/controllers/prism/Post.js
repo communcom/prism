@@ -41,7 +41,13 @@ class Post extends Abstract {
         const contentId = extractContentId(content);
         const { communityId, userId, permlink } = contentId;
 
-        if (!(await isCommunityExists(communityId))) {
+        const postCommunity = await CommunityModel.findOne(
+            { communityId },
+            { language: 1 },
+            { lean: true }
+        );
+
+        if (!postCommunity) {
             Logger.warn(`New post into unknown community: ${communityId},`, contentId);
             return;
         }
@@ -76,6 +82,7 @@ class Post extends Abstract {
                 upCount: 1,
                 upVotes: [{ userId }],
             },
+            language: postCommunity.language,
         });
 
         await this.registerForkChanges({ type: 'create', Model: PostModel, documentId: model._id });

@@ -176,6 +176,7 @@ class Community {
             alias,
             rules: [],
             name: normalizedName,
+            nameLower: normalizedName.toLowerCase(),
             registrationTime: new Date(blockTime),
         });
 

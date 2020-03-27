@@ -20,6 +20,10 @@ module.exports = MongoDB.makeModel(
             type: String,
             required: true,
         },
+        nameLower: {
+            type: String,
+            required: true,
+        },
         avatarUrl: {
             type: String,
         },
@@ -62,6 +66,7 @@ module.exports = MongoDB.makeModel(
         },
         language: {
             type: String,
+            default: 'eng',
         },
         blacklist: {
             type: [String],
@@ -107,7 +112,13 @@ module.exports = MongoDB.makeModel(
             },
             {
                 fields: {
+                    nameLower: 1,
+                },
+            },
+            {
+                fields: {
                     subscribersCount: 1,
+                    language: 1,
                 },
             },
         ],

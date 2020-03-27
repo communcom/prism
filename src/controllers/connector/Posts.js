@@ -44,6 +44,7 @@ const baseProjection = {
         'stats.commentsCount': true,
         meta: true,
         isNsfw: { $in: ['nsfw', '$tags'] },
+        language: true,
         author: {
             $let: {
                 vars: {
@@ -320,7 +321,7 @@ class Posts extends BasicController {
     }
 
     async _getFeedNew({ allowNsfw, limit, offset }, authUserId) {
-        const filter = { $match: { status: 'clean' } };
+        const filter = { $match: { status: 'clean', language: 'eng' } };
 
         if (!allowNsfw) {
             filter.$match.tags = { $ne: 'nsfw' };
@@ -392,6 +393,7 @@ class Posts extends BasicController {
                     $gte: new Date(startDate),
                 },
                 status: 'clean',
+                language: 'eng',
             },
         };
 
@@ -452,7 +454,7 @@ class Posts extends BasicController {
     ) {
         // make default sorting, so nothing breaks
         const sortBy = { $sort: { _id: -1 } };
-        const filter = { $match: { status: 'clean' } };
+        const filter = { $match: { status: 'clean', language: 'eng' } };
         let addSortingField;
 
         if (!allowNsfw) {
