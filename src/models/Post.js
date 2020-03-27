@@ -131,6 +131,9 @@ module.exports = MongoDB.makeModel(
             type: Object,
             default: {},
         },
+        language: {
+            type: String,
+        },
     },
     {
         index: [
@@ -189,6 +192,7 @@ module.exports = MongoDB.makeModel(
             {
                 fields: {
                     'meta.creationTime': -1,
+                    language: 1,
                 },
             },
             // sitemap

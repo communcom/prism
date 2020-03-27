@@ -44,6 +44,7 @@ const baseProjection = {
         'stats.commentsCount': true,
         meta: true,
         isNsfw: { $in: ['nsfw', '$tags'] },
+        language: true,
         author: {
             $let: {
                 vars: {
@@ -392,6 +393,7 @@ class Posts extends BasicController {
                     $gte: new Date(startDate),
                 },
                 status: 'clean',
+                language: 'eng',
             },
         };
 
