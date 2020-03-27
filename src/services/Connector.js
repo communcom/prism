@@ -568,6 +568,13 @@ class Connector extends BasicConnector {
                             sortingToken: {
                                 type: 'string',
                             },
+                            allowedLanguages: {
+                                type: 'array',
+                                items: {
+                                    type: 'string',
+                                },
+                                default: ['eng'],
+                            },
                         },
                     },
                 },

@@ -262,7 +262,17 @@ class Community extends BasicController {
     }
 
     async getCommunities(
-        { type, userId, search, limit, offset, excludeMySubscriptions, sortingToken, forceQuery },
+        {
+            type,
+            userId,
+            search,
+            limit,
+            offset,
+            excludeMySubscriptions,
+            allowedLanguages,
+            sortingToken,
+            forceQuery,
+        },
         { userId: authUserId },
         { clientType }
     ) {
@@ -296,6 +306,11 @@ class Community extends BasicController {
 
             if (search) {
                 query.nameLower = { $regex: `^${escape(search.trim().toLowerCase())}` };
+            }
+
+            if (allowedLanguages.length > 0) {
+                query.$and = query.$and || [];
+                query.$and.push({ language: { $in: [allowedLanguages] } });
             }
 
             if (type === 'user') {

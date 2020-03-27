@@ -117,6 +117,7 @@ module.exports = MongoDB.makeModel(
             {
                 fields: {
                     subscribersCount: 1,
+                    language: 1,
                 },
             },
         ],
