@@ -56,10 +56,10 @@ class Main {
         blockHandleHoneyEvent.metadata = { blockNum, blockTime };
         blockHandleHoneyEvent.addField('startTime', startTime);
 
-        for (const { actions } of transactions) {
+        for (const { id, actions } of transactions) {
             for (const action of actions) {
                 if (isAllowedAction(action)) {
-                    await this._disperseAction(action, { blockNum, blockTime });
+                    await this._disperseAction(action, { blockNum, blockTime, trxId: id });
                 }
             }
         }
@@ -118,7 +118,7 @@ class Main {
         blockHandleHoneyEvent.send();
     }
 
-    async _disperseAction(action, { blockNum, blockTime }) {
+    async _disperseAction(action, { blockNum, blockTime, trxId }) {
         const pathName = [action.code, action.action].join('->');
         const communityId = this._extractCommunityId(action);
         const actionArgs = action.args;
@@ -128,6 +128,7 @@ class Main {
             communityId,
             blockNum,
             blockTime,
+            trxId,
             events,
         };
 

@@ -66,6 +66,7 @@ class Post extends Abstract {
             document,
             tags,
             meta: {
+                trxId: meta.trxId,
                 creationTime: meta.blockTime,
                 updateTime: meta.blockTime,
             },
