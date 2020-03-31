@@ -21,7 +21,7 @@
     "bytebuffer": "^5.0.1",
     "commun-utils": "^1.1.0",
     "cyberway-core-service": "^3.58.5",
-    "cyberwayjs": "^20.0.0-beta7",
+    "cyberwayjs": "^20.0.2",
     "elasticsearch": "^15.5.0",
     "elasticsearch-sanitize": "^2.0.0",
     "eosjs-ecc": "^4.0.7",
