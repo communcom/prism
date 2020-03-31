@@ -300,9 +300,13 @@ class Community extends BasicController {
         if (forceQuery) {
             query = forceQuery;
         } else {
+            const skipCommunities = ['FEED'];
+
             if (clientType !== 'web') {
-                query.$and = [{ communityId: { $ne: 'PORN' } }, { communityId: { $ne: 'NSFW' } }];
+                skipCommunities.push('PORN', 'NSFW');
             }
+
+            query.$and = [{ communityId: { $nin: skipCommunities } }];
 
             if (search) {
                 query.nameLower = { $regex: `^${escape(search.trim().toLowerCase())}` };
