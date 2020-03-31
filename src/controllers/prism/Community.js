@@ -149,8 +149,11 @@ class Community {
         }
     }
 
-    async handleCreate({ community_name: name, commun_code: communityId }, { blockTime }) {
-        const { alias, name, nameLower } = community.normalizeCommunityNames({ communityId, name });
+    async handleCreate({ community_name: originalName, commun_code: communityId }, { blockTime }) {
+        const { alias, name, nameLower } = community.normalizeCommunityNames({
+            communityId,
+            name: originalName,
+        });
 
         const point = await CommunityPointModel.findOne(
             {
