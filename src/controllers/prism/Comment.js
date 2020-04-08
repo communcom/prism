@@ -36,7 +36,7 @@ class Comment extends Abstract {
         }
     }
 
-    async handleCreate(content, { blockNum, blockTime }) {
+    async handleCreate(content, { blockNum, blockTime, trxId }) {
         const contentId = extractContentId(content);
         const { communityId, userId, permlink } = contentId;
 
@@ -62,6 +62,7 @@ class Comment extends Abstract {
             contentId,
             parents: {},
             meta: {
+                trxId,
                 creationTime: blockTime,
                 updateTime: blockTime,
             },
