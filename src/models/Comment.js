@@ -78,6 +78,10 @@ module.exports = MongoDB.makeModel(
             },
         },
         meta: {
+            trxId: {
+                type: String,
+                default: null,
+            },
             creationTime: {
                 type: Date,
                 default: null,
