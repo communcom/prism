@@ -48,24 +48,39 @@ class Subscribe extends Abstract {
 
     async _manage(pinner, pinning, action) {
         const [addAction, removeAction, increment] = this._getArrayEntityCommands(action);
-        const applier = this._makeSubscriptionApplier({ addAction, removeAction, increment });
+        const applier = this._makeSubscriptionApplier({
+            addAction,
+            removeAction,
+            increment,
+            action,
+        });
 
         await applier(pinner, pinning, 'subscriptions');
         await applier(pinning, pinner, 'subscribers');
     }
 
-    _makeSubscriptionApplier({ addAction, removeAction, increment }) {
+    _makeSubscriptionApplier({ addAction, removeAction, increment, action }) {
         return async (iniciator, target, type) => {
             const [arrayPath, countPath] = await this._getTargetFields(iniciator);
             const fullArrayPath = `${type}.${arrayPath}`;
             const fullCountPath = `${type}.${countPath}`;
+
+            const profileObj = await ProfileModel.findOne({
+                userId: iniciator,
+            });
+
             const previousModel = await ProfileModel.findOneAndUpdate(
                 {
                     userId: iniciator,
                 },
                 {
                     [addAction]: { [fullArrayPath]: target },
-                    $inc: { [fullCountPath]: increment },
+                    $set: {
+                        [fullCountPath]: this._calculateCount(
+                            action,
+                            profileObj[type][arrayPath].length
+                        ),
+                    },
                 }
             );
 
