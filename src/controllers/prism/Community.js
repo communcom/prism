@@ -270,10 +270,16 @@ class Community {
             revertMethod = '$addToSet';
             inc = -1;
         }
+        const communityObj = await CommunityModel.findOne({ communityId });
 
         const oldCommunityObject = await CommunityModel.findOneAndUpdate(
             { communityId },
-            { [changeMethod]: { subscribers: userId }, $inc: { subscribersCount: inc } }
+            {
+                [changeMethod]: { subscribers: userId },
+                $set: {
+                    subscribersCount: this._calculateCount(type, communityObj.subscribers.length),
+                },
+            }
         );
 
         if (oldCommunityObject) {
@@ -292,11 +298,18 @@ class Community {
             });
         }
 
+        const profileObj = await ProfileModel.findOne({ userId });
+
         const oldProfileObject = await ProfileModel.findOneAndUpdate(
             { userId },
             {
                 [changeMethod]: { 'subscriptions.communityIds': communityId },
-                $inc: { 'subscriptions.communitiesCount': inc },
+                $set: {
+                    'subscriptions.communitiesCount': this._calculateCount(
+                        type,
+                        profileObj.subscriptions.communityIds.length
+                    ),
+                },
             }
         );
 
@@ -362,6 +375,15 @@ class Community {
         }
 
         return null;
+    }
+
+    _calculateCount(action, current) {
+        switch (action) {
+            case 'follow':
+                return current + 1;
+            case 'unfollow':
+                return current === 0 ? 0 : current - 1;
+        }
     }
 }
 

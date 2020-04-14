@@ -39,6 +39,15 @@ class Abstract extends BasicController {
                 return ['$pull', '$addToSet', -1];
         }
     }
+
+    _calculateCount(action, current) {
+        switch (action) {
+            case 'add':
+                return current + 1;
+            case 'remove':
+                return current === 0 ? 0 : current - 1;
+        }
+    }
 }
 
 module.exports = Abstract;
