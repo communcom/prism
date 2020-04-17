@@ -3,6 +3,7 @@ const escape = require('escape-string-regexp');
 const core = require('cyberway-core-service');
 const BasicController = core.controllers.Basic;
 const ProfileModel = require('../../models/Profile');
+const PostModel = require('../../models/Post');
 const CommunityModel = require('../../models/Community');
 const { addFieldIsIncludes } = require('../../utils/mongodb');
 
@@ -225,6 +226,19 @@ class Profile extends BasicController {
             resultUser = result.find(resultUser => resultUser.username === user);
         } else {
             resultUser = result[0];
+        }
+
+        const bannedPosts = await PostModel.find({
+            'contentId.userId': resultUser.userId,
+            status: 'banned',
+        });
+
+        const bannedPostsCount = bannedPosts.length;
+        const postsCount = resultUser.stats.postsCount;
+
+        if (bannedPostsCount && postsCount) {
+            const newPostCount = postsCount - bannedPostsCount;
+            resultUser.stats.postsCount = newPostCount > 0 ? newPostCount : 0;
         }
 
         // TODO: Temporary fix for backward compatible

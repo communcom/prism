@@ -4,6 +4,44 @@ const { addFieldIsIncludes } = require('../../utils/mongodb');
 const LeaderModel = require('../../models/Leader');
 
 class Leaders extends BasicController {
+    async getVotedLeader({ communityId, userId }) {
+        const query = { communityId, votes: userId };
+        const projection = {
+            userId: true,
+            isActive: true,
+            inTop: true,
+            position: true,
+            _id: false,
+        };
+        const profileLookup = {
+            from: 'profiles',
+            localField: 'userId',
+            foreignField: 'userId',
+            as: 'profiles',
+        };
+        const addFields = { profile: { $arrayElemAt: ['$profiles', 0] } };
+        const finalProjection = {
+            ...projection,
+            username: '$profile.username',
+            avatarUrl: '$profile.avatarUrl',
+            userId: '$profile.userId',
+        };
+
+        const aggregation = [
+            { $match: query },
+            { $project: projection },
+            { $lookup: profileLookup },
+            { $addFields: addFields },
+            { $project: finalProjection },
+        ];
+
+        const [leader] = await LeaderModel.aggregate(aggregation);
+
+        return {
+            leader: leader || null,
+        };
+    }
+
     async getLeaders({ communityId, limit, offset, prefix }, { userId }) {
         const queryText = prefix ? prefix.trim() : null;
         const isSearching = Boolean(queryText);

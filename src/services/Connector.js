@@ -349,6 +349,22 @@ class Connector extends BasicConnector {
                         },
                     },
                 },
+                getVotedLeader: {
+                    handler: this._leaders.getVotedLeader,
+                    scope: this._leaders,
+                    inherits: ['paging', 'onlyWhenPublicApiEnabled'],
+                    validation: {
+                        required: ['communityId', 'userId'],
+                        properties: {
+                            communityId: {
+                                type: 'string',
+                            },
+                            userId: {
+                                type: 'string',
+                            },
+                        },
+                    },
+                },
                 getLeaderCommunities: {
                     handler: this._leaders.getLeaderCommunities,
                     scope: this._leaders,
