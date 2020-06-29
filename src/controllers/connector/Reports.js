@@ -175,15 +175,28 @@ class Reports extends Controller {
 
         const aggregation = [
             match,
-            sorting,
-            { $skip: offset },
-            { $limit: limit },
-            profileLookup,
-            communityLookup,
-            projection,
+            {
+                $facet: {
+                    items: [
+                        sorting,
+                        { $skip: offset },
+                        { $limit: limit },
+                        profileLookup,
+                        communityLookup,
+                        projection,
+                    ],
+                    meta: [{ $count: 'count' }],
+                },
+            },
         ];
 
-        const items = await model.aggregate(aggregation);
+        const [result] = await model.aggregate(aggregation);
+
+        const { items, meta } = result;
+
+        if (!items.length) {
+            return { items: [] };
+        }
 
         this._fixDocuments(items, contentType);
 
@@ -207,7 +220,14 @@ class Reports extends Controller {
             await appendViewsCount(items, this);
         }
 
-        return { items };
+        let reportsCount = 0;
+
+        if (meta.length) {
+            const [{ count }] = meta;
+            reportsCount = count;
+        }
+
+        return { items, reportsCount };
     }
 
     async getEntityReports({ communityId, userId, permlink, limit, offset }) {
@@ -216,6 +236,7 @@ class Reports extends Controller {
                 'contentId.communityId': communityId,
                 'contentId.userId': userId,
                 'contentId.permlink': permlink,
+                status: { $ne: 'closed' },
             },
         };
 

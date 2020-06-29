@@ -248,7 +248,14 @@ class LeaderProposals extends Abstract {
     }
 
     _validateSetInfo(data) {
-        const allowedFields = ['description', 'language', 'rules', 'avatar_image', 'cover_image'];
+        const allowedFields = [
+            'description',
+            'language',
+            'rules',
+            'avatar_image',
+            'cover_image',
+            'subject',
+        ];
 
         let updatedFieldsCount = 0;
 

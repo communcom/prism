@@ -25,6 +25,7 @@ const baseProjection = {
     isBlocked: true,
     postsCount: true,
     registrationTime: true,
+    subject: true,
 };
 
 const FRIEND_SUBSCRIBERS_LIMIT = 5;
@@ -271,6 +272,7 @@ class Community extends BasicController {
             excludeMySubscriptions,
             allowedLanguages,
             sortingToken,
+            allowNsfw,
             forceQuery,
         },
         { userId: authUserId },
@@ -303,7 +305,7 @@ class Community extends BasicController {
         } else {
             const skipCommunities = ['FEED'];
 
-            if (clientType !== 'web') {
+            if (clientType !== 'web' || !allowNsfw) {
                 skipCommunities.push('PORN', 'NSFW');
             }
 

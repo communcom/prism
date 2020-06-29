@@ -369,7 +369,7 @@ class Main {
             case 'c.ctrl':
                 let queue = this._ctrlUpdateActions;
 
-                if (action.action === 'propose') {
+                if (action.action === 'propose' || action.action === 'regleader') {
                     queue = this._ctrlCreateActions;
                 }
 

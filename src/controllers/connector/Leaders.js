@@ -239,6 +239,7 @@ class Leaders extends BasicController {
                                 avatarUrl: '$$community.avatarUrl',
                                 name: '$$community.name',
                                 subscribersCount: '$$community.subscribersCount',
+                                postsCount: '$$community.postsCount',
                             },
                         },
                     },

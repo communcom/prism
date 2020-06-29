@@ -17,22 +17,55 @@ class Comment extends Abstract {
             permlink: messageId.permlink,
         };
 
-        const previousModel = await CommentModel.findOneAndUpdate(
+        const previousCommentModel = await CommentModel.findOneAndUpdate(
             { contentId },
             { $set: { status: 'banned', 'report.status': 'closed' } }
         );
 
-        if (previousModel) {
+        const previousProfileModel = await ProfileModel.findOneAndUpdate(
+            { userId: contentId.userId },
+            { $inc: { 'stats.commentsCount': -1 } }
+        );
+
+        if (previousCommentModel) {
             await this.registerForkChanges({
                 type: 'update',
                 Model: CommentModel,
-                documentId: previousModel._id,
+                documentId: previousCommentModel._id,
                 data: {
                     $set: {
-                        document: previousModel.document.toObject(),
+                        status: previousCommentModel.status,
+                        'report.status': previousCommentModel.report.status,
                     },
                 },
             });
+
+            const previousParentPostModel = await PostModel.findOneAndUpdate(
+                { contentId: previousCommentModel.parents.post },
+                { $inc: { 'stats.commentsCount': -1 } }
+            );
+
+            if (previousParentPostModel) {
+                await this.registerForkChanges({
+                    type: 'update',
+                    Model: PostModel,
+                    documentId: previousParentPostModel._id,
+                    data: {
+                        $inc: { 'stats.commentsCount': -1 },
+                    },
+                });
+            }
+
+            if (previousProfileModel) {
+                await this.registerForkChanges({
+                    type: 'update',
+                    Model: ProfileModel,
+                    documentId: previousProfileModel._id,
+                    data: {
+                        $inc: { 'stats.commentsCount': -1 },
+                    },
+                });
+            }
         }
     }
 

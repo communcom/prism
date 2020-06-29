@@ -25,6 +25,7 @@ class Community {
         // permission,
         // required_threshold,
         commun_code: communityId,
+        community_name: name,
         collection_period: collectionPeriod,
         moderation_period: moderationPeriod,
         lock_period: lockPeriod,
@@ -51,11 +52,20 @@ class Community {
             emissionRate,
             leadersPercent,
             authorPercent,
+            name,
         };
+
+        const updates = {
+            settings: newSettings,
+        };
+
+        if (name) {
+            updates.name = name;
+        }
 
         const oldCommunityObject = await CommunityModel.findOneAndUpdate(
             { communityId },
-            { $set: { settings: newSettings } }
+            { $set: updates }
         );
 
         if (oldCommunityObject) {
@@ -66,6 +76,7 @@ class Community {
                 data: {
                     $set: {
                         settings: oldCommunityObject.settings,
+                        name: oldCommunityObject.name,
                     },
                 },
             });
@@ -196,6 +207,7 @@ class Community {
         description,
         rules,
         language,
+        subject,
     }) {
         const updates = {};
         let hasUpdate = false;
@@ -217,6 +229,11 @@ class Community {
 
         if (!isNil(description)) {
             updates.description = description;
+            hasUpdate = true;
+        }
+
+        if (!isNil(subject)) {
+            updates.subject = subject;
             hasUpdate = true;
         }
 
@@ -252,6 +269,7 @@ class Community {
                         coverUrl: oldObject.coverUrl,
                         description: oldObject.description,
                         rules: oldObject.rules,
+                        subject: oldObject.subject,
                     },
                 },
             });
@@ -261,54 +279,54 @@ class Community {
     async handleFollowUnfollow({ commun_code: communityId, follower: userId }, type) {
         let changeMethod, revertMethod, inc;
 
+        const communityMatch = {
+            communityId,
+        };
+
         if (type === 'follow') {
             changeMethod = '$addToSet';
             revertMethod = '$pull';
             inc = 1;
+            communityMatch.subscribers = { $ne: userId };
         } else {
             changeMethod = '$pull';
             revertMethod = '$addToSet';
             inc = -1;
+            communityMatch.subscribers = userId;
         }
-        const communityObj = await CommunityModel.findOne({ communityId });
 
-        const oldCommunityObject = await CommunityModel.findOneAndUpdate(
-            { communityId },
-            {
-                [changeMethod]: { subscribers: userId },
-                $set: {
-                    subscribersCount: this._calculateCount(type, communityObj.subscribers.length),
-                },
-            }
-        );
+        const update = {
+            [changeMethod]: { subscribers: userId },
+            $inc: {
+                subscribersCount: inc,
+            },
+        };
+        const revert = {
+            [revertMethod]: {
+                subscribers: userId,
+            },
+            $inc: {
+                subscribersCount: -inc,
+            },
+        };
+
+        const oldCommunityObject = await CommunityModel.findOneAndUpdate(communityMatch, update);
 
         if (oldCommunityObject) {
             await this._forkService.registerChanges({
                 type: 'update',
                 Model: CommunityModel,
                 documentId: oldCommunityObject._id,
-                data: {
-                    [revertMethod]: {
-                        subscribers: userId,
-                    },
-                    $inc: {
-                        subscribersCount: -inc,
-                    },
-                },
+                data: revert,
             });
         }
-
-        const profileObj = await ProfileModel.findOne({ userId });
 
         const oldProfileObject = await ProfileModel.findOneAndUpdate(
             { userId },
             {
                 [changeMethod]: { 'subscriptions.communityIds': communityId },
-                $set: {
-                    'subscriptions.communitiesCount': this._calculateCount(
-                        type,
-                        profileObj.subscriptions.communityIds.length
-                    ),
+                $inc: {
+                    'subscriptions.communitiesCount': inc,
                 },
             }
         );
@@ -321,8 +339,8 @@ class Community {
                 data: {
                     [changeMethod]: {
                         'subscriptions.communityIds': communityId,
-                        $inc: { 'subscriptions.communitiesCount': -inc },
                     },
+                    $inc: { 'subscriptions.communitiesCount': -inc },
                 },
             });
         }
@@ -375,15 +393,6 @@ class Community {
         }
 
         return null;
-    }
-
-    _calculateCount(action, current) {
-        switch (action) {
-            case 'follow':
-                return current + 1;
-            case 'unfollow':
-                return current === 0 ? 0 : current - 1;
-        }
     }
 }
 

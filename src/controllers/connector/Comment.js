@@ -161,11 +161,12 @@ class Comment extends BasicController {
         const filter = { $match: { status: 'clean' } };
 
         if (type === 'user') {
-            filter.$match = { 'contentId.userId': userId };
+            filter.$match['contentId.userId'] = userId;
         } else {
-            filter.$match = {
-                $or: [{ 'parents.comment.userId': userId }, { 'parents.post.userId': userId }],
-            };
+            filter.$match.$or = [
+                { 'parents.comment.userId': userId },
+                { 'parents.post.userId': userId },
+            ];
         }
 
         const paging = [{ $skip: offset }, { $limit: limit }];

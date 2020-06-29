@@ -569,7 +569,7 @@ class Connector extends BasicConnector {
                 getCommunities: {
                     handler: this._community.getCommunities,
                     scope: this._community,
-                    inherits: ['onlyWhenPublicApiEnabled', 'paging'],
+                    inherits: ['onlyWhenPublicApiEnabled', 'paging', 'nsfwFilter'],
                     validation: {
                         required: [],
                         properties: {

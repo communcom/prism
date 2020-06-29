@@ -18,22 +18,55 @@ class Post extends Abstract {
             permlink: messageId.permlink,
         };
 
-        const previousModel = await PostModel.findOneAndUpdate(
+        const previousPostModel = await PostModel.findOneAndUpdate(
             { contentId },
             { $set: { status: 'banned', 'reports.status': 'closed' } }
         );
 
-        if (previousModel) {
+        if (previousPostModel) {
             await this.registerForkChanges({
                 type: 'update',
                 Model: PostModel,
-                documentId: previousModel._id,
+                documentId: previousPostModel._id,
                 data: {
                     $set: {
-                        document: previousModel.document.toObject(),
+                        status: previousPostModel.status,
+                        'reports.status': previousPostModel.reports.status,
                     },
                 },
             });
+
+            const previousCommunityModel = await CommunityModel.findOneAndUpdate(
+                { communityId: contentId.communityId },
+                { $inc: { postsCount: -1 } }
+            );
+
+            const previousUserModel = await ProfileModel.findOneAndUpdate(
+                { userId: contentId.userId },
+                { $inc: { 'stats.postsCount': -1 } }
+            );
+
+            if (previousCommunityModel) {
+                await this.registerForkChanges({
+                    type: 'update',
+                    Model: CommunityModel,
+                    documentId: previousCommunityModel._id,
+                    data: {
+                        $inc: { postsCount: 1 },
+                    },
+                });
+            }
+
+            if (previousUserModel) {
+                await this.registerForkChanges({
+                    type: 'update',
+                    Model: ProfileModel,
+                    documentId: previousUserModel._id,
+                    data: {
+                        $inc: { 'stats.postsCount': 1 },
+                    },
+                });
+            }
         }
     }
 

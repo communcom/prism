@@ -16,7 +16,7 @@ const APPROVES_THRESHOLD = {
 
 class LeaderProposals extends BasicController {
     async getBanPostProposal(contentId, { userId }) {
-        const [proposal] = await this._getProposals(
+        const { items } = await this._getProposals(
             [
                 {
                     $match: {
@@ -32,6 +32,8 @@ class LeaderProposals extends BasicController {
             userId
         );
 
+        const [proposal] = items;
+
         if (!proposal) {
             throw {
                 code: 404,
@@ -45,7 +47,7 @@ class LeaderProposals extends BasicController {
     }
 
     async getProposal({ proposer, proposalId, communityId }, { userId }) {
-        const [proposal] = await this._getProposals(
+        const { items } = await this._getProposals(
             [
                 {
                     $match: {
@@ -60,6 +62,8 @@ class LeaderProposals extends BasicController {
             ],
             userId
         );
+
+        const [proposal] = items;
 
         if (!proposal) {
             throw {
@@ -102,7 +106,7 @@ class LeaderProposals extends BasicController {
             match.type = { $in: types };
         }
 
-        const items = await this._getProposals(
+        const { items, proposalsCount } = await this._getProposals(
             [
                 {
                     $match: match,
@@ -124,6 +128,7 @@ class LeaderProposals extends BasicController {
 
         return {
             items,
+            proposalsCount,
         };
     }
 
@@ -175,31 +180,43 @@ class LeaderProposals extends BasicController {
             projection.isApproved = isIncludes('$approves', userId);
         }
 
-        const items = await LeaderProposalModel.aggregate([
-            ...aggregate,
+        const match = aggregate.shift();
+
+        const [result] = await LeaderProposalModel.aggregate([
+            match,
             {
-                $lookup: {
-                    from: 'profiles',
-                    localField: 'proposer',
-                    foreignField: 'userId',
-                    as: 'proposerProfile',
+                $facet: {
+                    items: [
+                        ...aggregate,
+                        {
+                            $lookup: {
+                                from: 'profiles',
+                                localField: 'proposer',
+                                foreignField: 'userId',
+                                as: 'proposerProfile',
+                            },
+                        },
+                        {
+                            $lookup: {
+                                from: 'communities',
+                                localField: 'communityId',
+                                foreignField: 'communityId',
+                                as: 'community',
+                            },
+                        },
+                        {
+                            $project: projection,
+                        },
+                    ],
+                    meta: [{ $count: 'count' }],
                 },
-            },
-            {
-                $lookup: {
-                    from: 'communities',
-                    localField: 'communityId',
-                    foreignField: 'communityId',
-                    as: 'community',
-                },
-            },
-            {
-                $project: projection,
             },
         ]);
 
+        const { items, meta } = result;
+
         if (!items.length) {
-            return [];
+            return { items: [] };
         }
 
         const leaderIds = new Set();
@@ -250,7 +267,14 @@ class LeaderProposals extends BasicController {
             };
         }
 
-        return items;
+        let proposalsCount = 0;
+
+        if (meta.length) {
+            const [{ count }] = meta;
+            proposalsCount = count;
+        }
+
+        return { items, proposalsCount };
     }
 
     _formatChanges(proposal) {

@@ -79,19 +79,59 @@ class Profile extends Abstract {
                     break;
 
                 case 'facebook':
-                    query['personal.contacts.facebook'] = value;
+                    query['personal.facebook'] = value;
                     break;
 
                 case 'telegram':
-                    query['personal.contacts.telegram'] = value;
+                    query['personal.telegram'] = value;
                     break;
 
                 case 'whatsapp':
-                    query['personal.contacts.whatsApp'] = value;
+                    query['personal.whatsApp'] = value;
                     break;
 
                 case 'wechat':
-                    query['personal.contacts.weChat'] = value;
+                    query['personal.weChat'] = value;
+                    break;
+
+                case 'first_name':
+                    query['personal.firstName'] = value;
+                    break;
+
+                case 'last_name':
+                    query['personal.lastName'] = value;
+                    break;
+
+                case 'country':
+                    query['personal.country'] = value;
+                    break;
+
+                case 'city':
+                    query['personal.city'] = value;
+                    break;
+
+                case 'birth_date':
+                    query['personal.birthDate'] = new Date(value + 'Z');
+                    break;
+
+                case 'instagram':
+                    query['personal.instagram'] = value;
+                    break;
+
+                case 'linkedin':
+                    query['personal.linkedin'] = value;
+                    break;
+
+                case 'twitter':
+                    query['personal.twitter'] = value;
+                    break;
+
+                case 'github':
+                    query['personal.gitHub'] = value;
+                    break;
+
+                case 'website_url':
+                    query['personal.websiteUrl'] = value;
                     break;
             }
         }

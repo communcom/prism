@@ -1,6 +1,5 @@
 const core = require('cyberway-core-service');
 const { MongoDB } = core.services;
-const { Logger } = core.utils;
 
 const ProfileModel = MongoDB.makeModel(
     'Profile',
@@ -23,25 +22,47 @@ const ProfileModel = MongoDB.makeModel(
             biography: {
                 type: String,
             },
-            contacts: {
-                vkontakte: {
-                    type: String,
-                },
-                facebook: {
-                    type: String,
-                },
-                instagram: {
-                    type: String,
-                },
-                telegram: {
-                    type: String,
-                },
-                whatsApp: {
-                    type: String,
-                },
-                weChat: {
-                    type: String,
-                },
+            facebook: {
+                type: String,
+            },
+            telegram: {
+                type: String,
+            },
+            whatsApp: {
+                type: String,
+            },
+            weChat: {
+                type: String,
+            },
+            firstName: {
+                type: String,
+            },
+            lastName: {
+                type: String,
+            },
+            country: {
+                type: String,
+            },
+            city: {
+                type: String,
+            },
+            birthDate: {
+                type: Date,
+            },
+            instagram: {
+                type: String,
+            },
+            linkedin: {
+                type: String,
+            },
+            twitter: {
+                type: String,
+            },
+            gitHub: {
+                type: String,
+            },
+            websiteUrl: {
+                type: String,
             },
         },
         subscriptions: {
