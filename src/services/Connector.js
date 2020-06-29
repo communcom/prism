@@ -225,6 +225,13 @@ class Connector extends BasicConnector {
                             communityAlias: {
                                 type: 'string',
                             },
+                            allowedLanguages: {
+                                type: 'array',
+                                items: {
+                                    type: 'string',
+                                },
+                                default: ['en'],
+                            },
                         },
                     },
                 },
@@ -589,7 +596,7 @@ class Connector extends BasicConnector {
                                 items: {
                                     type: 'string',
                                 },
-                                default: ['en'],
+                                default: ['all'],
                             },
                         },
                     },

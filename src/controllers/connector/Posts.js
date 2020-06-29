@@ -6,6 +6,7 @@ const { Logger } = core.utils;
 
 const PostModel = require('../../models/Post');
 const ProfileModel = require('../../models/Profile');
+const TopFeedBlacklistCommunitiesModel = require('../../models/TopFeedBlacklistCommunities');
 const {
     normalizeContentId,
     lookupUserIdByUsername,
@@ -121,6 +122,7 @@ class Posts extends BasicController {
             communityId,
             communityAlias,
             username,
+            allowedLanguages,
         },
         { userId: authUserId }
     ) {
@@ -154,6 +156,21 @@ class Posts extends BasicController {
             case 'topLikes':
             case 'topComments':
             case 'topRewards':
+                return await this._getTopFeed(
+                    {
+                        type,
+                        timeframe,
+                        userId,
+                        allowNsfw,
+                        communityId,
+                        communityAlias,
+                        offset,
+                        limit,
+                        allowedLanguages,
+                        excludeSpecificCommunities: true,
+                    },
+                    authUserId
+                );
             case 'subscriptionsPopular':
                 return await this._getTopFeed(
                     {
@@ -170,7 +187,15 @@ class Posts extends BasicController {
                 );
             case 'hot':
                 return await this._getHotFeed(
-                    { communityId, communityAlias, allowNsfw, offset, limit },
+                    {
+                        communityId,
+                        communityAlias,
+                        allowNsfw,
+                        offset,
+                        limit,
+                        allowedLanguages,
+                        excludeSpecificCommunitues: true,
+                    },
                     authUserId
                 );
             case 'voted':
@@ -382,10 +407,30 @@ class Posts extends BasicController {
         return { items };
     }
 
-    async _getHotFeed({ communityId, communityAlias, allowNsfw, offset, limit }, authUserId) {
+    async _getHotFeed(
+        {
+            communityId,
+            communityAlias,
+            allowNsfw,
+            offset,
+            limit,
+            allowedLanguages,
+            excludeSpecificCommunities = false,
+        },
+        authUserId
+    ) {
         const now = Date.now();
         const scope = 1000 * 60 * 60 * env.GLS_HOT_SCOPE_HOURS;
         const startDate = now - scope;
+
+        let communitiesToExclude = [];
+        if (excludeSpecificCommunities) {
+            communitiesToExclude = await TopFeedBlacklistCommunitiesModel.find(
+                {},
+                { communityId: 1 },
+                { lean: true }
+            );
+        }
 
         const match = {
             $match: {
@@ -393,7 +438,10 @@ class Posts extends BasicController {
                     $gte: new Date(startDate),
                 },
                 status: 'clean',
-                language: 'en',
+                'contentId.communityId': {
+                    $nin: communitiesToExclude.map(({ communityId }) => communityId),
+                },
+                language: { $in: allowedLanguages },
             },
         };
 
@@ -449,12 +497,43 @@ class Posts extends BasicController {
     }
 
     async _getTopFeed(
-        { type, timeframe, allowNsfw, limit, offset, communityId, userId, communityAlias },
+        {
+            type,
+            timeframe,
+            allowNsfw,
+            limit,
+            offset,
+            communityId,
+            userId,
+            communityAlias,
+            allowedLanguages,
+            excludeSpecificCommunities = false,
+        },
         authUserId
     ) {
+        let communitiesToExclude = [];
+        if (excludeSpecificCommunities) {
+            communitiesToExclude = await TopFeedBlacklistCommunitiesModel.find(
+                {},
+                { communityId: 1 },
+                { lean: true }
+            );
+        }
+
         // make default sorting, so nothing breaks
         const sortBy = { $sort: { _id: -1 } };
-        const filter = { $match: { status: 'clean', language: 'en' } };
+        const filter = {
+            $match: {
+                status: 'clean',
+                'contentId.communityId': {
+                    $nin: communitiesToExclude.map(({ communityId }) => communityId),
+                },
+            },
+        };
+        if (allowedLanguages) {
+            filter.$match.language = { $in: allowedLanguages };
+        }
+
         let addSortingField;
 
         if (!allowNsfw) {

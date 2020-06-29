@@ -283,6 +283,7 @@ class Community extends BasicController {
                     type,
                     userId,
                     search,
+                    allowedLanguages,
                     limit,
                     offset,
                     forceQuery: this._getSortingTokenQuery(sortingToken),
