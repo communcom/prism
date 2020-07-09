@@ -171,6 +171,7 @@ class LeaderProposals extends BasicController {
                         coverUrl: '$$community.coverUrl',
                         description: '$$community.description',
                         rules: '$$community.rules',
+                        language: '$$community.language',
                     },
                 },
             },
