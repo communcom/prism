@@ -19,6 +19,10 @@ module.exports = MongoDB.makeModel(
         communityId: {
             type: String,
         },
+        isGlobal: {
+            type: Boolean,
+            default: false,
+        },
         reason: {
             type: String,
         },

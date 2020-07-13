@@ -32,12 +32,14 @@ const FRIEND_SUBSCRIBERS_LIMIT = 5;
 
 class Community extends BasicController {
     async isInCommunityBlacklist({ userId, communityId }) {
-        const community = await this.getCommunity({ communityId }, { userId });
-        if (!community) {
-            return false;
-        }
-
-        return community.isBlocked;
+        const ban = await BanModel.find(
+            {
+                $or: [{ userId, communityId }, { userId, isGlobal: true }],
+            },
+            { _id: 1 },
+            { lean: true }
+        );
+        return ban.length > 0;
     }
 
     async getCommunityBanHistory({ communityId, communityAlias, userId, limit, offset }) {

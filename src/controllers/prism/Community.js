@@ -121,6 +121,7 @@ class Community {
             leaderUserId,
             reason,
             type,
+            isGlobal: communityId === '',
         });
 
         await this._forkService.registerChanges({
