@@ -19,7 +19,7 @@ class Comment extends Abstract {
 
         const previousCommentModel = await CommentModel.findOneAndUpdate(
             { contentId },
-            { $set: { status: 'banned', 'report.status': 'closed' } }
+            { $set: { status: 'banned', 'reports.status': 'closed' } }
         );
 
         const previousProfileModel = await ProfileModel.findOneAndUpdate(
@@ -35,7 +35,7 @@ class Comment extends Abstract {
                 data: {
                     $set: {
                         status: previousCommentModel.status,
-                        'report.status': previousCommentModel.report.status,
+                        'reports.status': previousCommentModel.reports.status,
                     },
                 },
             });

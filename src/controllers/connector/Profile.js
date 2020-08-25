@@ -6,6 +6,7 @@ const ProfileModel = require('../../models/Profile');
 const PostModel = require('../../models/Post');
 const CommunityModel = require('../../models/Community');
 const { addFieldIsIncludes } = require('../../utils/mongodb');
+const { processPersonalInfo } = require('../../utils/getProfile');
 
 const COMMON_COMMUNITIES_COUNT = 10;
 const COMMON_FRIENDS_COUNT = 5;
@@ -241,8 +242,7 @@ class Profile extends BasicController {
             resultUser.stats.postsCount = newPostCount > 0 ? newPostCount : 0;
         }
 
-        // TODO: Temporary fix for backward compatible
-        resultUser.personal = resultUser.personal || {};
+        resultUser.personal = processPersonalInfo(resultUser.personal);
         resultUser.personal.avatarUrl = resultUser.avatarUrl;
         resultUser.personal.coverUrl = resultUser.coverUrl;
 

@@ -500,7 +500,40 @@ waitForTransaction               // Дождаться и получить от�
         "avatarUrl": "https://img.golos.io/images/3r3CCZXMY7ct5QobX55W82MFeZiX.jpg",
         "coverUrl": "https://img.golos.io/images/KWk34xqkvvk7cKLR1miPRscghwz.jpg",
         "personal": {
-            "biography": "Rockin' and rollin' the web-development"
+            "defaultContacts": ["telegram", "weChat"],
+            "messengers": {
+                "telegram": {
+                    "value": "commun",
+                    "default": true,
+                    "href": "https://t.me/commun"
+                },
+                "weChat": {
+                    "value": "43534534",
+                    "default": true,
+                    "href": "43534534"
+                }
+            },
+            "links": {
+                "facebook": {
+                    "value": "commun",
+                    "default": false,
+                    "href": "https://www.facebook.com/commun"
+                },
+                "instagram": {
+                    "value": "commun",
+                    "default": false,
+                    "href": "https://instagram.com/commun"
+                },
+                "twitter": {
+                    "value": "commun",
+                    "default": false,
+                    "href": "https://twitter.com/commun"
+                }
+            },
+            "biography": "Few words about me test 2",
+            "firstName": "Name",
+            "lastName": "Last name",
+            "websiteUrl": "https://commun.com"
         },
         "isSubscribed": false,
         "isSubscription": false,
@@ -699,6 +732,41 @@ waitForTransaction               // Дождаться и получить от�
 }
 ```
 
+<= Ответ (пользователь авторизирован)
+
+```json
+{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "result": {
+        "subscribersCount": 3,
+        "leadersCount": 3,
+        "language": "en",
+        "postsCount": 8,
+        "communityId": "RADIO",
+        "issuer": "commtestpeez",
+        "alias": "radio",
+        "rules": [
+            { "id": "1", "title": "rule1", "text": "fasdf" },
+            { "id": "2", "title": "rule2", "text": "fasdfasdf" }
+        ],
+        "name": "radio",
+        "registrationTime": "2020-07-02T11:25:27.000Z",
+        "description": "Radio community! Join us! 🤖📡📻",
+        "subject": "test",
+        "coverUrl": "https://img.commun.com/images/2VkhES8QXGPEzuFjAe2uGz1GqvpV.png",
+        "avatarUrl": "https://img.commun.com/images/43G169cqRNszQySBCo7FX68eckST.png",
+        "isSubscribed": true,
+        "isBlocked": false,
+        "friendsCount": 0,
+        "friends": [],
+        "isInBlacklist": false,
+        "isLeader": true,
+        "isStoppedLeader": false
+    }
+}
+```
+
 <= Ответ
 
 ```json
@@ -706,32 +774,23 @@ waitForTransaction               // Дождаться и получить от�
     "jsonrpc": "2.0",
     "id": 1,
     "result": {
-        "subscribersCount": 5,
+        "subscribersCount": 3,
         "leadersCount": 3,
-        "communityId": "WREK",
-        "alias": "id2599799600",
-        "name": "WREK comunity",
-        "avatarUrl": "https://i.pravatar.cc/300?u=20528f91b85f0d42ca3c95019bcb2f70b0071c8a",
-        "coverUrl": "https://elearning.unipd.it/cur/pluginfile.php/35531/course/overviewfiles/matrix_animated_60.gif",
-        "description": "WREK comunity description",
-        "theme": "WREK community theme",
-        "language": "eng",
+        "language": "en",
+        "postsCount": 8,
+        "communityId": "RADIO",
+        "issuer": "commtestpeez",
+        "alias": "radio",
         "rules": [
             { "id": "1", "title": "rule1", "text": "fasdf" },
             { "id": "2", "title": "rule2", "text": "fasdfasdf" }
         ],
-        "isSubscribed": true,
-        "isBlocked": false,
-        "postsCount": 1,
-        "friendsCount": 1,
-        "friends": [
-            {
-                "userId": "tst3evxcjgjn",
-                "username": "bayer-van-dds",
-                "avatarUrl": "https://img.golos.io/images/12DcKUF5SFgXyt9dazqn7ibu5Pn.jpg"
-            }
-        ],
-        "registrationTime": "2019-11-06T09:55:45.000Z"
+        "name": "radio",
+        "registrationTime": "2020-07-02T11:25:27.000Z",
+        "description": "Radio community! Join us! 🤖📡📻",
+        "subject": "test",
+        "coverUrl": "https://img.commun.com/images/2VkhES8QXGPEzuFjAe2uGz1GqvpV.png",
+        "avatarUrl": "https://img.commun.com/images/43G169cqRNszQySBCo7FX68eckST.png"
     }
 }
 ```

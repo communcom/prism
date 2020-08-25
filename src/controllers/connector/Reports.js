@@ -164,6 +164,7 @@ class Reports extends Controller {
         const match = {
             $match: {
                 'reports.status': status,
+                status: { $ne: 'banned' },
             },
         };
 

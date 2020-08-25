@@ -441,9 +441,12 @@ class Posts extends BasicController {
                 'contentId.communityId': {
                     $nin: communitiesToExclude.map(({ communityId }) => communityId),
                 },
-                language: { $in: allowedLanguages },
             },
         };
+
+        if (allowedLanguages && !allowedLanguages.includes('all')) {
+            match.$match.language = { $in: allowedLanguages };
+        }
 
         if (communityId || communityAlias) {
             communityId = await resolveCommunityId({ communityId, communityAlias });
@@ -530,7 +533,7 @@ class Posts extends BasicController {
                 },
             },
         };
-        if (allowedLanguages) {
+        if (allowedLanguages && !allowedLanguages.includes('all')) {
             filter.$match.language = { $in: allowedLanguages };
         }
 

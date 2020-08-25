@@ -206,6 +206,30 @@ class LeaderProposals extends BasicController {
                             },
                         },
                         {
+                            $lookup: {
+                                from: 'profiles',
+                                localField: 'data.message_id.author',
+                                foreignField: 'userId',
+                                as: 'author',
+                            },
+                        },
+                        {
+                            $addFields: {
+                                'data.author': {
+                                    $let: {
+                                        vars: {
+                                            author: { $arrayElemAt: ['$author', 0] },
+                                        },
+                                        in: {
+                                            userId: '$$author.userId',
+                                            username: '$$author.username',
+                                            avatarUrl: '$$author.avatarUrl',
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                        {
                             $project: projection,
                         },
                     ],
