@@ -72,6 +72,34 @@ const communityLookup = {
     },
 };
 
+const postLookup = {
+    $lookup: {
+        from: 'posts',
+        let: {
+            communityId: '$parents.post.communityId',
+            userId: '$parents.post.userId',
+            permlink: '$parents.post.permlink',
+        },
+        as: 'post',
+        pipeline: [
+            {
+                $match: {
+                    $and: [
+                        { $expr: { $eq: ['$contentId.communityId', '$$communityId'] } },
+                        { $expr: { $eq: ['$contentId.userId', '$$userId'] } },
+                        { $expr: { $eq: ['$contentId.permlink', '$$permlink'] } },
+                    ],
+                },
+            },
+            {
+                $project: {
+                    contentId: 1,
+                },
+            },
+        ],
+    },
+};
+
 class Comment extends BasicController {
     async getComment({ userId, permlink, communityId, communityAlias }, { userId: authUserId }) {
         communityId = await resolveCommunityId({ communityId, communityAlias });
@@ -181,6 +209,18 @@ class Comment extends BasicController {
             ...paging,
             profileLookup,
             communityLookup,
+            postLookup,
+            {
+                $addFields: {
+                    'parents.isDeleted': {
+                        $cond: {
+                            if: { $size: '$post' },
+                            then: false,
+                            else: true,
+                        },
+                    },
+                },
+            },
             ...this._addCurrentUserFields(authUserId),
             { $project: baseProjection },
             {
