@@ -259,12 +259,17 @@ class Profile extends BasicController {
             resultUser.commonFriends = commonFriends;
             resultUser.commonFriendsCount = commonFriendsCount;
 
-            resultUser.highlightCommunities = await this._getHighlightCommunities({
+            const {
+                highlightCommunities,
+                highlightCommunitiesCount,
+            } = await this._getHighlightCommunities({
                 hostUserId: resultUser.userId,
                 guestUserId: authUserId,
                 maxCommonCommunities,
             });
-            resultUser.highlightCommunitiesCount = resultUser.highlightCommunities.length;
+            resultUser.highlightCommunities = highlightCommunities;
+            resultUser.highlightCommunitiesCount = highlightCommunitiesCount;
+
             resultUser.isInBlacklist = await this._isInBlacklist({
                 blockerUserId: authUserId,
                 blockingUserId: resultUser.userId,
@@ -820,7 +825,7 @@ class Profile extends BasicController {
             );
         }
 
-        return highlightCommunities;
+        return { highlightCommunities, highlightCommunitiesCount: commonCommunities.length };
     }
 
     async getUsers({ userIds }, { userId }) {
