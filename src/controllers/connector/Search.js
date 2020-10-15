@@ -9,6 +9,10 @@ const { getPost } = require('../../utils/getPost');
 const { getComment } = require('../../utils/getComment');
 const { getCommunity } = require('../../utils/getCommunity');
 const { getProfile } = require('../../utils/getProfile');
+const UserModel = require('../../models/Profile');
+const PostModel = require('../../models/Post');
+const CommunityModel = require('../../models/Community');
+const CommentModel = require('../../models/Comment');
 
 function sanitizeQueryString(qs) {
     return escapeElastic(qs);
@@ -23,7 +27,7 @@ class Search extends BasicController {
         });
     }
 
-    async _find({ queryString, limit = 5, offset = 0, entities }, { userId }) {
+    async _find({ queryString, amongIds, limit = 5, offset = 0, entities }, { authUserId }) {
         let indexes = [];
         if (entities.includes('all')) {
             indexes = ['_all'];
@@ -34,7 +38,7 @@ class Search extends BasicController {
         queryString = sanitizeQueryString(queryString);
         queryString = `${queryString}*~`;
 
-        const found = await this._querySearch(indexes, queryString, { limit, offset });
+        const found = await this._querySearch(indexes, queryString, amongIds, { limit, offset });
 
         const results = found.hits.hits;
         const resolvePromises = [];
@@ -48,19 +52,19 @@ class Search extends BasicController {
             switch (entityType) {
                 case 'posts':
                     type = 'post';
-                    promise = getPost(item._id, { userId });
+                    promise = getPost(item._id, { userId: authUserId });
                     break;
                 case 'comments':
                     type = 'comment';
-                    promise = getComment(item._id, { userId });
+                    promise = getComment(item._id, { userId: authUserId });
                     break;
                 case 'communities':
                     type = 'community';
-                    promise = getCommunity(item._id, { userId });
+                    promise = getCommunity(item._id, { userId: authUserId });
                     break;
                 case 'profiles':
                     type = 'profile';
-                    promise = getProfile(item._id, { userId });
+                    promise = getProfile(item._id, { userId: authUserId });
                     break;
                 default:
                     Logger.warn(`Entity type ${entityType} is not supported`);
@@ -84,11 +88,11 @@ class Search extends BasicController {
         };
     }
 
-    async quickSearch({ queryString, limit, entities }, { userId }) {
-        return await this._find({ queryString, limit, entities }, { userId });
+    async quickSearch({ queryString, limit, entities }, { userId: authUserId }) {
+        return await this._find({ queryString, limit, entities }, { authUserId });
     }
 
-    async extendedSearch({ queryString, entities }, { userId }) {
+    async extendedSearch({ queryString, entities }, { userId: authUserId }) {
         const entitiesList = [...Object.entries(entities)];
         const result = {};
 
@@ -108,7 +112,7 @@ class Search extends BasicController {
                         offset: params.offset,
                         entities: [entityName],
                     },
-                    { userId }
+                    { authUserId }
                 ).then(results => {
                     result[entityName] = results;
                 })
@@ -118,13 +122,77 @@ class Search extends BasicController {
         return result;
     }
 
-    async entitySearch({ queryString, entity, limit, offset }, { userId }) {
-        return this._find({ queryString, entities: [entity], limit, offset }, { userId });
+    async entitySearch(
+        { queryString, entity, limit, offset, userId, communityId },
+        { userId: authUserId }
+    ) {
+        const amongIds = [];
+        if (userId || communityId) {
+            switch (entity) {
+                case 'posts': {
+                    const query = { $and: [] };
+                    if (userId) {
+                        query.$and.push({ 'contentId.userId': userId });
+                    }
+                    if (communityId) {
+                        query.$and.push({ 'contentId.communityId': communityId });
+                    }
+                    const ids = await PostModel.find(query, { _id: 1 });
+                    amongIds.push(...ids.map(({ _id }) => _id));
+                    break;
+                }
+                case 'comments': {
+                    const query = { $and: [] };
+                    if (userId) {
+                        query.$and.push({ $or: [{ 'contentId.userId': userId }] });
+                    }
+                    if (communityId) {
+                        query.$and.push({ 'contentId.communityId': communityId });
+                    }
+                    const ids = await CommentModel.find(query, { _id: 1 });
+                    amongIds.push(...ids.map(({ _id }) => _id));
+                    break;
+                }
+                case 'profiles': {
+                    // todo: profiles
+                    break;
+                }
+                case 'communities': {
+                    const { subscriptions } = await UserModel.findOne(
+                        { userId },
+                        { 'subscriptions.communityIds': 1 }
+                    );
+                    const ids = await CommunityModel.find({
+                        communityId: subscriptions.communityIds,
+                    });
+                    amongIds.push(...ids.map(({ _id }) => _id));
+                    break;
+                }
+            }
+        }
+
+        return this._find(
+            { queryString, entities: [entity], amongIds, limit, offset },
+            { authUserId }
+        );
     }
 
-    async _querySearch(indexes, queryString, { limit = 10, offset = 0 }) {
-        const queryBody = bodybuilder()
-            .query('query_string', { fields: [], query: queryString })
+    async _querySearch(indexes, queryString, amongIds, { limit = 10, offset = 0 }) {
+        // Android и iOS сохраняли теги с #
+        if (queryString.indexOf('#') !== -1) {
+            queryString = `${queryString} | ${queryString.replace(/^#/, '')}`;
+        } else {
+            queryString = `${queryString} | #${queryString}`;
+        }
+
+        let queryBody = bodybuilder().query('query_string', { fields: [], query: queryString });
+
+        if (amongIds && amongIds.length > 0) {
+            queryBody = queryBody.query('ids', 'values', amongIds);
+        }
+
+        queryBody = queryBody
+            .sort('_id', 'desc')
             .size(limit)
             .from(offset)
             .build();

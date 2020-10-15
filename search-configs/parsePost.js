@@ -30,12 +30,34 @@ function getText(document) {
         .trim();
 }
 
+function getTags(document) {
+    var tags = [];
+    for (var i = 0; i < document.content.length; i++) {
+        var node = document.content[i];
+
+        if (node.type === 'paragraph') {
+            for (var j = 0; j < node.content.length; j++) {
+                var type = node.content[j].type;
+                if (type === 'tag') {
+                    var content = node.content[j].content;
+                    tags.push('#' + content);
+                }
+            }
+        }
+    }
+    return tags;
+}
+
 function parseDoc(doc) {
     if (doc.document) {
         if (doc.document.article) {
             doc.document = getText(doc.document.article);
         } else {
-            doc.document = getText(doc.document.body);
+            var document = getText(doc.document.body);
+            var tags = getTags(doc.document.body);
+
+            doc.document = document;
+            doc.tags = tags;
         }
     }
 }

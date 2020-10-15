@@ -120,7 +120,7 @@ class Community {
             communityId,
             leaderUserId,
             reason,
-            type,
+            banType: type,
             isGlobal: communityId === '',
         });
 

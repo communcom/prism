@@ -4,11 +4,9 @@ const { MongoDB } = core.services;
 module.exports = MongoDB.makeModel(
     'Ban',
     {
-        type: {
-            type: {
-                type: String,
-                enum: ['ban', 'unban'],
-            },
+        banType: {
+            type: String,
+            enum: ['ban', 'unban'],
         },
         userId: {
             type: String,

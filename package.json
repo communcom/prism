@@ -8,20 +8,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/GolosChain/prism-service.git"
+    "url": "git+https://github.com/communcom/prism.git"
   },
-  "author": "golos.io",
-  "license": "GPL-3.0",
-  "bugs": {
-    "url": "https://github.com/GolosChain/prism-service/issues"
-  },
-  "homepage": "https://github.com/GolosChain/prism-service#readme",
+  "author": "Good guys from Commun",
+  "license": "MIT",
   "dependencies": {
-    "bodybuilder": "^2.2.20",
+    "bodybuilder": "^2.2.21",
     "bytebuffer": "^5.0.1",
     "commun-utils": "^1.3.0",
     "cyberway-core-service": "^3.59.3",
     "cyberwayjs": "^20.0.2",
+    "dotenv": "^8.2.0",
     "elasticsearch": "^15.5.0",
     "elasticsearch-sanitize": "^2.0.0",
     "eosjs-ecc": "^4.0.7",

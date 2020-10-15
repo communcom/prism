@@ -11,6 +11,7 @@ const Block = require('../controllers/connector/Block');
 const Community = require('../controllers/connector/Community');
 const Reports = require('../controllers/connector/Reports');
 const Search = require('../controllers/connector/Search');
+const Tags = require('../controllers/connector/Tags');
 
 class Connector extends BasicConnector {
     constructor({ prism }) {
@@ -34,6 +35,7 @@ class Connector extends BasicConnector {
             this._community = new Community(linking);
             this._reports = new Reports({ ...linking, leaderProposals: this._leaderProposals });
             this._search = new Search(linking);
+            this._tags = new Tags(linking);
         } else {
             this._posts = empty;
             this._comment = empty;
@@ -43,12 +45,26 @@ class Connector extends BasicConnector {
             this._community = empty;
             this._reports = empty;
             this._search = empty;
+            this._tags = empty;
         }
     }
 
     async start() {
         await super.start({
             serverRoutes: {
+                getTrendingTags: {
+                    handler: this._tags.getTrendingTags,
+                    scope: this._tags,
+                    inherits: ['paging'],
+                    validation: {
+                        properties: {
+                            limit: {
+                                type: 'number',
+                                default: 5,
+                            },
+                        }
+                    }
+                },
                 quickSearch: {
                     handler: this._search.quickSearch,
                     scope: this._search,
@@ -119,6 +135,12 @@ class Connector extends BasicConnector {
                                 enum: SEARCHABLE_ENTITIES,
                             },
                             queryString: {
+                                type: 'string',
+                            },
+                            userId: {
+                                type: 'string',
+                            },
+                            communityId: {
                                 type: 'string',
                             },
                         },
@@ -401,7 +423,7 @@ class Connector extends BasicConnector {
                                 type: 'array',
                                 items: {
                                     type: 'string',
-                                    enum: ['all', 'setInfo', 'banUser', 'unbanUser', 'banPost'],
+                                    enum: ['all', 'setInfo', 'banUser', 'unbanUser', 'banPost', 'archive'],
                                 },
                                 default: ['all'],
                             },
@@ -598,6 +620,10 @@ class Connector extends BasicConnector {
                                 },
                                 default: ['all'],
                             },
+                            hideOnboarding: {
+                                type: 'boolean',
+                                default: false,
+                            }
                         },
                     },
                 },

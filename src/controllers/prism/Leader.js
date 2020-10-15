@@ -116,9 +116,9 @@ class Leader extends Abstract {
                 Model: LeaderModel,
                 documentId: newModel._id,
             });
-        }
 
-        await this._incrementLeadersCount({ communityId, inc: 1 });
+            await this._incrementLeadersCount({ communityId, inc: 1 });
+        }
     }
 
     async _unregister({ commun_code: communityId, leader: userId }) {

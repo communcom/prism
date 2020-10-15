@@ -65,6 +65,10 @@ module.exports = MongoDB.makeModel(
         contentType: {
             type: String,
         },
+        isExpired: {
+            type: Boolean,
+            default: false,
+        },
     },
     {
         index: [

@@ -100,10 +100,21 @@ class LeaderProposals extends BasicController {
                 $in: communityIds,
             },
             isExecuted: false,
+            expiration: {
+                $gte: new Date(),
+            },
         };
 
         if (!types.includes('all')) {
             match.type = { $in: types };
+        }
+
+        if (types.includes('archive')) {
+            match.expiration = {
+                $lte: new Date(),
+            };
+            // TODO mark proposal as archive
+            delete match.type;
         }
 
         const { items, proposalsCount } = await this._getProposals(
@@ -214,6 +225,14 @@ class LeaderProposals extends BasicController {
                             },
                         },
                         {
+                            $lookup: {
+                                from: 'profiles',
+                                localField: 'data.account',
+                                foreignField: 'userId',
+                                as: 'account',
+                            },
+                        },
+                        {
                             $addFields: {
                                 'data.author': {
                                     $let: {
@@ -224,6 +243,24 @@ class LeaderProposals extends BasicController {
                                             userId: '$$author.userId',
                                             username: '$$author.username',
                                             avatarUrl: '$$author.avatarUrl',
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                        {
+                            $addFields: {
+                                'data.account': {
+                                    $let: {
+                                        vars: {
+                                            account: { $arrayElemAt: ['$account', 0] },
+                                        },
+                                        in: {
+                                            userId: '$$account.userId',
+                                            username: '$$account.username',
+                                            avatarUrl: '$$account.avatarUrl',
+                                            postsCount: '$$account.stats.postsCount',
+                                            subscribersCount: '$$account.subscribers.usersCount',
                                         },
                                     },
                                 },

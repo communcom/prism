@@ -107,6 +107,21 @@ const communityLookup = {
     },
 };
 
+const addUrl = {
+    $addFields: {
+        url: {
+            $concat: [
+                '/',
+                '$community.alias',
+                '/@',
+                '$author.username',
+                '/',
+                '$contentId.permlink',
+            ],
+        },
+    },
+};
+
 class Reports extends Controller {
     constructor({ leaderProposals, ...links }) {
         super(links);
@@ -185,6 +200,7 @@ class Reports extends Controller {
                         profileLookup,
                         communityLookup,
                         projection,
+                        addUrl,
                     ],
                     meta: [{ $count: 'count' }],
                 },

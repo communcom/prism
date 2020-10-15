@@ -31,9 +31,15 @@ module.exports = MongoDB.makeModel(
         },
         status: {
             type: String,
-            enum: ['open', 'closed'],
+            enum: ['open', 'closed', 'archive'],
             required: true,
             default: 'open',
+        },
+        proposalId: {
+            type: String,
+        },
+        tracery: {
+            type: String,
         },
     },
     {

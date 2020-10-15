@@ -51,7 +51,7 @@ async function isPost(content) {
 
 async function processContent(connector, data, allowedTypes) {
     const doc = JSON.parse(data.body);
-    const tags = uniq(data.tags);
+    const tags = uniq(data.tags).map(tag => tag.replace(/^#/, '').toLowerCase());
     let metadata = {};
 
     try {

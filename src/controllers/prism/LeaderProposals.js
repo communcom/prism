@@ -5,6 +5,7 @@ const { isNil } = require('lodash');
 const core = require('cyberway-core-service');
 const { Logger } = core.utils;
 const Abstract = require('./Abstract');
+const { calculateTracery } = require('../../utils/mosaic');
 const env = require('../../data/env');
 const LeaderModel = require('../../models/Leader');
 const ReportModel = require('../../models/Report');
@@ -127,6 +128,29 @@ class LeaderProposals extends Abstract {
             if (!contentType) {
                 return;
             }
+
+            const { author: userId, permlink } = data.message_id;
+            const tracery = calculateTracery(userId, permlink);
+            data.tracery = tracery;
+
+            const match = {
+                'contentId.communityId': communityId,
+                'contentId.userId': userId,
+                'contentId.permlink': permlink,
+            };
+
+            const report = await ReportModel.findOne(match, { reports: false }, { lean: true });
+
+            if (!report) {
+                return;
+            }
+
+            await ReportModel.updateOne(match, {
+                $set: {
+                    proposalId,
+                    tracery,
+                },
+            });
         }
 
         const proposalModel = await ProposalModel.create({

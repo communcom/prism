@@ -4,6 +4,7 @@ const BasicController = core.controllers.Basic;
 const { addFieldIsIncludes } = require('../../utils/mongodb');
 const { resolveCommunityId } = require('../../utils/lookup');
 const {
+    SKIP_ONBOARDING_COMMUNITIES,
     KAVA_SPECIAL_SORTED_COMMUNITIES,
     DANK_MEME_SPECIAL_SORTED_COMMUNITIES,
 } = require('../../data/constants');
@@ -32,14 +33,17 @@ const FRIEND_SUBSCRIBERS_LIMIT = 5;
 
 class Community extends BasicController {
     async isInCommunityBlacklist({ userId, communityId }) {
-        const ban = await BanModel.find(
-            {
-                $or: [{ userId, communityId }, { userId, isGlobal: true }],
-            },
-            { _id: 1 },
+        const community = await CommunityModel.findOne(
+            { communityId, blacklist: { $in: [userId] } },
+            { blacklist: 1 },
             { lean: true }
         );
-        return ban.length > 0;
+
+        if (!community) {
+            return false;
+        }
+        
+        return community.blacklist.includes(userId);
     }
 
     async getCommunityBanHistory({ communityId, communityAlias, userId, limit, offset }) {
@@ -276,6 +280,7 @@ class Community extends BasicController {
             sortingToken,
             allowNsfw,
             forceQuery,
+            hideOnboarding,
         },
         { userId: authUserId },
         { clientType }
@@ -291,6 +296,7 @@ class Community extends BasicController {
                     limit,
                     offset,
                     forceQuery: this._getSortingTokenQuery(sortingToken),
+                    hideOnboarding,
                 },
                 { userId: authUserId },
                 { clientType }
@@ -309,6 +315,10 @@ class Community extends BasicController {
 
             if (clientType !== 'web' || !allowNsfw) {
                 skipCommunities.push('PORN', 'NSFW');
+            }
+
+            if (hideOnboarding) {
+                skipCommunities.push(...SKIP_ONBOARDING_COMMUNITIES);
             }
 
             query.$and = [{ communityId: { $nin: skipCommunities } }];
